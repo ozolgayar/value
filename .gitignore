@@ -1,0 +1,17 @@
+node_modules
+dist
+.DS_Store
+*.local
+.env
+.env.*
+
+# исходник книги и временные выгрузки (очень тяжёлые)
+*.pptx
+slides-extract.json
+slides-toc-draft.md
+key-slides.txt
+key-slides-utf8.txt
+_extract_slides.py
+_extract_media.py
+_dump_key.py
+public/media
