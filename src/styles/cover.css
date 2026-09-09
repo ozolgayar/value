@@ -21,7 +21,7 @@
 .cover__media {
   position: absolute;
   inset: 0;
-  background: url('/img/01.jpg') center top / cover no-repeat;
+  background: var(--asset-cover) center top / cover no-repeat;
   transform: scale(1.04);
   animation: cover-ken 18s ease-in-out infinite alternate;
 }

@@ -19,8 +19,8 @@
   aspect-ratio: 1.35 / 1;
   pointer-events: none;
   background-color: #e4eff8;
-  -webkit-mask-image: url('/logo/trans-mark-only.png');
-  mask-image: url('/logo/trans-mark-only.png');
+  -webkit-mask-image: var(--asset-trans-mark);
+  mask-image: var(--asset-trans-mark);
   -webkit-mask-size: contain;
   mask-size: contain;
   -webkit-mask-repeat: no-repeat;

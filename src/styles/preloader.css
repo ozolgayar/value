@@ -116,11 +116,11 @@
 .preloader-symbol__fill {
   position: absolute;
   inset: 0;
-  -webkit-mask-image: url('/logo/trans-mark-only.png');
+  -webkit-mask-image: var(--asset-trans-mark);
   -webkit-mask-position: center;
   -webkit-mask-size: contain;
   -webkit-mask-repeat: no-repeat;
-  mask-image: url('/logo/trans-mark-only.png');
+  mask-image: var(--asset-trans-mark);
   mask-position: center;
   mask-size: contain;
   mask-repeat: no-repeat;

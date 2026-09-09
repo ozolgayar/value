@@ -1,5 +1,6 @@
 import { useId } from 'react'
 import { BOOK_META } from '../data/book'
+import { asset } from '../asset'
 import '../styles/cover.css'
 
 const particles = [
@@ -125,7 +126,7 @@ export function Cover({ onOpen, inert = false }: CoverProps) {
             <span>ГЕРОФАРМ</span>
             <img
               className="cover__trans-mark"
-              src="/logo/trans-mark-only.png"
+              src={asset('logo/trans-mark-only.png')}
               alt=""
               aria-hidden
             />

@@ -73,7 +73,7 @@ export const sections: Section[] = [
             meta: {
               name: 'Петр Родионов',
               role: 'Генеральный директор ГЕРОФАРМ',
-              photo: '/img/02.jpg',
+              photo: 'img/02.jpg',
             },
           },
         ],
@@ -101,7 +101,7 @@ export const sections: Section[] = [
             ],
             footerSlogan: 'У КАЖДОГО ИЗ НАС СВОЯ РОЛЬ,\nНАС ОБЪЕДИНЯЕТ КУЛЬТУРА ГЕРОФАРМ',
             meta: {
-              logo: '/logo/gero_trans.png',
+              logo: 'logo/gero_trans_clear.png',
               chapter: '01',
             },
           },

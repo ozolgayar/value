@@ -1,4 +1,5 @@
 import type { BookPage } from '../data/book'
+import { asset } from '../asset'
 
 export function PageView({ page }: { page: BookPage }) {
   if (page.kind === 'ceo') {
@@ -7,7 +8,7 @@ export function PageView({ page }: { page: BookPage }) {
         <div className="page-ceo__aside">
           <img
             className="page-ceo__photo"
-            src={page.meta?.photo ?? '/covers/ceo.jpg'}
+            src={asset(page.meta?.photo ?? 'covers/ceo.jpg')}
             alt={page.meta?.name ?? 'Портрет'}
           />
           <p className="page-ceo__name">{page.meta?.name}</p>
@@ -46,7 +47,7 @@ export function PageView({ page }: { page: BookPage }) {
           {page.meta?.logo && (
             <img
               className="page-split__logo"
-              src={page.meta.logo}
+              src={asset(page.meta.logo)}
               alt="ГЕРОФАРМ Трансформация"
             />
           )}
