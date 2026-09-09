@@ -30,6 +30,11 @@ export function PageView({ page }: { page: BookPage }) {
     return (
       <article className="page-shell page-bleed page-split">
         <div className="page-split__left">
+          {page.meta?.chapter && (
+            <span className="page-split__chapter" aria-hidden>
+              {page.meta.chapter}
+            </span>
+          )}
           <div className="page-split__left-inner">
             {page.title && <h2 className="page-split__title">{page.title}</h2>}
             <div className="page-split__body">
@@ -56,17 +61,21 @@ export function PageView({ page }: { page: BookPage }) {
                 ))}
               </ul>
             )}
+            {page.footerSlogan && (
+              <>
+                <div className="page-split__divider" aria-hidden />
+                <p className="page-split__slogan">
+                  <span className="page-split__quote-mark" aria-hidden>
+                    «
+                  </span>
+                  {page.footerSlogan.replace(/\n/g, ' ')}
+                  <span className="page-split__quote-mark" aria-hidden>
+                    »
+                  </span>
+                </p>
+              </>
+            )}
           </div>
-          {page.footerSlogan && (
-            <p className="page-split__slogan">
-              {page.footerSlogan.split('\n').map((line) => (
-                <span key={line}>
-                  {line}
-                  <br />
-                </span>
-              ))}
-            </p>
-          )}
         </div>
       </article>
     )

@@ -10,8 +10,9 @@
   --shadow: 0 18px 50px rgba(44, 18, 100, 0.12);
   --radius: 18px;
   --nav-safe: 72px;
-  --font: 'Manrope', system-ui, sans-serif;
-  --display: 'Instrument Serif', Georgia, serif;
+  --font: Verdana, Geneva, sans-serif;
+  --display: Verdana, Geneva, sans-serif;
+  --btn-font: 'Roboto', Arial, sans-serif;
 }
 
 *,
@@ -42,6 +43,19 @@ a {
   font-family: inherit;
 }
 
+.btn-primary,
+.btn-ghost,
+.tool-btn,
+.nav-arrow,
+.menu-close,
+.menu-toc-link,
+.bento__item,
+.paragraphs button,
+.bookmarks__list button,
+.contents__row {
+  font-family: var(--btn-font);
+}
+
 button {
   cursor: pointer;
   border: none;
@@ -60,26 +74,140 @@ img {
   overflow: hidden;
 }
 
+.app-shell__wash {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(160deg, #e4eef8 0%, #d7e8f4 40%, #cfe0f0 100%);
+  transition: background 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.app-shell.theme-cover .app-shell__wash {
+  /* Same as contents — cover paints itself; avoids navy flash during open */
+  background: linear-gradient(160deg, #e4eef8 0%, #d7e8f4 40%, #cfe0f0 100%);
+}
+
+.app-shell.theme-contents .app-shell__wash {
+  background: linear-gradient(160deg, #e4eef8 0%, #d7e8f4 40%, #cfe0f0 100%);
+}
+
+.app-shell.theme-reader .app-shell__wash,
+.app-shell.is-book-open .app-shell__wash {
+  background: linear-gradient(145deg, #2c1264 0%, #3a2a7a 42%, #1f6a9a 100%);
+}
+
 .view {
   position: absolute;
   inset: 0;
+  z-index: 1;
   opacity: 0;
   pointer-events: none;
-  transform: translateY(12px) scale(0.985);
+  transform: translateY(18px) scale(0.985);
+  filter: blur(0);
   transition:
-    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform, filter;
 }
 
 .view.is-active {
   opacity: 1;
   pointer-events: auto;
   transform: none;
+  filter: none;
 }
 
 .view.is-exit {
   opacity: 0;
-  transform: translateY(-10px) scale(1.02);
+  pointer-events: none;
+  transform: translateY(-12px) scale(1.02);
+  filter: blur(6px);
+}
+
+.akony-view.is-active {
+  transform: none;
+  filter: none;
+}
+
+.akony-view.is-exit:not(.screen-exit) {
+  opacity: 0;
+  transform: scale(1.045);
+  filter: blur(10px);
+}
+
+.reader-view:not(.is-active):not(.is-exit):not(.screen-enter) {
+  transform: translateY(28px) scale(0.97);
+  filter: blur(8px);
+}
+
+.reader-view.is-active:not(.screen-enter) {
+  transform: none;
+  filter: none;
+}
+
+.reader-view.is-exit {
+  opacity: 0;
+  transform: translateY(16px) scale(0.98);
+  filter: blur(6px);
+}
+
+/* Contents → Reader: background wash + scale open */
+.akony-view.screen-exit,
+.reader-view.screen-enter {
+  transform-origin: center center;
+  will-change: transform, opacity;
+}
+
+.akony-view.screen-exit {
+  animation: scaleOut 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transition: none !important;
+  filter: none !important;
+  pointer-events: none;
+}
+
+.reader-view.screen-enter {
+  animation: scaleIn 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transition: none !important;
+  filter: none !important;
+  pointer-events: auto;
+}
+
+@keyframes scaleOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.94);
+    opacity: 0;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(1.03);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view,
+  .akony-view,
+  .reader-view {
+    transition-duration: 0.01ms !important;
+    filter: none !important;
+    animation: none !important;
+  }
+
+  .app-shell__wash {
+    transition: none !important;
+  }
 }
 
 .btn-primary {

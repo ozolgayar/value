@@ -1,0 +1,213 @@
+.preloader {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1a0840;
+  color: #fff;
+  overflow: hidden;
+  transform: translateY(0);
+  transition: transform 0.95s cubic-bezier(0.76, 0, 0.24, 1);
+  will-change: transform;
+}
+
+.preloader.is-leaving {
+  transform: translateY(-105%);
+  pointer-events: none;
+}
+
+.velaris {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.velaris__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  display: block;
+}
+
+.velaris__content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+
+.preloader__velaris {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.preloader__center {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.75rem;
+  width: 100%;
+  padding-inline: clamp(1rem, 3vw, 2.5rem);
+}
+
+/* —— Brand row: word | mark | word (mark locked to horizontal center) —— */
+.preloader-brand {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  column-gap: clamp(0.85rem, 2.2vw, 1.75rem);
+  width: 100%;
+  max-width: 1400px;
+  font-size: clamp(2.7rem, 7.5vw, 4.6rem);
+  animation: preloader-logo-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.preloader-brand__word {
+  font-family: Verdana, Geneva, sans-serif;
+  font-weight: 700;
+  font-size: 1em;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background-image: linear-gradient(
+    105deg,
+    #8a8a8a 0%,
+    #cfcfcf 22%,
+    #ffffff 42%,
+    #b8b8b8 58%,
+    #f5f5f5 78%,
+    #9a9a9a 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: preloader-shimmer 3.2s ease-in-out infinite;
+}
+
+.preloader-brand__word--left {
+  justify-self: end;
+  text-align: right;
+}
+
+.preloader-brand__word--right {
+  justify-self: start;
+  text-align: left;
+}
+
+/* —— Transformation mark (CSS mask fill) —— */
+.preloader-symbol {
+  position: relative;
+  justify-self: center;
+  height: 1em;
+  width: calc(1em * 1.35);
+}
+
+.preloader-symbol__ghost,
+.preloader-symbol__fill {
+  position: absolute;
+  inset: 0;
+  -webkit-mask-image: url('/logo/trans-mark-only.png');
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-image: url('/logo/trans-mark-only.png');
+  mask-position: center;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-mode: luminance;
+  -webkit-mask-mode: luminance;
+}
+
+.preloader-symbol__ghost {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.preloader-symbol__fill {
+  background: linear-gradient(90deg, #ff9c1b 0%, #de56c2 50%, #1e88fe 100%);
+  transition: clip-path 60ms linear;
+  filter: drop-shadow(0 0 10px rgba(222, 86, 194, 0.35));
+}
+
+.preloader__count {
+  display: flex;
+  align-items: baseline;
+  gap: 0.15rem;
+  font-family: var(--btn-font);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  animation: preloader-logo-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+}
+
+.preloader__count-num {
+  font-size: clamp(2.4rem, 8vw, 4.2rem);
+  font-variant-numeric: tabular-nums;
+}
+
+.preloader__count-pct {
+  font-size: clamp(1rem, 2.6vw, 1.35rem);
+  opacity: 0.75;
+}
+
+@keyframes preloader-logo-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes preloader-shimmer {
+  0%,
+  100% {
+    background-position: 100% 50%;
+  }
+  50% {
+    background-position: 0% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preloader,
+  .preloader-brand,
+  .preloader-brand__word,
+  .preloader__count,
+  .preloader-symbol__fill {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .preloader-brand__word {
+    background-position: 40% 50%;
+  }
+
+  .preloader.is-leaving {
+    opacity: 0;
+    transform: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .preloader-brand {
+    column-gap: 0.45rem;
+    font-size: clamp(0.58rem, 3vw, 0.85rem);
+  }
+
+  .preloader-brand__word {
+    letter-spacing: 0.06em;
+  }
+}

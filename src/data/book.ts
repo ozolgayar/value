@@ -42,7 +42,7 @@ export const BOOK_META = {
   title: 'Культурный путеводитель ГЕРОФАРМ',
   hashtag: '#КОМПАНИЮ_МЕНЯЮТ_ЛЮДИ',
   badge: 'ГЕРОФАРМ · ТРАНСФОРМАЦИЯ',
-  subtitle: 'Семь разделов о смыслах, культуре и действиях',
+  subtitle: 'Восемь разделов о корпоративной культуре ГЕРОФАРМ',
 }
 
 /** Разметка содержания по PPTX «Путеводитель по культуре ГЕРОФАРМ 07.09.2026» */
@@ -50,7 +50,7 @@ export const sections: Section[] = [
   {
     id: 'intro',
     number: '01',
-    title: 'Обращение',
+    title: 'Добро пожаловать',
     tag: 'СМЫСЛЫ / СТАРТ',
     summary: 'Как сегодняшние смыслы определяют завтрашний результат',
     accent: '#2C1264',
@@ -73,7 +73,7 @@ export const sections: Section[] = [
             meta: {
               name: 'Петр Родионов',
               role: 'Генеральный директор ГЕРОФАРМ',
-              photo: '/covers/ceo.jpg',
+              photo: '/img/02.jpg',
             },
           },
         ],
@@ -102,6 +102,7 @@ export const sections: Section[] = [
             footerSlogan: 'У КАЖДОГО ИЗ НАС СВОЯ РОЛЬ,\nНАС ОБЪЕДИНЯЕТ КУЛЬТУРА ГЕРОФАРМ',
             meta: {
               logo: '/logo/gero_trans.png',
+              chapter: '01',
             },
           },
         ],
@@ -111,7 +112,7 @@ export const sections: Section[] = [
   {
     id: 'history',
     number: '02',
-    title: 'История',
+    title: 'История ГЕРОФАРМ',
     tag: 'ПУТЬ / КУЛЬТУРА',
     summary: 'Путь компании и становление культуры',
     accent: '#3BB9B8',
@@ -167,7 +168,7 @@ export const sections: Section[] = [
   {
     id: 'mission',
     number: '03',
-    title: 'Миссия и стратегия',
+    title: 'Миссия и стратегия ГЕРОФАРМ',
     tag: 'ГОРИЗОНТ / 2030',
     summary: 'Как личный вклад влияет на глобальные цели и жизнь пациентов',
     accent: '#E56814',
@@ -213,7 +214,7 @@ export const sections: Section[] = [
   {
     id: 'synergy',
     number: '04',
-    title: 'Синергия «МЫ»',
+    title: 'Синергия «МЫ» ГЕРОФАРМ',
     tag: 'МИРОВОЗЗРЕНИЕ',
     summary: 'Что помогает понимать друг друга с полуслова',
     accent: '#2C1264',
@@ -249,7 +250,7 @@ export const sections: Section[] = [
   {
     id: 'values',
     number: '05',
-    title: 'Ценности',
+    title: 'Ценности ГЕРОФАРМ',
     tag: 'ВНУТРЕННИЙ КОМПАС',
     summary: 'Внутренний компас для принятия решений',
     accent: '#3BB9B8',
@@ -297,7 +298,7 @@ export const sections: Section[] = [
   {
     id: 'mastery',
     number: '06',
-    title: 'Мастерство',
+    title: 'Мастерство ГЕРОФАРМ',
     tag: 'ИСТОРИИ ПОБЕД',
     summary: 'Легендарные победы и секреты успеха',
     accent: '#E56814',
@@ -332,7 +333,7 @@ export const sections: Section[] = [
   {
     id: 'environment',
     number: '07',
-    title: 'Окружение',
+    title: 'Окружение ГЕРОФАРМ',
     tag: 'ИНФРАСТРУКТУРА КУЛЬТУРЫ',
     summary: 'Что в компании поддерживает и развивает культуру',
     accent: '#2C1264',
@@ -369,7 +370,7 @@ export const sections: Section[] = [
   {
     id: 'practice',
     number: '08',
-    title: 'Практики-тренажёры',
+    title: 'Практики-тренажёры ГЕРОФАРМ',
     tag: 'ТРЕНИРОВКА МЫШЛЕНИЯ',
     summary: 'Тренировка мышления на рабочих ситуациях',
     accent: '#3BB9B8',

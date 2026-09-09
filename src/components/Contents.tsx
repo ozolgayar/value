@@ -5,6 +5,8 @@ interface ContentsProps {
   onStart: () => void
   onSelectSection: (sectionId: string) => void
   onBack: () => void
+  /** Kept for compatibility; contents shows instantly (no reveal animation) */
+  revealed?: boolean
 }
 
 function sectionStartPage(sectionId: string) {
@@ -19,14 +21,14 @@ function sectionStartPage(sectionId: string) {
 export function Contents({ onStart, onSelectSection, onBack }: ContentsProps) {
   return (
     <section className="contents" aria-label="Содержание">
+      <div className="contents__pattern contents__pattern--right" aria-hidden />
+      <div className="contents__pattern contents__pattern--left" aria-hidden />
+
       <div className="contents__inner">
         <header className="contents__header">
           <p className="contents__eyebrow">{BOOK_META.subtitle}</p>
           <h1 className="contents__title">Содержание</h1>
-          <p className="contents__sub">
-            Интерактивное оглавление культурного путеводителя. Выберите раздел или начните читать с
-            первой страницы.
-          </p>
+          <p className="contents__sub">Выбери раздел или начни читать с первой страницы.</p>
         </header>
 
         <div className="contents__list" role="list">
@@ -42,15 +44,15 @@ export function Contents({ onStart, onSelectSection, onBack }: ContentsProps) {
               <span className="contents__name">{section.title}</span>
               <span className="contents__tag">{section.tag}</span>
               <span className="contents__page">
-                P. {String(sectionStartPage(section.id)).padStart(3, '0')}
+                С.&nbsp;{String(sectionStartPage(section.id)).padStart(3, '0')}
               </span>
             </button>
           ))}
         </div>
 
         <footer className="contents__footer">
-          <button type="button" className="btn-ghost contents__back" onClick={onBack}>
-            ← К обложке
+          <button type="button" className="contents__back" onClick={onBack}>
+            ← На главную
           </button>
           <button type="button" className="btn-primary" onClick={onStart}>
             Начать читать

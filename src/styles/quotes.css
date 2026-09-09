@@ -1,0 +1,146 @@
+.quotes-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgba(8, 12, 28, 0.55);
+}
+
+.quotes-panel {
+  width: min(520px, 100%);
+  max-height: min(78dvh, 640px);
+  overflow: auto;
+  background: #1a1c22;
+  color: #fff;
+  border-radius: 24px;
+  padding: 1.35rem 1.35rem 1.5rem;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+}
+
+.quotes-panel__head {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.quotes-panel__head h2 {
+  margin: 0;
+  text-align: center;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.quotes-back,
+.quotes-close {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 1.15rem;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.quotes-back:hover,
+.quotes-close:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.quotes-panel__empty {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.quotes-panel__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.quotes-panel__item {
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.quotes-panel__item blockquote {
+  margin: 0 0 0.75rem;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.quotes-panel__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.quotes-panel__goto {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #1e88fe;
+  text-align: left;
+}
+
+.quotes-panel__goto:hover {
+  text-decoration: underline;
+}
+
+.quotes-panel__remove {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.quotes-panel__remove:hover {
+  color: #ff7a7a;
+}
+
+.quote-pop {
+  position: fixed;
+  z-index: 60;
+  transform: translate(-50%, -120%);
+  min-height: 40px;
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+  border: none;
+  background: #1a1c22;
+  color: #fff;
+  font-family: var(--btn-font);
+  font-size: 0.85rem;
+  font-weight: 700;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+  animation: quote-pop-in 0.2s ease both;
+}
+
+.quote-pop:hover {
+  background: #252830;
+}
+
+@keyframes quote-pop-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -100%) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -120%) scale(1);
+  }
+}
