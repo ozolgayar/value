@@ -2,10 +2,32 @@ export type PageKind =
   | 'ceo'
   | 'text'
   | 'split'
+  | 'route'
   | 'section-open'
+  | 'interstitial'
+  | 'history-era'
+  | 'mission-eco'
+  | 'mission-statement'
+  | 'mission-ecosystem'
+  | 'mission-longevity'
   | 'timeline'
   | 'values'
   | 'quote'
+  | 'facts'
+
+export interface FactStat {
+  value: number
+  label: string
+  prefix?: string
+  suffix?: string
+}
+
+export interface RouteItem {
+  title: string
+  desc: string
+  sectionId: string
+  pageId?: string
+}
 
 export interface BookPage {
   id: string
@@ -17,6 +39,8 @@ export interface BookPage {
   meta?: Record<string, string>
   years?: { year: string; text: string }[]
   values?: { name: string; desc: string; color: string }[]
+  facts?: FactStat[]
+  routeItems?: RouteItem[]
   sideTitle?: string
   sideItems?: string[]
   footerSlogan?: string
@@ -73,7 +97,7 @@ export const sections: Section[] = [
             meta: {
               name: 'Петр Родионов',
               role: 'Генеральный директор ГЕРОФАРМ',
-              photo: 'img/02.jpg',
+              photo: 'img/03.jpg',
             },
           },
         ],
@@ -102,7 +126,79 @@ export const sections: Section[] = [
             footerSlogan: 'У КАЖДОГО ИЗ НАС СВОЯ РОЛЬ,\nНАС ОБЪЕДИНЯЕТ КУЛЬТУРА ГЕРОФАРМ',
             meta: {
               logo: 'logo/gero_trans_clear.png',
-              chapter: '01',
+            },
+          },
+        ],
+      },
+      {
+        id: 'route',
+        title: 'Маршрут',
+        pages: [
+          {
+            id: 'p-route',
+            kind: 'route',
+            title: 'Маршрут: от смыслов к конкретным шагам',
+            body: [
+              'От миссии и стратегии – через командную идентичность, ценности – к мастерству и окружению. Это позволяет двигаться от глубинных смыслов к повседневным практикам.',
+              'Читать можно последовательно, а можно открывать нужную главу, когда возник вопрос или потребность свериться с ориентирами.',
+            ],
+            routeItems: [
+              {
+                title: 'История',
+                desc: 'Путь компании и становление культуры',
+                sectionId: 'history',
+                pageId: 'p-history-0',
+              },
+              {
+                title: 'Миссия и стратегия',
+                desc: 'Как личный вклад влияет на глобальные цели и жизнь пациентов',
+                sectionId: 'mission',
+              },
+              {
+                title: 'Синергия «МЫ»',
+                desc: 'Что помогает понимать друг друга с полуслова',
+                sectionId: 'synergy',
+              },
+              {
+                title: 'Ценности',
+                desc: 'Внутренний компас для принятия решений',
+                sectionId: 'values',
+              },
+              {
+                title: 'Мастерство',
+                desc: 'Легендарные победы и секреты успеха',
+                sectionId: 'mastery',
+              },
+              {
+                title: 'Окружение',
+                desc: 'Что в компании поддерживает и развивает культуру',
+                sectionId: 'environment',
+              },
+              {
+                title: 'Практики-тренажеры',
+                desc: 'Тренировка мышления на рабочих ситуациях',
+                sectionId: 'practice',
+              },
+            ],
+            meta: {
+              logo: 'logo/gero_trans_clear.png',
+            },
+          },
+        ],
+      },
+      {
+        id: 'history-break',
+        title: 'История ГЕРОФАРМ',
+        pages: [
+          {
+            id: 'p-history-break',
+            kind: 'interstitial',
+            title: 'ИСТОРИЯ\nГЕРОФАРМ',
+            body: [
+              'Мы отправляемся по историческому маршруту: ключевым вехам становления ГЕРОФАРМ. Переломные решения, преодоленные вызовы и смелые идеи, сформировавшие корпоративный характер.',
+            ],
+            meta: {
+              logo: 'logo/trans-mark-only.png',
             },
           },
         ],
@@ -115,50 +211,100 @@ export const sections: Section[] = [
     title: 'История ГЕРОФАРМ',
     tag: 'ПУТЬ / КУЛЬТУРА',
     summary: 'Путь компании и становление культуры',
-    accent: '#3BB9B8',
+    accent: '#9b4dff',
     paragraphs: [
       {
-        id: 'history-open',
+        id: 'history-eras',
         title: 'Исторический маршрут',
         pages: [
           {
-            id: 'p-history-open',
-            kind: 'section-open',
-            badge: 'РАЗДЕЛ 02',
+            id: 'p-history-0',
+            kind: 'history-era',
             title: 'История ГЕРОФАРМ',
-            body: [
-              'Мы отправляемся по историческому маршруту: ключевым вехам становления ГЕРОФАРМ. Переломные решения, преодоленные вызовы и смелые идеи, сформировавшие корпоративный характер.',
-            ],
+            meta: { historyPage: '0' },
           },
           {
-            id: 'p-history-2000s',
-            kind: 'timeline',
-            badge: '2001 — 2009',
-            title: 'Смелый старт',
-            body: [
-              'В начале 2000-х рынок был наполнен импортными препаратами, при этом отечественные производства устаревали.',
-              'Мы выбрали свой путь: вкладываться в науку, разрабатывать свои технологии и выстраивать современное производство полного цикла.',
-            ],
-            years: [
-              { year: '2001', text: 'Старт с амбициозным взглядом из желаемого будущего' },
-              { year: '2003', text: 'Формирование научной и производственной базы' },
-              { year: '2006', text: 'Укрепление экспертизы и первых масштабов' },
-              { year: '2009', text: 'Культура результата закрепляется в команде' },
-            ],
+            id: 'p-history-1',
+            kind: 'history-era',
+            title: 'История ГЕРОФАРМ',
+            meta: { historyPage: '1' },
           },
           {
-            id: 'p-history-2010s',
-            kind: 'timeline',
-            badge: '2011 — 2016',
-            title: 'Инвестиции в будущее',
+            id: 'p-history-2',
+            kind: 'history-era',
+            title: 'История ГЕРОФАРМ',
+            meta: { historyPage: '2' },
+          },
+          {
+            id: 'p-history-3',
+            kind: 'history-era',
+            title: 'История ГЕРОФАРМ',
+            meta: { historyPage: '3' },
+          },
+          {
+            id: 'p-history-4',
+            kind: 'history-era',
+            title: 'История ГЕРОФАРМ',
+            meta: { historyPage: '4' },
+          },
+        ],
+      },
+      {
+        id: 'mission-break',
+        title: 'Миссия и стратегия',
+        pages: [
+          {
+            id: 'p-mission-break',
+            kind: 'interstitial',
+            title: 'МИССИЯ\nи СТРАТЕГИЯ\nГЕРОФАРМ',
             body: [
-              'Успех приходит тогда, когда бизнес чутко реагирует на потребности общества. Начался период крупных инвестиций: R&D-центр и новые производственные мощности.',
+              'Миссия — это взгляд за горизонт. Она задает глобальный смысл всей культуре: от ценностей до повседневных решений.',
+              'Стратегия — маршрут на ближайшие пять лет. Она определяет, как реализовать наше предназначение, превращая ежедневные задачи в реальный вклад в здоровье пациентов.',
             ],
-            years: [
-              { year: '2011', text: 'Крупные инвестиции в R&D и производство' },
-              { year: '2013', text: 'Расширение портфеля и компетенций' },
-              { year: '2014', text: 'Усиление полного цикла контроля качества' },
-              { year: '2016', text: 'Масштабирование экспертизы команды' },
+            meta: {
+              logo: 'logo/trans-mark-only.png',
+            },
+          },
+        ],
+      },
+      {
+        id: 'mission-pages',
+        title: 'Миссия ГЕРОФАРМ',
+        pages: [
+          {
+            id: 'p-mission-statement',
+            kind: 'mission-statement',
+            title: 'Миссия ГЕРОФАРМ',
+          },
+          // Single spread: left (blue) + right (white) on one screen — do not duplicate
+          {
+            id: 'p-mission-ecosystem',
+            kind: 'mission-ecosystem',
+            title: 'Экосистема здорового долголетия',
+          },
+          {
+            id: 'p-mission-longevity',
+            kind: 'mission-longevity',
+            title: 'Мышление долголетия',
+          },
+        ],
+      },
+      {
+        id: 'facts',
+        title: 'ГЕРОФАРМ в цифрах',
+        pages: [
+          {
+            id: 'p-facts',
+            kind: 'facts',
+            badge: 'ГЕРОФАРМ В ЦИФРАХ',
+            title: 'Масштаб, который создают люди',
+            body: [
+              'За этими цифрами — ежедневная работа команды, которая меняет жизнь пациентов к лучшему.',
+            ],
+            facts: [
+              { value: 25, label: 'лет' },
+              { value: 70, suffix: '+', label: 'стран' },
+              { value: 2500, suffix: '+', label: 'сотрудников' },
             ],
           },
         ],

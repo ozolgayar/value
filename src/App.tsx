@@ -4,6 +4,7 @@ import { AkonyGate, requestAkonyClose } from './components/AkonyGate'
 import { Contents } from './components/Contents'
 import { Cover } from './components/Cover'
 import { Preloader } from './components/Preloader'
+import { Cursor } from './components/Cursor'
 import { Reader } from './components/Reader'
 import './styles/global.css'
 
@@ -57,6 +58,7 @@ export default function App() {
       className={`app-shell ${shellTheme}${bookOpenTransition ? ' is-book-open' : ''}`}
     >
       <div className="app-shell__wash" aria-hidden />
+      <Cursor />
 
       {booting && <Preloader onDone={() => setBooting(false)} />}
 

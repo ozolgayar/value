@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
 import { flatPages, sections, totalPages } from '../data/book'
+import { getHistoryPage } from '../data/history'
 import { useMediaQuery, useQuotes } from '../hooks'
 import { BentoMenu } from './BentoMenu'
 import { PageView } from './PageView'
@@ -29,21 +30,109 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
   const [selectionUi, setSelectionUi] = useState<{ text: string; x: number; y: number } | null>(
     null,
   )
+  const [zoomPhase, setZoomPhase] = useState<'idle' | 'out' | 'in'>('idle')
+  const [historyCurtain, setHistoryCurtain] = useState<null | {
+    phase: 'start' | 'cover' | 'exit'
+    dir: 'next' | 'prev'
+    color: string
+    years: string[]
+    from: number
+    to: number
+  }>(null)
+  const [missionSlide, setMissionSlide] = useState<null | {
+    phase: 'start' | 'cover' | 'exit'
+    dir: 'next' | 'prev'
+  }>(null)
+  const [historyRevealed, setHistoryRevealed] = useState<Record<string, number[]>>({})
+  const [historyHint, setHistoryHint] = useState(true)
   const touchStart = useRef<{ x: number; y: number } | null>(null)
   const suppressSwipe = useRef(false)
+  const zoomTimers = useRef<number[]>([])
+  const curtainTimers = useRef<number[]>([])
+  const slideTimers = useRef<number[]>([])
   const { quotes, add: addQuote, remove: removeQuote } = useQuotes()
 
   const current = flatPages[index]
   const anyOverlay = rollOpen || tocOpen || quotesOpen
+  const isInterstitial = current.page.kind === 'interstitial'
+  const isHistoryEra = current.page.kind === 'history-era'
+  const chromeHidden =
+    isInterstitial || zoomPhase !== 'idle' || !!historyCurtain || !!missionSlide
+
+  const historyAccent = (accent: 'purple' | 'blue') =>
+    accent === 'blue' ? '#1e3a8a' : '#7c3aed'
+
+  const isMissionKind = (kind: string) =>
+    kind === 'mission-statement' ||
+    kind === 'mission-ecosystem' ||
+    kind === 'mission-longevity'
+  const currentHistoryPage = useMemo(() => {
+    if (!isHistoryEra) return null
+    return getHistoryPage(Number(current.page.meta?.historyPage ?? 0))
+  }, [isHistoryEra, current.page.meta?.historyPage])
+
+  const revealedSet = useMemo(() => {
+    const arr = historyRevealed[current.page.id] ?? []
+    return new Set(arr)
+  }, [historyRevealed, current.page.id])
+
+  const revealHistoryYear = useCallback(
+    (yearIndex: number) => {
+      const pageId = current.page.id
+      setHistoryRevealed((prev) => {
+        const cur = new Set(prev[pageId] ?? [])
+        if (cur.has(yearIndex)) return prev
+        cur.add(yearIndex)
+        setHistoryHint(false)
+        return { ...prev, [pageId]: [...cur].sort((a, b) => a - b) }
+      })
+    },
+    [current.page.id],
+  )
+
+  const revealNextHistoryYear = useCallback(() => {
+    if (!currentHistoryPage) return false
+    const cur = revealedSet
+    for (let i = 0; i < currentHistoryPage.years.length; i++) {
+      if (!cur.has(i)) {
+        revealHistoryYear(i)
+        return true
+      }
+    }
+    return false
+  }, [currentHistoryPage, revealedSet, revealHistoryYear])
 
   const sectionCount = sections.length
   const sectionProgress = useMemo(() => {
     const count = Math.max(1, current.sectionPageCount)
     const local = (current.sectionPageIndex + 1) / count
     if (sectionCount <= 1) return local
-    // Fill travels from node 0 → node 7 as sections are read
     return Math.min(1, (current.sectionIndex + local) / (sectionCount - 1))
   }, [current.sectionIndex, current.sectionPageIndex, current.sectionPageCount, sectionCount])
+
+  const clearZoomTimers = useCallback(() => {
+    zoomTimers.current.forEach((id) => window.clearTimeout(id))
+    zoomTimers.current = []
+  }, [])
+
+  const clearCurtainTimers = useCallback(() => {
+    curtainTimers.current.forEach((id) => window.clearTimeout(id))
+    curtainTimers.current = []
+  }, [])
+
+  const clearSlideTimers = useCallback(() => {
+    slideTimers.current.forEach((id) => window.clearTimeout(id))
+    slideTimers.current = []
+  }, [])
+
+  useEffect(
+    () => () => {
+      clearZoomTimers()
+      clearCurtainTimers()
+      clearSlideTimers()
+    },
+    [clearZoomTimers, clearCurtainTimers, clearSlideTimers],
+  )
 
   useEffect(() => {
     setIndex(Math.min(Math.max(initialIndex, 0), totalPages - 1))
@@ -110,30 +199,144 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
     return () => document.removeEventListener('selectionchange', onSelectionChange)
   }, [anyOverlay])
 
-  const go = useCallback((next: number) => {
-    setIndex(Math.min(Math.max(next, 0), totalPages - 1))
-  }, [])
+  const go = useCallback(
+    (next: number) => {
+      const clamped = Math.min(Math.max(next, 0), totalPages - 1)
+      if (zoomPhase !== 'idle' || historyCurtain || missionSlide) return
+      if (clamped === index) return
 
-  const goById = useCallback((pageId: string) => {
-    const found = flatPages.findIndex((p) => p.page.id === pageId)
-    if (found >= 0) setIndex(found)
-  }, [])
+      // History: reveal all year cards before advancing to the next page
+      if (isHistoryEra && currentHistoryPage && clamped === index + 1) {
+        if (revealedSet.size < currentHistoryPage.years.length) {
+          revealNextHistoryYear()
+          return
+        }
+      }
+
+      if (flatPages[clamped]?.page.kind === 'history-era') {
+        setHistoryHint(true)
+      }
+
+      const targetKind = flatPages[clamped]?.page.kind
+      const currentKind = flatPages[index]?.page.kind
+      const cinematic =
+        !isMobile && (targetKind === 'interstitial' || currentKind === 'interstitial')
+
+      const historyToHistory =
+        currentKind === 'history-era' && targetKind === 'history-era'
+      const missionFlow = isMissionKind(currentKind) && isMissionKind(targetKind)
+      const reduceMotion =
+        typeof window !== 'undefined' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+      if (historyToHistory && !reduceMotion) {
+        clearCurtainTimers()
+        const dir = clamped > index ? 'next' : 'prev'
+        const fromPage = getHistoryPage(Number(flatPages[index].page.meta?.historyPage ?? 0))
+        const toPage = getHistoryPage(Number(flatPages[clamped].page.meta?.historyPage ?? 0))
+        const color = historyAccent(toPage.accent)
+        const years = (dir === 'next' ? toPage : fromPage).years.map((y) => y.year)
+
+        setHistoryCurtain({
+          phase: 'start',
+          dir,
+          color,
+          years,
+          from: index,
+          to: clamped,
+        })
+
+        const tArm = window.setTimeout(() => {
+          setHistoryCurtain((prev) => (prev ? { ...prev, phase: 'cover' } : null))
+        }, 20)
+
+        const t1 = window.setTimeout(() => {
+          setIndex(clamped)
+          setHistoryCurtain((prev) => (prev ? { ...prev, phase: 'exit' } : null))
+          const t2 = window.setTimeout(() => setHistoryCurtain(null), 520)
+          curtainTimers.current.push(t2)
+        }, 640)
+        curtainTimers.current.push(tArm, t1)
+        return
+      }
+
+      // Mission pages: horizontal slide to the right (like the video, but sideways)
+      if (missionFlow && !reduceMotion) {
+        clearSlideTimers()
+        const dir = clamped > index ? 'next' : 'prev'
+        setMissionSlide({ phase: 'start', dir })
+        const tArm = window.setTimeout(() => {
+          setMissionSlide((prev) => (prev ? { ...prev, phase: 'cover' } : null))
+        }, 20)
+        const t1 = window.setTimeout(() => {
+          setIndex(clamped)
+          setMissionSlide((prev) => (prev ? { ...prev, phase: 'exit' } : null))
+          const t2 = window.setTimeout(() => setMissionSlide(null), 520)
+          slideTimers.current.push(t2)
+        }, 640)
+        slideTimers.current.push(tArm, t1)
+        return
+      }
+
+      if (!cinematic) {
+        setIndex(clamped)
+        return
+      }
+
+      clearZoomTimers()
+      setZoomPhase('out')
+      const t1 = window.setTimeout(() => {
+        setIndex(clamped)
+        setZoomPhase('in')
+        const t2 = window.setTimeout(() => setZoomPhase('idle'), 980)
+        zoomTimers.current.push(t2)
+      }, 420)
+      zoomTimers.current.push(t1)
+    },
+    [
+      index,
+      zoomPhase,
+      historyCurtain,
+      missionSlide,
+      isMobile,
+      clearZoomTimers,
+      clearCurtainTimers,
+      clearSlideTimers,
+      isHistoryEra,
+      currentHistoryPage,
+      revealedSet,
+      revealNextHistoryYear,
+    ],
+  )
+
+  const goById = useCallback(
+    (pageId: string) => {
+      const found = flatPages.findIndex((p) => p.page.id === pageId)
+      if (found >= 0) go(found)
+    },
+    [go],
+  )
 
   const goToSection = useCallback(
     (sectionIndex: number) => {
       const section = sections[sectionIndex]
       const firstPage = section?.paragraphs[0]?.pages[0]
-      if (firstPage) {
-        const found = flatPages.findIndex((p) => p.page.id === firstPage.id)
-        if (found >= 0) setIndex(found)
-      }
+      if (firstPage) goById(firstPage.id)
     },
-    [],
+    [goById],
+  )
+
+  const goToSectionId = useCallback(
+    (sectionId: string) => {
+      const found = flatPages.findIndex((p) => p.sectionId === sectionId)
+      if (found >= 0) go(found)
+    },
+    [go],
   )
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (anyOverlay) return
+      if (anyOverlay || zoomPhase !== 'idle' || historyCurtain || missionSlide) return
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         e.preventDefault()
         go(index + 1)
@@ -145,7 +348,7 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [go, index, anyOverlay])
+  }, [go, index, anyOverlay, zoomPhase, historyCurtain, missionSlide])
 
   const onTouchStart = (e: TouchEvent) => {
     const t = e.changedTouches[0]
@@ -153,7 +356,14 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
   }
 
   const onTouchEnd = (e: TouchEvent) => {
-    if (!touchStart.current || anyOverlay || suppressSwipe.current) {
+    if (
+      !touchStart.current ||
+      anyOverlay ||
+      suppressSwipe.current ||
+      zoomPhase !== 'idle' ||
+      historyCurtain ||
+      missionSlide
+    ) {
       suppressSwipe.current = false
       touchStart.current = null
       return
@@ -173,11 +383,15 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
   }
 
   const trackStyle = useMemo(() => {
-    if (isMobile) {
-      return { transform: `translate3d(0, ${-index * 100}%, 0)` }
+    const transform = isMobile
+      ? `translate3d(0, ${-index * 100}%, 0)`
+      : `translate3d(${-index * 100}%, 0, 0)`
+    return {
+      transform,
+      transition:
+        zoomPhase !== 'idle' || historyCurtain || missionSlide ? 'none' : undefined,
     }
-    return { transform: `translate3d(${-index * 100}%, 0, 0)` }
-  }, [index, isMobile])
+  }, [index, isMobile, zoomPhase, historyCurtain, missionSlide])
 
   const handleAddQuote = () => {
     if (!selectionUi) return
@@ -187,24 +401,75 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
     window.getSelection()?.removeAllRanges()
   }
 
+  const transitionBusy = !!historyCurtain || !!missionSlide
+
   return (
     <section
-      className={`reader${isMobile ? ' is-vertical' : ''}`}
+      className={`reader${isMobile ? ' is-vertical' : ''}${
+        zoomPhase === 'out' ? ' is-zoom-out' : ''
+      }${zoomPhase === 'in' ? ' is-zoom-in' : ''}${isInterstitial ? ' is-interstitial' : ''}${
+        isHistoryEra ? ' is-history' : ''
+      }`}
       aria-label="Чтение книги"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      <div className="reader__track" style={trackStyle}>
+      <div className="reader__track" style={trackStyle} key={`track-${totalPages}`}>
         {flatPages.map((fp) => (
-          <div className="reader__page" key={fp.page.id} aria-hidden={fp.globalIndex !== index}>
-            <PageView page={fp.page} />
+          <div
+            className="reader__page"
+            key={fp.page.id}
+            aria-hidden={fp.globalIndex !== index}
+          >
+            <PageView
+              page={fp.page}
+              onGoToSection={goToSectionId}
+              onGoToPage={goById}
+              historyRevealed={
+                fp.page.id === current.page.id
+                  ? revealedSet
+                  : new Set(historyRevealed[fp.page.id] ?? [])
+              }
+              onHistoryReveal={
+                fp.page.id === current.page.id ? revealHistoryYear : undefined
+              }
+              onHistoryAdvance={
+                fp.page.id === current.page.id
+                  ? () => go(index + 1)
+                  : undefined
+              }
+              historyHint={historyHint && fp.page.id === current.page.id && isHistoryEra}
+            />
           </div>
         ))}
       </div>
 
-      <div className="reader__chrome">
+      {historyCurtain && (
         <div
-          className="reader__progress"
+          className={`history-curtain is-${historyCurtain.phase} is-${historyCurtain.dir}`}
+          style={{ background: historyCurtain.color }}
+          aria-hidden
+        >
+          <div className="history-curtain__years">
+            {historyCurtain.years.map((year) => (
+              <span key={year} className="history-curtain__year">
+                {year}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {missionSlide && (
+        <div
+          className={`mission-slide is-${missionSlide.phase} is-${missionSlide.dir}`}
+          aria-hidden
+        />
+      )}
+
+      <div className={`reader__chrome${chromeHidden ? ' is-dimmed' : ''}`}>
+        <div
+          className={`reader__progress${isInterstitial ? ' is-hidden' : ''}`}
           role="navigation"
           aria-label="Прогресс по разделам"
         >
@@ -222,10 +487,12 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
                 <button
                   key={section.id}
                   type="button"
-                  className={`reader__progress-node${done ? ' is-done' : ''}${active ? ' is-active' : ''}`}
+                  className={`reader__progress-node${done ? ' is-done' : ''}${
+                    active ? ' is-active' : ''
+                  }`}
                   aria-label={`Раздел ${section.number}: ${section.title}`}
                   aria-current={active ? 'step' : undefined}
-                  disabled={anyOverlay}
+                  disabled={anyOverlay || zoomPhase !== 'idle' || transitionBusy}
                   onClick={() => goToSection(i)}
                 >
                   {Number(section.number) || i + 1}
@@ -241,7 +508,7 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
               type="button"
               className="nav-arrow nav-arrow--prev"
               aria-label="Предыдущая страница"
-              disabled={index === 0 || anyOverlay}
+              disabled={index === 0 || anyOverlay || zoomPhase !== 'idle' || transitionBusy}
               onClick={() => go(index - 1)}
             >
               ←
@@ -250,7 +517,9 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
               type="button"
               className="nav-arrow nav-arrow--next"
               aria-label="Следующая страница"
-              disabled={index >= totalPages - 1 || anyOverlay}
+              disabled={
+                index >= totalPages - 1 || anyOverlay || zoomPhase !== 'idle' || transitionBusy
+              }
               onClick={() => go(index + 1)}
             >
               →
@@ -258,11 +527,16 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
           </>
         )}
 
-        <div className="reader__pager" aria-live="polite">
-          {index + 1} / {totalPages}
+        <div
+          className={`reader__pager${
+            isInterstitial || isHistoryEra ? ' is-hidden' : ''
+          }`}
+          aria-live="polite"
+        >
+          {`${index + 1} / ${totalPages}`}
         </div>
 
-        {hintVisible && (
+        {hintVisible && !isInterstitial && !isHistoryEra && (
           <div className="reader__hint">
             {isMobile
               ? 'Листайте вертикально свайпом вверх/вниз'
@@ -292,14 +566,16 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
         </button>
       )}
 
-      <RollUpMenu
-        open={rollOpen}
-        onToggle={() => setRollOpen((v) => !v)}
-        onClose={() => setRollOpen(false)}
-        onContents={() => setTocOpen(true)}
-        onHome={onExitToHome}
-        onQuotes={() => setQuotesOpen(true)}
-      />
+      {!isInterstitial && (
+        <RollUpMenu
+          open={rollOpen}
+          onToggle={() => setRollOpen((v) => !v)}
+          onClose={() => setRollOpen(false)}
+          onContents={() => setTocOpen(true)}
+          onHome={onExitToHome}
+          onQuotes={() => setQuotesOpen(true)}
+        />
+      )}
 
       <BentoMenu
         open={tocOpen}
