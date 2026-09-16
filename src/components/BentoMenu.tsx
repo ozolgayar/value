@@ -1,4 +1,4 @@
-import { sections, type FlatPage } from '../data/book'
+import { navSections, type FlatPage } from '../data/book'
 import '../styles/menu.css'
 
 interface BentoMenuProps {
@@ -37,7 +37,7 @@ export function BentoMenu({ open, current, onClose, onBack, onGoPageId }: BentoM
         </div>
 
         <div className="bento">
-          {sections.map((section) => {
+          {navSections.map((section) => {
             const firstPage = section.paragraphs[0]?.pages[0]
             const active = section.id === current.sectionId
             return (

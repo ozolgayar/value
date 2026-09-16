@@ -111,15 +111,19 @@ export function Velaris({
 }: VelarisProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const colorsKey = colors.slice(0, 4).join(',')
 
   useEffect(() => {
     const canvas = canvasRef.current
     const container = containerRef.current
     if (!canvas || !container) return
 
+    const palette = colorsKey.split(',').filter(Boolean)
+    while (palette.length < 4) palette.push(palette[palette.length - 1] ?? DEFAULT_COLORS[0])
+
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const gl = canvas.getContext('webgl', { alpha: false, antialias: false })
-    if (!gl) return
+    if (!gl || gl.isContextLost()) return
 
     const createShader = (type: number, src: string) => {
       const s = gl.createShader(type)!
@@ -150,15 +154,15 @@ export function Velaris({
       bg: gl.getUniformLocation(program, 'u_bg'),
     }
 
+    const colorFlat = new Float32Array(palette.flatMap(hexToRgb))
+
     const paint = (timeSec: number) => {
+      if (gl.isContextLost()) return
       gl.uniform2f(locs.res, canvas.width, canvas.height)
       gl.uniform1f(locs.time, timeSec)
       gl.uniform1f(locs.grain, grain)
       gl.uniform3f(locs.bg, ...hexToRgb(bg))
-
-      const flat = new Float32Array(colors.slice(0, 4).flatMap(hexToRgb))
-      gl.uniform3fv(locs.colors, flat)
-
+      gl.uniform3fv(locs.colors, colorFlat)
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     }
 
@@ -181,17 +185,47 @@ export function Velaris({
     }
 
     let raf = 0
+    let visible = true
+
+    const stop = () => {
+      if (raf) {
+        cancelAnimationFrame(raf)
+        raf = 0
+      }
+    }
+
     const render = (t: number) => {
+      if (!visible) {
+        raf = 0
+        return
+      }
       paint(t * 0.001 * speed)
       raf = requestAnimationFrame(render)
     }
 
-    raf = requestAnimationFrame(render)
-    return () => {
-      ro.disconnect()
-      cancelAnimationFrame(raf)
+    const start = () => {
+      if (raf || !visible) return
+      raf = requestAnimationFrame(render)
     }
-  }, [bg, colors, speed, grain])
+
+    // Pause off-screen instances (all book pages stay mounted)
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = Boolean(entry?.isIntersecting)
+        if (visible) start()
+        else stop()
+      },
+      { root: null, threshold: 0.01, rootMargin: '8px' },
+    )
+    io.observe(container)
+    start()
+
+    return () => {
+      stop()
+      io.disconnect()
+      ro.disconnect()
+    }
+  }, [bg, colorsKey, speed, grain])
 
   return (
     <div ref={containerRef} className={className ? `velaris ${className}` : 'velaris'}>

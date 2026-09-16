@@ -10,6 +10,15 @@
   --shadow: 0 18px 50px rgba(44, 18, 100, 0.12);
   --radius: 18px;
   --nav-safe: 72px;
+  /* Reserve space for ← / → buttons: offset + 52px circle + gap */
+  --nav-arrow-size: 52px;
+  --nav-arrow-gap: 16px;
+  --nav-arrow-lane-left: calc(
+    max(0.75rem, env(safe-area-inset-left, 0px)) + var(--nav-arrow-size) + var(--nav-arrow-gap)
+  );
+  --nav-arrow-lane-right: calc(
+    max(0.75rem, env(safe-area-inset-right, 0px)) + var(--nav-arrow-size) + var(--nav-arrow-gap)
+  );
   --font: Verdana, Geneva, sans-serif;
   --display: Verdana, Geneva, sans-serif;
   --btn-font: 'Roboto', Arial, sans-serif;

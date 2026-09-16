@@ -339,6 +339,25 @@ export const historyYears: HistoryYearEntry[] = historyEras.flatMap((era, eraInd
 export const HISTORY_PAGE_SIZE = 4
 export const historyPageCount = Math.ceil(historyYears.length / HISTORY_PAGE_SIZE)
 
+/** Years shown in the side «piano» navigator — every year that has a timeline card. */
+export const historyPianoYears = historyYears
+
+export function getHistoryPageIndexForYear(year: string) {
+  const entry = historyYears.find((y) => y.year === year)
+  if (!entry) return -1
+  return Math.floor(entry.globalIndex / HISTORY_PAGE_SIZE)
+}
+
+export function getYearIndexOnPage(year: string) {
+  const entry = historyYears.find((y) => y.year === year)
+  if (!entry) return -1
+  return entry.globalIndex % HISTORY_PAGE_SIZE
+}
+
+export function historyBookPageId(pageIndex: number) {
+  return `p-history-${pageIndex}`
+}
+
 export interface HistoryPage {
   id: string
   index: number

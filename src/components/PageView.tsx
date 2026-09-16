@@ -6,7 +6,30 @@ import {
   MissionEcosystemPage,
   MissionLongevityPage,
   MissionStatementPage,
+  MissionStrategyHousePage,
+  MissionStrategySpreadPage,
+  MissionUniquenessPage,
 } from './MissionEco'
+import { ValuesSpreadPage } from './ValuesSpread'
+import { ValueAmbitionPage } from './ValueAmbition'
+import { ValuePassionPage } from './ValuePassion'
+import { ValueResponsibilityPage } from './ValueResponsibility'
+import { EnvNavigatorPage } from './EnvNavigator'
+import { MasteryPutinPage } from './MasteryPutin'
+import { MasterySemavicPage } from './MasterySemavic'
+import { MasteryThirdLinePage } from './MasteryThirdLine'
+import { MasteryVenezuelaPage } from './MasteryVenezuela'
+import { PracticeAiPage } from './PracticeAi'
+import { PracticeBureaucracyPage } from './PracticeBureaucracy'
+import { ClosingCoverPage } from './ClosingCover'
+import { PracticeEquipmentPage } from './PracticeEquipment'
+import { PracticeErrorFirstPage } from './PracticeErrorFirst'
+import { PracticeHabitsPage } from './PracticeHabits'
+import { PracticeLongTermPage } from './PracticeLongTerm'
+import { PracticeMarketPage } from './PracticeMarket'
+import { PracticeMethodologyPage } from './PracticeMethodology'
+import { PracticeModernizationPage } from './PracticeModernization'
+import { PracticeWeeksPage } from './PracticeWeeks'
 import { getHistoryPage, historyPageCount } from '../data/history'
 import { Velaris } from './Velaris'
 
@@ -17,6 +40,9 @@ export function PageView({
   historyRevealed,
   onHistoryReveal,
   onHistoryAdvance,
+  onHistoryJumpYear,
+  historyJumpYear = null,
+  onHistoryJumpYearHandled,
   historyHint = false,
 }: {
   page: BookPage
@@ -25,6 +51,9 @@ export function PageView({
   historyRevealed?: Set<number>
   onHistoryReveal?: (index: number) => void
   onHistoryAdvance?: () => void
+  onHistoryJumpYear?: (year: string) => void
+  historyJumpYear?: string | null
+  onHistoryJumpYearHandled?: () => void
   historyHint?: boolean
 }) {
   if (page.kind === 'ceo') {
@@ -196,16 +225,47 @@ export function PageView({
 
   if (page.kind === 'interstitial') {
     const titleLines = (page.title ?? '').split('\n').filter(Boolean)
+    const theme = page.meta?.theme
+    const velarisBg = page.meta?.bg ?? '#1a1460'
+    const velarisColors = page.meta?.colors
+      ? page.meta.colors.split(',').map((c) => c.trim())
+      : ['#3B6FD9', '#6B4FE0', '#A855F7', '#C4B5FD']
+
     return (
-      <article className="page-shell page-bleed page-interstitial">
+      <article
+        className={`page-shell page-bleed page-interstitial${
+          theme ? ` page-interstitial--${theme}` : ''
+        }`}
+      >
         <Velaris
           className="page-interstitial__velaris"
-          bg="#1a1460"
-          colors={['#3B6FD9', '#6B4FE0', '#A855F7', '#C4B5FD']}
-          speed={1.35}
-          grain={0.18}
+          bg={velarisBg}
+          colors={velarisColors}
+          speed={
+            theme === 'values' ||
+            theme === 'mastery' ||
+            theme === 'environment' ||
+            theme === 'practice'
+              ? 1.55
+              : 1.35
+          }
+          grain={
+            theme === 'values' ||
+            theme === 'mastery' ||
+            theme === 'environment' ||
+            theme === 'practice'
+              ? 0.14
+              : 0.18
+          }
         />
         <div className="page-interstitial__inner">
+          {(theme === 'synergy' ||
+            theme === 'values' ||
+            theme === 'mastery' ||
+            theme === 'environment' ||
+            theme === 'practice') && (
+            <div className="page-interstitial__top-line" aria-hidden />
+          )}
           <h2 className="page-interstitial__title">
             {titleLines.map((line) => (
               <span key={line}>{line}</span>
@@ -257,6 +317,98 @@ export function PageView({
     return <MissionLongevityPage />
   }
 
+  if (page.kind === 'mission-strategy-spread') {
+    return <MissionStrategySpreadPage />
+  }
+
+  if (page.kind === 'mission-strategy-house') {
+    return <MissionStrategyHousePage />
+  }
+
+  if (page.kind === 'mission-uniqueness') {
+    return <MissionUniquenessPage />
+  }
+
+  if (page.kind === 'values-spread') {
+    return <ValuesSpreadPage />
+  }
+
+  if (page.kind === 'value-ambition') {
+    return <ValueAmbitionPage />
+  }
+
+  if (page.kind === 'value-passion') {
+    return <ValuePassionPage />
+  }
+
+  if (page.kind === 'value-responsibility') {
+    return <ValueResponsibilityPage />
+  }
+
+  if (page.kind === 'mastery-semavic') {
+    return <MasterySemavicPage />
+  }
+
+  if (page.kind === 'mastery-venezuela') {
+    return <MasteryVenezuelaPage />
+  }
+
+  if (page.kind === 'mastery-third-line') {
+    return <MasteryThirdLinePage />
+  }
+
+  if (page.kind === 'mastery-putin') {
+    return <MasteryPutinPage />
+  }
+
+  if (page.kind === 'env-navigator') {
+    return <EnvNavigatorPage />
+  }
+
+  if (page.kind === 'practice-equipment') {
+    return <PracticeEquipmentPage />
+  }
+
+  if (page.kind === 'practice-weeks') {
+    return <PracticeWeeksPage />
+  }
+
+  if (page.kind === 'practice-error-first') {
+    return <PracticeErrorFirstPage />
+  }
+
+  if (page.kind === 'practice-market') {
+    return <PracticeMarketPage />
+  }
+
+  if (page.kind === 'practice-modernization') {
+    return <PracticeModernizationPage />
+  }
+
+  if (page.kind === 'practice-ai') {
+    return <PracticeAiPage />
+  }
+
+  if (page.kind === 'practice-long-term') {
+    return <PracticeLongTermPage />
+  }
+
+  if (page.kind === 'practice-methodology') {
+    return <PracticeMethodologyPage />
+  }
+
+  if (page.kind === 'practice-bureaucracy') {
+    return <PracticeBureaucracyPage />
+  }
+
+  if (page.kind === 'practice-habits') {
+    return <PracticeHabitsPage />
+  }
+
+  if (page.kind === 'closing-cover') {
+    return <ClosingCoverPage />
+  }
+
   if (page.kind === 'history-era') {
     const pageIndex = Number(page.meta?.historyPage ?? 0)
     const historyPage = getHistoryPage(pageIndex)
@@ -268,6 +420,9 @@ export function PageView({
           revealed={historyRevealed ?? new Set()}
           onReveal={onHistoryReveal ?? (() => {})}
           onAdvance={onHistoryAdvance}
+          onJumpYear={onHistoryJumpYear}
+          jumpYear={historyJumpYear}
+          onJumpYearHandled={onHistoryJumpYearHandled}
           showHint={historyHint}
         />
       </article>

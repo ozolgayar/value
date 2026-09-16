@@ -10,6 +10,29 @@ export type PageKind =
   | 'mission-statement'
   | 'mission-ecosystem'
   | 'mission-longevity'
+  | 'mission-strategy-spread'
+  | 'mission-strategy-house'
+  | 'mission-uniqueness'
+  | 'values-spread'
+  | 'value-ambition'
+  | 'value-passion'
+  | 'value-responsibility'
+  | 'mastery-semavic'
+  | 'mastery-venezuela'
+  | 'mastery-third-line'
+  | 'mastery-putin'
+  | 'env-navigator'
+  | 'practice-equipment'
+  | 'practice-weeks'
+  | 'practice-error-first'
+  | 'practice-market'
+  | 'practice-modernization'
+  | 'practice-ai'
+  | 'practice-long-term'
+  | 'practice-methodology'
+  | 'practice-bureaucracy'
+  | 'practice-habits'
+  | 'closing-cover'
   | 'timeline'
   | 'values'
   | 'quote'
@@ -60,13 +83,15 @@ export interface Section {
   summary: string
   accent: string
   paragraphs: Paragraph[]
+  /** If false, section is omitted from progress / contents / menu */
+  nav?: boolean
 }
 
 export const BOOK_META = {
   title: 'Культурный путеводитель ГЕРОФАРМ',
   hashtag: '#КОМПАНИЮ_МЕНЯЮТ_ЛЮДИ',
   badge: 'ГЕРОФАРМ · ТРАНСФОРМАЦИЯ',
-  subtitle: 'Восемь разделов о корпоративной культуре ГЕРОФАРМ',
+  subtitle: 'Разделы о корпоративной культуре ГЕРОФАРМ',
 }
 
 /** Разметка содержания по PPTX «Путеводитель по культуре ГЕРОФАРМ 07.09.2026» */
@@ -147,37 +172,43 @@ export const sections: Section[] = [
                 title: 'История',
                 desc: 'Путь компании и становление культуры',
                 sectionId: 'history',
-                pageId: 'p-history-0',
+                pageId: 'p-history-break',
               },
               {
                 title: 'Миссия и стратегия',
                 desc: 'Как личный вклад влияет на глобальные цели и жизнь пациентов',
                 sectionId: 'mission',
+                pageId: 'p-mission-break',
               },
               {
                 title: 'Синергия «МЫ»',
                 desc: 'Что помогает понимать друг друга с полуслова',
                 sectionId: 'synergy',
+                pageId: 'p-synergy-break',
               },
               {
                 title: 'Ценности',
                 desc: 'Внутренний компас для принятия решений',
                 sectionId: 'values',
+                pageId: 'p-values-break',
               },
               {
                 title: 'Мастерство',
                 desc: 'Легендарные победы и секреты успеха',
                 sectionId: 'mastery',
+                pageId: 'p-mastery-break',
               },
               {
                 title: 'Окружение',
                 desc: 'Что в компании поддерживает и развивает культуру',
                 sectionId: 'environment',
+                pageId: 'p-env-break',
               },
               {
                 title: 'Практики-тренажеры',
                 desc: 'Тренировка мышления на рабочих ситуациях',
                 sectionId: 'practice',
+                pageId: 'p-practice-break',
               },
             ],
             meta: {
@@ -186,6 +217,16 @@ export const sections: Section[] = [
           },
         ],
       },
+    ],
+  },
+  {
+    id: 'history',
+    number: '02',
+    title: 'История ГЕРОФАРМ',
+    tag: 'ПУТЬ / КУЛЬТУРА',
+    summary: 'Путь компании и становление культуры',
+    accent: '#9b4dff',
+    paragraphs: [
       {
         id: 'history-break',
         title: 'История ГЕРОФАРМ',
@@ -203,16 +244,6 @@ export const sections: Section[] = [
           },
         ],
       },
-    ],
-  },
-  {
-    id: 'history',
-    number: '02',
-    title: 'История ГЕРОФАРМ',
-    tag: 'ПУТЬ / КУЛЬТУРА',
-    summary: 'Путь компании и становление культуры',
-    accent: '#9b4dff',
-    paragraphs: [
       {
         id: 'history-eras',
         title: 'Исторический маршрут',
@@ -249,6 +280,16 @@ export const sections: Section[] = [
           },
         ],
       },
+    ],
+  },
+  {
+    id: 'mission',
+    number: '03',
+    title: 'Миссия и стратегия ГЕРОФАРМ',
+    tag: 'ГОРИЗОНТ / 2030',
+    summary: 'Как личный вклад влияет на глобальные цели и жизнь пациентов',
+    accent: '#E56814',
+    paragraphs: [
       {
         id: 'mission-break',
         title: 'Миссия и стратегия',
@@ -276,7 +317,6 @@ export const sections: Section[] = [
             kind: 'mission-statement',
             title: 'Миссия ГЕРОФАРМ',
           },
-          // Single spread: left (blue) + right (white) on one screen — do not duplicate
           {
             id: 'p-mission-ecosystem',
             kind: 'mission-ecosystem',
@@ -287,71 +327,15 @@ export const sections: Section[] = [
             kind: 'mission-longevity',
             title: 'Мышление долголетия',
           },
-        ],
-      },
-      {
-        id: 'facts',
-        title: 'ГЕРОФАРМ в цифрах',
-        pages: [
           {
-            id: 'p-facts',
-            kind: 'facts',
-            badge: 'ГЕРОФАРМ В ЦИФРАХ',
-            title: 'Масштаб, который создают люди',
-            body: [
-              'За этими цифрами — ежедневная работа команды, которая меняет жизнь пациентов к лучшему.',
-            ],
-            facts: [
-              { value: 25, label: 'лет' },
-              { value: 70, suffix: '+', label: 'стран' },
-              { value: 2500, suffix: '+', label: 'сотрудников' },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'mission',
-    number: '03',
-    title: 'Миссия и стратегия ГЕРОФАРМ',
-    tag: 'ГОРИЗОНТ / 2030',
-    summary: 'Как личный вклад влияет на глобальные цели и жизнь пациентов',
-    accent: '#E56814',
-    paragraphs: [
-      {
-        id: 'mission-open',
-        title: 'Миссия и стратегия',
-        pages: [
-          {
-            id: 'p-mission-open',
-            kind: 'section-open',
-            badge: 'РАЗДЕЛ 03',
-            title: 'Миссия и стратегия',
-            body: [
-              'Миссия — взгляд за горизонт. Она задает глобальный смысл всей культуре: от ценностей до повседневных решений. Стратегия — маршрут на ближайшие пять лет.',
-            ],
+            id: 'p-mission-strategy',
+            kind: 'mission-strategy-spread',
+            title: 'Стратегия 2030',
           },
           {
-            id: 'p-mission',
-            kind: 'quote',
-            badge: 'МИССИЯ ГЕРОФАРМ',
-            quote:
-              'ГЕРОФАРМ — биотехнологическая компания, которая выводит Россию в лидеры по продолжительности активной жизни.',
-            body: [
-              'Более 25 лет мы разрабатываем и производим жизненно важные лекарства и выступаем надежным партнером государства в лечении социально значимых заболеваний.',
-            ],
-          },
-          {
-            id: 'p-strategy-role',
-            kind: 'text',
-            badge: 'ВАША РОЛЬ',
-            title: 'Стратегия работает, когда каждый понимает',
-            body: [
-              'Как его задачи влияют на общие цели.',
-              'Какие решения он принимает с учетом долгосрочных последствий.',
-              'Какую ответственность он несет за результат.',
-            ],
+            id: 'p-mission-strategy-house',
+            kind: 'mission-strategy-house',
+            title: 'Стратегия 2030 — дом',
           },
         ],
       },
@@ -366,28 +350,27 @@ export const sections: Section[] = [
     accent: '#2C1264',
     paragraphs: [
       {
-        id: 'synergy-open',
+        id: 'synergy-break',
         title: 'Синергия «МЫ»',
         pages: [
           {
-            id: 'p-synergy',
-            kind: 'section-open',
-            badge: 'РАЗДЕЛ 04',
-            title: 'Синергия «МЫ»',
+            id: 'p-synergy-break',
+            kind: 'interstitial',
+            title: 'Синергия\n«МЫ»\nГЕРОФАРМ',
             body: [
-              'Уникальность ГЕРОФАРМ — наше мировоззрение. Мы хорошо понимаем друг друга, и это помогает быстрее договариваться, увереннее принимать решения и двигаться в одном направлении.',
+              'Уникальность ГЕРОФАРМ — наше мировоззрение. Мы хорошо понимаем друг друга, и это помогает нам быстрее договариваться, увереннее принимать решения и двигаться в одном направлении',
             ],
+            meta: {
+              logo: 'logo/trans-mark-only.png',
+              theme: 'synergy',
+              bg: '#1a0840',
+              colors: '#FF9C1B,#FF6B35,#DE56C2,#8B3DFF',
+            },
           },
           {
-            id: 'p-synergy-traits',
-            kind: 'text',
-            badge: 'НАШ ХАРАКТЕР',
-            title: 'Мы смело мыслим на долгие годы вперед',
-            body: [
-              'Предвосхищаем запросы пациентов и формируем будущее фармацевтической отрасли.',
-              'Ставим долгосрочные цели, создаем комплексные стратегии и непрерывно развиваемся.',
-              'Нас объединяет мышление долголетия.',
-            ],
+            id: 'p-mission-uniqueness',
+            kind: 'mission-uniqueness',
+            title: 'Уникальность, которая нас объединяет',
           },
         ],
       },
@@ -402,40 +385,48 @@ export const sections: Section[] = [
     accent: '#3BB9B8',
     paragraphs: [
       {
+        id: 'values-break',
+        title: 'Ценности',
+        pages: [
+          {
+            id: 'p-values-break',
+            kind: 'interstitial',
+            title: 'ЦЕННОСТИ\nГЕРОФАРМ',
+            body: [
+              'Мы команда с общей миссией и схожим мировоззрением. Мы выбрали три ключевые ценности, которые помогают нам всем интуитивно принимать верные решения в тех ситуациях, где нет готовых инструкций.',
+            ],
+            meta: {
+              logo: 'logo/trans-mark-only.png',
+              theme: 'values',
+              bg: '#3a2a68',
+              colors: '#C9A8EF,#E0C4FF,#A8B8F0,#D4A5FF',
+            },
+          },
+        ],
+      },
+      {
         id: 'values-open',
         title: 'Три ценности',
         pages: [
           {
-            id: 'p-values-open',
-            kind: 'section-open',
-            badge: 'РАЗДЕЛ 05',
+            id: 'p-values-spread',
+            kind: 'values-spread',
             title: 'Ценности ГЕРОФАРМ',
-            body: [
-              'Мы команда с общей миссией и схожим мировоззрением. Мы выбрали три ключевые ценности, которые помогают интуитивно принимать верные решения там, где нет готовых инструкций.',
-            ],
           },
           {
-            id: 'p-values-three',
-            kind: 'values',
-            badge: 'НАШИ ЦЕННОСТИ',
-            title: 'Амбициозность · Страсть · Ответственность',
-            values: [
-              {
-                name: 'Амбициозность',
-                desc: 'Открываем возможности, ставим дерзкие цели и берёмся за сложные задачи. Мы устремлены в будущее.',
-                color: '#E56814',
-              },
-              {
-                name: 'Страсть',
-                desc: 'Увлечены работой, преодолеваем трудности и создаём атмосферу драйва вокруг инноваций.',
-                color: '#3BB9B8',
-              },
-              {
-                name: 'Ответственность',
-                desc: 'Доводим начатое до результата и выполняем взятые на себя обязательства перед пациентами и командой.',
-                color: '#2C1264',
-              },
-            ],
+            id: 'p-value-ambition',
+            kind: 'value-ambition',
+            title: 'Амбициозность',
+          },
+          {
+            id: 'p-value-passion',
+            kind: 'value-passion',
+            title: 'Страсть',
+          },
+          {
+            id: 'p-value-responsibility',
+            kind: 'value-responsibility',
+            title: 'Ответственность',
           },
         ],
       },
@@ -450,27 +441,48 @@ export const sections: Section[] = [
     accent: '#E56814',
     paragraphs: [
       {
+        id: 'mastery-break',
+        title: 'Мастерство',
+        pages: [
+          {
+            id: 'p-mastery-break',
+            kind: 'interstitial',
+            title: 'МАСТЕРСТВО\nГЕРОФАРМ',
+            body: [
+              'Легендарные истории о том, как наша культура реализуется в условиях жестких дедлайнов и высоких рисков, помогая достигать впечатляющих результатов',
+            ],
+            meta: {
+              logo: 'logo/trans-mark-only.png',
+              theme: 'mastery',
+              bg: '#3a1430',
+              colors: '#FF9C1B,#FF5C3A,#E85A9A,#9B4DFF',
+            },
+          },
+        ],
+      },
+      {
         id: 'mastery-open',
         title: 'Мастерство в деле',
         pages: [
           {
-            id: 'p-mastery',
-            kind: 'section-open',
-            badge: 'РАЗДЕЛ 06',
-            title: 'Мастерство',
-            body: [
-              'Легендарные истории о том, как наша культура реализуется в условиях жестких дедлайнов и высоких рисков, помогая достигать впечатляющих результатов.',
-            ],
+            id: 'p-mastery-semavic',
+            kind: 'mastery-semavic',
+            title: 'Запуск Семавика: бизнес-контекст',
           },
           {
-            id: 'p-semavic',
-            kind: 'text',
-            badge: 'ТВОРЧЕСТВО В ЦИФРАХ',
-            title: 'Запуск Семавика',
-            body: [
-              'История началась, когда поставки критически важного препарата оказались под угрозой. Команда увидела бизнес-контекст и управляла результатом до запуска решения для пациентов.',
-              'В этой истории ярко проявились амбициозность, страсть и ответственность — цель без оглядки на прецеденты, работа до результата и решения с пониманием последствий.',
-            ],
+            id: 'p-mastery-venezuela',
+            kind: 'mastery-venezuela',
+            title: 'Поставки в Венесуэлу',
+          },
+          {
+            id: 'p-mastery-third-line',
+            kind: 'mastery-third-line',
+            title: 'Запуск третьей линии',
+          },
+          {
+            id: 'p-mastery-putin',
+            kind: 'mastery-putin',
+            title: 'Визит Президента',
           },
         ],
       },
@@ -485,29 +497,33 @@ export const sections: Section[] = [
     accent: '#2C1264',
     paragraphs: [
       {
+        id: 'env-break',
+        title: 'Окружение',
+        pages: [
+          {
+            id: 'p-env-break',
+            kind: 'interstitial',
+            title: 'ОКРУЖЕНИЕ\nГЕРОФАРМ',
+            body: [
+              'Мы собрали инструменты, которые поддерживают нашу культуру и помогают ей развиваться',
+            ],
+            meta: {
+              logo: 'logo/trans-mark-only.png',
+              theme: 'environment',
+              bg: '#0d1a4a',
+              colors: '#0081FF,#3D8BFF,#7B3DFF,#A033FF',
+            },
+          },
+        ],
+      },
+      {
         id: 'env-open',
         title: 'Культурное окружение',
         pages: [
           {
-            id: 'p-env',
-            kind: 'section-open',
-            badge: 'РАЗДЕЛ 07',
-            title: 'Окружение',
-            body: [
-              'Мы собрали инструменты, которые поддерживают нашу культуру и помогают ей развиваться: сообщество коллег и внутренняя инфраструктура.',
-            ],
-          },
-          {
-            id: 'p-env-tools',
-            kind: 'text',
-            badge: 'НАВИГАТОР',
-            title: 'Что рядом с вами',
-            body: [
-              'Корпоративный портал «СФЕРА» — единое пространство для команды.',
-              'ГЕРОФАРМ LIFE — канал о событиях корпоративной жизни.',
-              '«Пульс» — ежегодный опрос вовлеченности.',
-              'Программа «Рекомендуй!» и другие практики синергии «Мы».',
-            ],
+            id: 'p-env-navigator',
+            kind: 'env-navigator',
+            title: 'Навигатор по культурному окружению',
           },
         ],
       },
@@ -519,29 +535,92 @@ export const sections: Section[] = [
     title: 'Практики-тренажёры ГЕРОФАРМ',
     tag: 'ТРЕНИРОВКА МЫШЛЕНИЯ',
     summary: 'Тренировка мышления на рабочих ситуациях',
-    accent: '#3BB9B8',
+    accent: '#5A44E1',
     paragraphs: [
+      {
+        id: 'practice-break',
+        title: 'Практики-тренажёры',
+        pages: [
+          {
+            id: 'p-practice-break',
+            kind: 'interstitial',
+            title: 'ПРАКТИКИ\n-ТРЕНАЖЁРЫ\nГЕРОФАРМ',
+            body: [
+              'Каждая ситуация, разобранная здесь, — это шаг к тому, чтобы в работе мы делали меньше ошибок, сохраняли силы и время. Так общая культура делает нас эффективнее для реализации нашей миссии.',
+            ],
+            meta: {
+              logo: 'logo/trans-mark-only.png',
+              theme: 'practice',
+              bg: '#2a1a6e',
+              colors: '#8BB0F9,#B575F3,#7B5CFF,#5A44E1',
+            },
+          },
+        ],
+      },
       {
         id: 'practice-open',
         title: 'Практики',
         pages: [
           {
-            id: 'p-practice',
-            kind: 'section-open',
-            badge: 'РАЗДЕЛ 08',
-            title: 'Практики-тренажёры',
-            body: [
-              'Каждая ситуация — шаг к тому, чтобы в работе делать меньше ошибок, сохранять силы и время. Так общая культура делает нас эффективнее для реализации миссии.',
-            ],
+            id: 'p-practice-equipment',
+            kind: 'practice-equipment',
+            title: 'Поломка уникального оборудования',
           },
           {
-            id: 'p-practice-example',
-            kind: 'text',
-            badge: 'ПРИМЕР',
-            title: 'Поломка уникального оборудования',
-            body: [
-              'На линии розлива вышла из строя уникальная деталь. Поставка новой — три месяца. Лучший выбор по ценностям: найти локального поставщика, снизить зависимость от импорта, погрузиться в технические детали и не рисковать качеством.',
-            ],
+            id: 'p-practice-weeks',
+            kind: 'practice-weeks',
+            title: 'Недели, которые нельзя потерять',
+          },
+          {
+            id: 'p-practice-error-first',
+            kind: 'practice-error-first',
+            title: 'Найти ошибку первыми',
+          },
+          {
+            id: 'p-practice-market',
+            kind: 'practice-market',
+            title: 'Рынок, на котором не торгуются',
+          },
+          {
+            id: 'p-practice-modernization',
+            kind: 'practice-modernization',
+            title: 'Модернизация линии',
+          },
+          {
+            id: 'p-practice-ai',
+            kind: 'practice-ai',
+            title: 'Внедрение ИИ',
+          },
+          {
+            id: 'p-practice-long-term',
+            kind: 'practice-long-term',
+            title: 'Долгосрочное решение',
+          },
+          {
+            id: 'p-practice-methodology',
+            kind: 'practice-methodology',
+            title: 'Методика: разработать или купить',
+          },
+          {
+            id: 'p-practice-bureaucracy',
+            kind: 'practice-bureaucracy',
+            title: 'Бюрократические барьеры',
+          },
+          {
+            id: 'p-practice-habits',
+            kind: 'practice-habits',
+            title: 'Новые привычки',
+          },
+        ],
+      },
+      {
+        id: 'guide-close',
+        title: 'Культурный путеводитель',
+        pages: [
+          {
+            id: 'p-closing-cover',
+            kind: 'closing-cover',
+            title: 'Культурный путеводитель ГЕРОФАРМ',
           },
         ],
       },
@@ -587,3 +666,10 @@ export function flattenPages(secs: Section[] = sections): FlatPage[] {
 
 export const flatPages = flattenPages()
 export const totalPages = flatPages.length
+
+/** Sections shown in progress, contents, and menu (excludes preface). */
+export const navSections = sections.filter((s) => s.nav !== false)
+
+export function navIndexForSectionId(sectionId: string) {
+  return navSections.findIndex((s) => s.id === sectionId)
+}

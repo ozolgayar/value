@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
-import { flatPages, sections, totalPages } from '../data/book'
-import { getHistoryPage } from '../data/history'
+import { flatPages, navIndexForSectionId, navSections, totalPages } from '../data/book'
+import {
+  getHistoryPage,
+  getHistoryPageIndexForYear,
+  getYearIndexOnPage,
+  historyBookPageId,
+} from '../data/history'
 import { useMediaQuery, useQuotes } from '../hooks'
 import { BentoMenu } from './BentoMenu'
 import { PageView } from './PageView'
@@ -45,6 +50,7 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
   }>(null)
   const [historyRevealed, setHistoryRevealed] = useState<Record<string, number[]>>({})
   const [historyHint, setHistoryHint] = useState(true)
+  const [historyJumpYear, setHistoryJumpYear] = useState<string | null>(null)
   const touchStart = useRef<{ x: number; y: number } | null>(null)
   const suppressSwipe = useRef(false)
   const zoomTimers = useRef<number[]>([])
@@ -55,9 +61,14 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
   const current = flatPages[index]
   const anyOverlay = rollOpen || tocOpen || quotesOpen
   const isInterstitial = current.page.kind === 'interstitial'
+  const isClosingCover = current.page.kind === 'closing-cover'
   const isHistoryEra = current.page.kind === 'history-era'
   const chromeHidden =
-    isInterstitial || zoomPhase !== 'idle' || !!historyCurtain || !!missionSlide
+    isInterstitial ||
+    isClosingCover ||
+    zoomPhase !== 'idle' ||
+    !!historyCurtain ||
+    !!missionSlide
 
   const historyAccent = (accent: 'purple' | 'blue') =>
     accent === 'blue' ? '#1e3a8a' : '#7c3aed'
@@ -65,7 +76,28 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
   const isMissionKind = (kind: string) =>
     kind === 'mission-statement' ||
     kind === 'mission-ecosystem' ||
-    kind === 'mission-longevity'
+    kind === 'mission-longevity' ||
+    kind === 'mission-strategy-spread' ||
+    kind === 'mission-strategy-house' ||
+    kind === 'mission-uniqueness' ||
+    kind === 'values-spread' ||
+    kind === 'value-ambition' ||
+    kind === 'value-passion' ||
+    kind === 'value-responsibility' ||
+    kind === 'mastery-semavic' ||
+    kind === 'mastery-venezuela' ||
+    kind === 'mastery-third-line' ||
+    kind === 'mastery-putin' ||
+    kind === 'practice-equipment' ||
+    kind === 'practice-weeks' ||
+    kind === 'practice-error-first' ||
+    kind === 'practice-market' ||
+    kind === 'practice-modernization' ||
+    kind === 'practice-ai' ||
+    kind === 'practice-long-term' ||
+    kind === 'practice-methodology' ||
+    kind === 'practice-bureaucracy' ||
+    kind === 'practice-habits'
   const currentHistoryPage = useMemo(() => {
     if (!isHistoryEra) return null
     return getHistoryPage(Number(current.page.meta?.historyPage ?? 0))
@@ -102,13 +134,15 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
     return false
   }, [currentHistoryPage, revealedSet, revealHistoryYear])
 
-  const sectionCount = sections.length
+  const sectionCount = navSections.length
+  const navSectionIndex = navIndexForSectionId(current.sectionId)
   const sectionProgress = useMemo(() => {
+    if (navSectionIndex < 0) return 0
     const count = Math.max(1, current.sectionPageCount)
     const local = (current.sectionPageIndex + 1) / count
     if (sectionCount <= 1) return local
-    return Math.min(1, (current.sectionIndex + local) / (sectionCount - 1))
-  }, [current.sectionIndex, current.sectionPageIndex, current.sectionPageCount, sectionCount])
+    return Math.min(1, (navSectionIndex + local) / (sectionCount - 1))
+  }, [navSectionIndex, current.sectionPageIndex, current.sectionPageCount, sectionCount])
 
   const clearZoomTimers = useCallback(() => {
     zoomTimers.current.forEach((id) => window.clearTimeout(id))
@@ -200,13 +234,18 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
   }, [anyOverlay])
 
   const go = useCallback(
-    (next: number) => {
+    (next: number, opts?: { force?: boolean }) => {
       const clamped = Math.min(Math.max(next, 0), totalPages - 1)
       if (zoomPhase !== 'idle' || historyCurtain || missionSlide) return
       if (clamped === index) return
 
       // History: reveal all year cards before advancing to the next page
-      if (isHistoryEra && currentHistoryPage && clamped === index + 1) {
+      if (
+        !opts?.force &&
+        isHistoryEra &&
+        currentHistoryPage &&
+        clamped === index + 1
+      ) {
         if (revealedSet.size < currentHistoryPage.years.length) {
           revealNextHistoryYear()
           return
@@ -309,6 +348,33 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
     ],
   )
 
+  const jumpToHistoryYear = useCallback(
+    (year: string) => {
+      const pageIndex = getHistoryPageIndexForYear(year)
+      const yearOnPage = getYearIndexOnPage(year)
+      if (pageIndex < 0 || yearOnPage < 0) return
+
+      const pageId = historyBookPageId(pageIndex)
+      setHistoryRevealed((prev) => {
+        const cur = new Set(prev[pageId] ?? [])
+        for (let i = 0; i <= yearOnPage; i++) cur.add(i)
+        return { ...prev, [pageId]: [...cur].sort((a, b) => a - b) }
+      })
+      setHistoryHint(false)
+      setHistoryJumpYear(year)
+
+      const found = flatPages.findIndex((p) => p.page.id === pageId)
+      if (found < 0) return
+      if (found === index) return
+      go(found, { force: true })
+    },
+    [go, index],
+  )
+
+  const clearHistoryJumpYear = useCallback(() => {
+    setHistoryJumpYear(null)
+  }, [])
+
   const goById = useCallback(
     (pageId: string) => {
       const found = flatPages.findIndex((p) => p.page.id === pageId)
@@ -319,7 +385,7 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
 
   const goToSection = useCallback(
     (sectionIndex: number) => {
-      const section = sections[sectionIndex]
+      const section = navSections[sectionIndex]
       const firstPage = section?.paragraphs[0]?.pages[0]
       if (firstPage) goById(firstPage.id)
     },
@@ -438,6 +504,15 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
                   ? () => go(index + 1)
                   : undefined
               }
+              onHistoryJumpYear={
+                fp.page.id === current.page.id ? jumpToHistoryYear : undefined
+              }
+              historyJumpYear={
+                fp.page.id === current.page.id ? historyJumpYear : null
+              }
+              onHistoryJumpYearHandled={
+                fp.page.id === current.page.id ? clearHistoryJumpYear : undefined
+              }
               historyHint={historyHint && fp.page.id === current.page.id && isHistoryEra}
             />
           </div>
@@ -480,9 +555,9 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
             />
           </div>
           <div className="reader__progress-nodes">
-            {sections.map((section, i) => {
-              const done = i < current.sectionIndex
-              const active = i === current.sectionIndex
+            {navSections.map((section, i) => {
+              const done = navSectionIndex >= 0 && i < navSectionIndex
+              const active = i === navSectionIndex
               return (
                 <button
                   key={section.id}

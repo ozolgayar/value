@@ -46,9 +46,9 @@
   min-height: 100%;
   padding:
     calc(var(--nav-safe) + 1rem)
-    max(1.5rem, env(safe-area-inset-right))
+    max(var(--nav-arrow-lane-right), 1.5rem)
     calc(var(--nav-safe) + 1.5rem)
-    max(1.5rem, env(safe-area-inset-left));
+    max(var(--nav-arrow-lane-left), 1.5rem);
   display: flex;
   flex-direction: column;
 }
@@ -126,7 +126,7 @@
   overflow: auto;
   padding:
     calc(var(--nav-safe) + 0.75rem)
-    max(4.75rem, calc(env(safe-area-inset-right) + 3.25rem))
+    max(var(--nav-arrow-lane-right), clamp(1.35rem, 3vw, 2.5rem))
     calc(var(--nav-safe) + 0.85rem)
     clamp(1.35rem, 3vw, 2.5rem);
   background: var(--white);
@@ -214,8 +214,7 @@
 .page-split__left {
   position: relative;
   justify-content: space-between;
-  /* Clear nav arrow (~52px) so text is not clipped */
-  padding-left: max(4.5rem, calc(env(safe-area-inset-left) + 3.5rem));
+  padding-left: var(--nav-arrow-lane-left);
   background: linear-gradient(160deg, #2b6db5 0%, #1e5a9c 55%, #2c1264 120%);
   color: var(--white);
   box-shadow: 4px 0 16px rgba(0, 0, 0, 0.12);
@@ -224,6 +223,7 @@
 
 .page-split__right {
   justify-content: flex-start;
+  padding-right: var(--nav-arrow-lane-right);
   background: var(--white);
   color: var(--ink);
 }
@@ -383,7 +383,7 @@
 
 .page-route__left {
   justify-content: center;
-  padding-left: max(4.5rem, calc(env(safe-area-inset-left) + 3.5rem));
+  padding-left: var(--nav-arrow-lane-left);
   background: var(--white);
   color: var(--ink);
 }
@@ -424,7 +424,7 @@
 .page-route__right {
   justify-content: space-between;
   gap: 1rem;
-  padding-right: max(4.25rem, calc(env(safe-area-inset-right) + 3rem));
+  padding-right: var(--nav-arrow-lane-right);
   padding-left: clamp(1rem, 2.2vw, 1.75rem);
   background: #2563c8;
   color: var(--white);
@@ -619,9 +619,9 @@
   gap: 1.25rem;
   padding:
     calc(var(--nav-safe) + 1rem)
-    max(1.75rem, env(safe-area-inset-right))
+    max(var(--nav-arrow-lane-right), 1.75rem)
     calc(var(--nav-safe) + 1.5rem)
-    max(1.75rem, env(safe-area-inset-left));
+    max(var(--nav-arrow-lane-left), 1.75rem);
 }
 
 .page-facts .page-title {
@@ -701,6 +701,7 @@
   width: 100%;
   height: 100%;
   z-index: 0;
+  background: inherit;
 }
 
 .page-interstitial .velaris__canvas {
@@ -710,6 +711,7 @@
   height: 100%;
   display: block;
   pointer-events: none;
+  background: transparent;
 }
 
 .page-interstitial__inner {
@@ -726,9 +728,9 @@
   text-align: center;
   padding:
     calc(var(--nav-safe) + 1.5rem)
-    max(1.75rem, env(safe-area-inset-right))
+    max(var(--nav-arrow-lane-right), 1.75rem)
     calc(var(--nav-safe) + 1.75rem)
-    max(1.75rem, env(safe-area-inset-left));
+    max(var(--nav-arrow-lane-left), 1.75rem);
 }
 
 .page-interstitial__title {
@@ -745,6 +747,152 @@
 
 .page-interstitial__title span {
   text-transform: none;
+}
+
+.page-interstitial__top-line {
+  position: absolute;
+  top: max(1.1rem, env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100% - 3rem, 56rem);
+  height: 1px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.page-interstitial--synergy {
+  background: #1a0840;
+}
+
+.page-interstitial--synergy .page-interstitial__title {
+  letter-spacing: 0.02em;
+}
+
+.page-interstitial--synergy .page-interstitial__body {
+  max-width: 28rem;
+}
+
+.page-interstitial--synergy .page-interstitial__body p {
+  font-weight: 600;
+}
+
+.page-interstitial--values {
+  background: #3a2a68;
+}
+
+.page-interstitial--values .page-interstitial__title {
+  letter-spacing: 0.06em;
+  font-size: clamp(2rem, 5.5vw, 4rem);
+  text-shadow: 0 2px 18px rgba(60, 40, 120, 0.35);
+}
+
+.page-interstitial--values .page-interstitial__body {
+  max-width: 34rem;
+}
+
+.page-interstitial--values .page-interstitial__body p {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.96);
+  text-shadow: 0 1px 12px rgba(50, 30, 100, 0.4);
+}
+
+.page-interstitial--values .page-interstitial__brand {
+  text-shadow: 0 1px 10px rgba(50, 30, 100, 0.35);
+}
+
+.page-interstitial--values .page-interstitial__top-line,
+.page-interstitial--values .page-interstitial__footer-line,
+.page-interstitial--values .page-interstitial__rule {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.page-interstitial--mastery {
+  background: #3a1430;
+}
+
+.page-interstitial--mastery .page-interstitial__title {
+  letter-spacing: 0.05em;
+  font-size: clamp(2rem, 5.8vw, 4.2rem);
+  text-shadow: 0 2px 22px rgba(180, 40, 60, 0.35);
+}
+
+.page-interstitial--mastery .page-interstitial__body {
+  max-width: 28rem;
+}
+
+.page-interstitial--mastery .page-interstitial__body p {
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.98);
+  text-shadow: 0 1px 14px rgba(120, 30, 50, 0.35);
+}
+
+.page-interstitial--mastery .page-interstitial__brand {
+  text-shadow: 0 1px 10px rgba(120, 30, 50, 0.3);
+}
+
+.page-interstitial--mastery .page-interstitial__top-line,
+.page-interstitial--mastery .page-interstitial__footer-line,
+.page-interstitial--mastery .page-interstitial__rule {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.page-interstitial--environment {
+  background: #0d1a4a;
+}
+
+.page-interstitial--environment .page-interstitial__title {
+  letter-spacing: 0.05em;
+  font-size: clamp(2rem, 5.8vw, 4.2rem);
+  text-shadow: 0 2px 22px rgba(20, 60, 180, 0.4);
+}
+
+.page-interstitial--environment .page-interstitial__body {
+  max-width: 28rem;
+}
+
+.page-interstitial--environment .page-interstitial__body p {
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.98);
+  text-shadow: 0 1px 14px rgba(30, 50, 140, 0.35);
+}
+
+.page-interstitial--environment .page-interstitial__brand {
+  text-shadow: 0 1px 10px rgba(30, 50, 140, 0.3);
+}
+
+.page-interstitial--environment .page-interstitial__top-line,
+.page-interstitial--environment .page-interstitial__footer-line,
+.page-interstitial--environment .page-interstitial__rule {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.page-interstitial--practice {
+  background: #2a1a6e;
+}
+
+.page-interstitial--practice .page-interstitial__title {
+  letter-spacing: 0.05em;
+  font-size: clamp(2rem, 5.6vw, 4rem);
+  text-shadow: 0 2px 22px rgba(90, 68, 225, 0.4);
+}
+
+.page-interstitial--practice .page-interstitial__body {
+  max-width: 26rem;
+}
+
+.page-interstitial--practice .page-interstitial__body p {
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.98);
+  text-shadow: 0 1px 14px rgba(70, 50, 180, 0.35);
+}
+
+.page-interstitial--practice .page-interstitial__brand {
+  text-shadow: 0 1px 10px rgba(70, 50, 180, 0.3);
+}
+
+.page-interstitial--practice .page-interstitial__top-line,
+.page-interstitial--practice .page-interstitial__footer-line,
+.page-interstitial--practice .page-interstitial__rule {
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .page-interstitial__rule {
@@ -1003,9 +1151,9 @@
   justify-content: center;
   padding:
     calc(var(--nav-safe) + 1rem)
-    max(1.75rem, env(safe-area-inset-right))
+    max(var(--nav-arrow-lane-right), 1.75rem)
     calc(var(--nav-safe) + 1.5rem)
-    max(1.75rem, env(safe-area-inset-left));
+    max(var(--nav-arrow-lane-left), 1.75rem);
 }
 
 .page-quote {
@@ -1286,6 +1434,106 @@
 
 .nav-arrow--next {
   right: max(0.75rem, env(safe-area-inset-right));
+}
+
+/* Light paper pages: keep chrome readable against white */
+.app-shell:has(.page-values-spread) .nav-arrow,
+.app-shell:has(.page-value-ambition) .nav-arrow,
+.app-shell:has(.page-value-passion) .nav-arrow,
+.app-shell:has(.page-value-responsibility) .nav-arrow,
+.app-shell:has(.page-mastery-semavic) .nav-arrow,
+.app-shell:has(.page-mastery-venezuela) .nav-arrow,
+.app-shell:has(.page-mastery-third-line) .nav-arrow,
+.app-shell:has(.page-mastery-putin) .nav-arrow,
+.app-shell:has(.page-practice-equipment) .nav-arrow,
+.app-shell:has(.page-facts) .nav-arrow,
+.app-shell:has(.page-mission-eco) .nav-arrow,
+.app-shell:has(.page-ceo) .nav-arrow {
+  background: #fff;
+  border: 1px solid rgba(44, 18, 100, 0.18);
+  box-shadow: 0 8px 22px rgba(44, 18, 100, 0.16);
+}
+
+.app-shell:has(.page-values-spread) .reader__progress-node,
+.app-shell:has(.page-value-ambition) .reader__progress-node,
+.app-shell:has(.page-value-passion) .reader__progress-node,
+.app-shell:has(.page-value-responsibility) .reader__progress-node,
+.app-shell:has(.page-mastery-semavic) .reader__progress-node,
+.app-shell:has(.page-mastery-venezuela) .reader__progress-node,
+.app-shell:has(.page-mastery-third-line) .reader__progress-node,
+.app-shell:has(.page-mastery-putin) .reader__progress-node,
+.app-shell:has(.page-practice-equipment) .reader__progress-node,
+.app-shell:has(.page-facts) .reader__progress-node,
+.app-shell:has(.page-mission-eco) .reader__progress-node,
+.app-shell:has(.page-ceo) .reader__progress-node {
+  background: rgba(44, 18, 100, 0.55);
+  border-color: rgba(44, 18, 100, 0.35);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(44, 18, 100, 0.18);
+}
+
+.app-shell:has(.page-values-spread) .reader__progress-node.is-done,
+.app-shell:has(.page-values-spread) .reader__progress-node.is-active,
+.app-shell:has(.page-value-ambition) .reader__progress-node.is-done,
+.app-shell:has(.page-value-ambition) .reader__progress-node.is-active,
+.app-shell:has(.page-value-passion) .reader__progress-node.is-done,
+.app-shell:has(.page-value-passion) .reader__progress-node.is-active,
+.app-shell:has(.page-value-responsibility) .reader__progress-node.is-done,
+.app-shell:has(.page-value-responsibility) .reader__progress-node.is-active,
+.app-shell:has(.page-mastery-semavic) .reader__progress-node.is-done,
+.app-shell:has(.page-mastery-semavic) .reader__progress-node.is-active,
+.app-shell:has(.page-mastery-venezuela) .reader__progress-node.is-done,
+.app-shell:has(.page-mastery-venezuela) .reader__progress-node.is-active,
+.app-shell:has(.page-mastery-third-line) .reader__progress-node.is-done,
+.app-shell:has(.page-mastery-third-line) .reader__progress-node.is-active,
+.app-shell:has(.page-mastery-putin) .reader__progress-node.is-done,
+.app-shell:has(.page-mastery-putin) .reader__progress-node.is-active,
+.app-shell:has(.page-practice-equipment) .reader__progress-node.is-done,
+.app-shell:has(.page-practice-equipment) .reader__progress-node.is-active,
+.app-shell:has(.page-facts) .reader__progress-node.is-done,
+.app-shell:has(.page-facts) .reader__progress-node.is-active,
+.app-shell:has(.page-mission-eco) .reader__progress-node.is-done,
+.app-shell:has(.page-mission-eco) .reader__progress-node.is-active,
+.app-shell:has(.page-ceo) .reader__progress-node.is-done,
+.app-shell:has(.page-ceo) .reader__progress-node.is-active {
+  background: #fff;
+  border-color: rgba(44, 18, 100, 0.35);
+  color: var(--purple);
+  box-shadow:
+    0 0 0 2px rgba(44, 18, 100, 0.2),
+    0 6px 16px rgba(44, 18, 100, 0.16);
+}
+
+.app-shell:has(.page-values-spread) .roll-menu__trigger,
+.app-shell:has(.page-value-ambition) .roll-menu__trigger,
+.app-shell:has(.page-value-passion) .roll-menu__trigger,
+.app-shell:has(.page-value-responsibility) .roll-menu__trigger,
+.app-shell:has(.page-mastery-semavic) .roll-menu__trigger,
+.app-shell:has(.page-mastery-venezuela) .roll-menu__trigger,
+.app-shell:has(.page-mastery-third-line) .roll-menu__trigger,
+.app-shell:has(.page-mastery-putin) .roll-menu__trigger,
+.app-shell:has(.page-practice-equipment) .roll-menu__trigger,
+.app-shell:has(.page-facts) .roll-menu__trigger,
+.app-shell:has(.page-mission-eco) .roll-menu__trigger,
+.app-shell:has(.page-ceo) .roll-menu__trigger {
+  border: 1px solid rgba(44, 18, 100, 0.16);
+  box-shadow: 0 10px 28px rgba(44, 18, 100, 0.2);
+}
+
+.app-shell:has(.page-values-spread) .reader__pager,
+.app-shell:has(.page-value-ambition) .reader__pager,
+.app-shell:has(.page-value-passion) .reader__pager,
+.app-shell:has(.page-value-responsibility) .reader__pager,
+.app-shell:has(.page-mastery-semavic) .reader__pager,
+.app-shell:has(.page-mastery-venezuela) .reader__pager,
+.app-shell:has(.page-mastery-third-line) .reader__pager,
+.app-shell:has(.page-mastery-putin) .reader__pager,
+.app-shell:has(.page-practice-equipment) .reader__pager,
+.app-shell:has(.page-facts) .reader__pager,
+.app-shell:has(.page-mission-eco) .reader__pager,
+.app-shell:has(.page-ceo) .reader__pager {
+  border: 1px solid rgba(44, 18, 100, 0.14);
+  box-shadow: 0 8px 20px rgba(44, 18, 100, 0.14);
 }
 
 @media (max-width: 860px) {

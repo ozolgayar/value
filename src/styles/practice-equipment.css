@@ -1,0 +1,258 @@
+.page-shell.page-practice-equipment {
+  box-sizing: border-box;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  /* Flush to the browser top — gradient only as side/bottom frame */
+  padding: 0;
+  background: linear-gradient(180deg, #9ec8ff 0%, #a8b4f5 42%, #b89af0 78%, #c9a6f5 100%);
+  color: #1a1a1a;
+}
+
+.pe__stage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  /* Side gutters reveal the gradient "frame" like the mockup */
+  padding:
+    0
+    calc(var(--nav-arrow-lane-right) + 0.35rem)
+    0
+    calc(var(--nav-arrow-lane-left) + 0.35rem);
+  box-sizing: border-box;
+}
+
+.pe__card {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: auto;
+  border-radius: 0;
+  border: 2px solid transparent;
+  /* Gradient frame (photo 2), square corners, white fill */
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(180deg, #7eb6ff 0%, #8b7cff 48%, #a78bfa 100%) border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: none;
+  padding:
+    calc(var(--nav-safe) + 0.55rem)
+    clamp(1rem, 1.8vw, 1.45rem)
+    clamp(0.85rem, 1.6vh, 1.2rem);
+}
+
+.pe__card--left {
+  border-right-width: 1px;
+}
+
+.pe__card--right {
+  border-left-width: 1px;
+}
+
+.pe__badge {
+  align-self: flex-start;
+  font-size: clamp(0.55rem, 0.8vw, 0.66rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #2563eb;
+  border: 1px solid rgba(37, 99, 235, 0.55);
+  border-radius: 999px;
+  padding: 0.28rem 0.7rem;
+}
+
+.pe__badge--end {
+  align-self: flex-end;
+}
+
+.pe__title {
+  margin: 0.85rem 0 0;
+  max-width: 22ch;
+  font-size: clamp(1.1rem, 2.1vw, 1.6rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: #2563eb;
+}
+
+.pe__section {
+  margin: 1.05rem 0 0;
+  font-size: clamp(0.7rem, 0.95vw, 0.84rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pe__section--ink {
+  color: #1f2937;
+}
+
+.pe__section--blue {
+  color: #2563eb;
+}
+
+.pe__situation {
+  margin: 0.5rem 0 0;
+  font-size: clamp(0.7rem, 1vw, 0.86rem);
+  line-height: 1.5;
+  color: #374151;
+}
+
+.pe__options {
+  list-style: none;
+  margin: 0.7rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pe__option {
+  margin: 0;
+  padding: 0.65rem 0;
+  border-top: 1px solid rgba(37, 99, 235, 0.28);
+  font-size: clamp(0.68rem, 0.95vw, 0.82rem);
+  line-height: 1.45;
+  color: #374151;
+}
+
+.pe__option:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.pe__option strong {
+  font-weight: 800;
+  color: #1f2937;
+}
+
+.pe__best {
+  margin: 1rem 0 0;
+  font-size: clamp(0.9rem, 1.3vw, 1.1rem);
+  font-weight: 600;
+  line-height: 1.3;
+  color: #1f2937;
+}
+
+.pe__best strong {
+  font-weight: 800;
+}
+
+.pe__values {
+  list-style: none;
+  margin: 1.05rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+}
+
+.pe__value {
+  display: grid;
+  grid-template-columns: 2.75rem 1fr;
+  gap: 0.85rem;
+  align-items: center;
+}
+
+.pe__icon-wrap {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: transparent;
+  border-radius: 0;
+}
+
+.pe__icon {
+  width: 2.35rem;
+  height: 2.35rem;
+  object-fit: contain;
+  display: block;
+}
+
+.pe__value p {
+  margin: 0;
+  font-size: clamp(0.72rem, 1.05vw, 0.9rem);
+  line-height: 1.4;
+  color: #374151;
+}
+
+.pe__result {
+  margin: 1.2rem 0 0;
+  font-size: clamp(0.7rem, 1vw, 0.86rem);
+  line-height: 1.5;
+  color: #374151;
+}
+
+.pe__result strong {
+  font-weight: 800;
+  color: #1f2937;
+}
+
+.pe__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: auto;
+  padding-top: 1.1rem;
+  font-size: clamp(0.55rem, 0.75vw, 0.68rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #1f2937;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.pe__brand--end {
+  align-self: flex-end;
+  color: #2563eb;
+}
+
+.pe__mark {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, #f0b429 0%, #e85a3c 28%, #a12c8f 62%, #2f6fe8 100%);
+  -webkit-mask-image: var(--asset-trans-mark);
+  mask-image: var(--asset-trans-mark);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+@media (max-width: 900px) {
+  .page-shell.page-practice-equipment {
+    overflow: auto;
+    height: auto;
+    min-height: 100%;
+  }
+
+  .pe__stage {
+    grid-template-columns: 1fr;
+    height: auto;
+    padding-left: calc(var(--nav-arrow-lane-left) + 0.55rem);
+    padding-right: calc(var(--nav-arrow-lane-right) + 0.55rem);
+  }
+
+  .pe__card {
+    height: auto;
+    min-height: 50vh;
+    overflow: visible;
+    border-width: 2px;
+  }
+}

@@ -3,6 +3,7 @@
   cursor: none !important;
 }
 
+/* Readable on both light and dark surfaces */
 .cursor-dot {
   position: fixed;
   top: 0;
@@ -12,11 +13,32 @@
   height: 28px;
   border-radius: 50%;
   pointer-events: none;
-  background: rgba(255, 255, 255, 0.32);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  background: rgba(44, 18, 100, 0.42);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
   box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.22),
-    0 0 0 1px rgba(44, 18, 100, 0.06);
+    0 0 0 2px rgba(255, 255, 255, 0.95),
+    0 0 0 3.5px rgba(44, 18, 100, 0.28),
+    0 4px 14px rgba(0, 0, 0, 0.18);
   will-change: transform;
+}
+
+/* Extra punch on light paper pages */
+.app-shell:has(.page-values-spread) .cursor-dot,
+.app-shell:has(.page-value-ambition) .cursor-dot,
+.app-shell:has(.page-value-passion) .cursor-dot,
+.app-shell:has(.page-value-responsibility) .cursor-dot,
+.app-shell:has(.page-mastery-semavic) .cursor-dot,
+.app-shell:has(.page-mastery-venezuela) .cursor-dot,
+.app-shell:has(.page-mastery-third-line) .cursor-dot,
+.app-shell:has(.page-mastery-putin) .cursor-dot,
+.app-shell:has(.page-practice-equipment) .cursor-dot,
+.app-shell:has(.page-facts) .cursor-dot,
+.app-shell:has(.page-mission-eco) .cursor-dot,
+.app-shell:has(.page-ceo) .cursor-dot {
+  background: rgba(44, 18, 100, 0.55);
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px rgba(44, 18, 100, 0.4),
+    0 6px 16px rgba(0, 0, 0, 0.2);
 }

@@ -3,7 +3,12 @@ import {
   missionEcosystem,
   missionLongevity,
   missionStatement,
+  missionStrategy,
+  missionStrategyHouse,
+  missionStrategyRole,
+  missionUniqueness,
   type EcoBlock,
+  type StrategyHouseSection,
 } from '../data/missionEco'
 import '../styles/mission-eco.css'
 
@@ -19,33 +24,37 @@ function renderHighlighted(text: string, highlight?: string) {
   )
 }
 
-function EcoBlocks({ blocks }: { blocks: EcoBlock[] }) {
+function EcoBlockCell({
+  block,
+  tone,
+}: {
+  block: EcoBlock | null
+  tone: 'light' | 'dark'
+}) {
+  if (!block) return <div className="ecosystem-block ecosystem-block--empty" aria-hidden />
+
   return (
-    <div className="meco__blocks">
-      {blocks.map((block) => (
-        <div className="meco__block" key={block.title}>
-          <h3 className="meco__block-title">{block.title}</h3>
-          <p className="meco__block-text">{block.text}</p>
-          {block.links && block.links.length > 0 && (
-            <div className="meco__links">
-              {block.links.map((link) => (
-                <a
-                  key={link.label}
-                  className={`meco__link meco__link--${link.kind ?? 'chip'}`}
-                  href={link.href || '#'}
-                  target="_blank"
-                  rel="noreferrer"
-                  onClick={(e) => {
-                    if (!link.href) e.preventDefault()
-                  }}
-                >
-                  {link.label}
-                </a>
-              ))}
-            </div>
-          )}
+    <div className="ecosystem-block">
+      <h3 className="block-title">{block.title}</h3>
+      <p className="block-text">{block.text}</p>
+      {block.links && block.links.length > 0 && (
+        <div className="ecosystem-block__links">
+          {block.links.map((link) => (
+            <a
+              key={link.label}
+              className={`badge${tone === 'dark' ? ' badge--dark' : ''}`}
+              href={link.href || '#'}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => {
+                if (!link.href) e.preventDefault()
+              }}
+            >
+              {link.label}
+            </a>
+          ))}
         </div>
-      ))}
+      )}
     </div>
   )
 }
@@ -150,29 +159,88 @@ export function MissionStatementPage() {
   )
 }
 
-export function MissionEcosystemPage() {
-  const data = missionEcosystem
+export function MissionUniquenessPage() {
+  const data = missionUniqueness
+
   return (
-    <article className="page-shell page-bleed page-mission-eco">
-      <div className="meco__left">
-        <div className="meco__left-top">
-          <h2 className="meco__title">{data.title}</h2>
-          <span className="meco__badge">{data.badge}</span>
+    <article className="page-shell page-bleed page-mission-uniqueness">
+      <div
+        className="muniq__photo"
+        style={{ backgroundImage: `url(${asset(data.photo)})` }}
+        aria-hidden
+      />
+      <div className="muniq__veil" aria-hidden />
+      <div className="muniq__inner">
+        <span className="mstmt__badge">{data.badge}</span>
+        <h2 className="muniq__title">{data.title}</h2>
+        <div className="muniq__points">
+          {data.points.map((point) => (
+            <div className="muniq__point" key={point.title}>
+              <span className="muniq__arrow" aria-hidden>
+                →
+              </span>
+              <div className="muniq__point-body">
+                <h3 className="muniq__point-title">{point.title}</h3>
+                <p className="muniq__point-text">{point.text}</p>
+              </div>
+            </div>
+          ))}
         </div>
-        <EcoBlocks blocks={data.left} />
-        <footer className="meco__brand">
+        <footer className="mstmt__brand">
           <span>ГЕРОФАРМ</span>
           <img src={asset(data.logo)} alt="" aria-hidden />
           <span>ТРАНСФОРМАЦИЯ</span>
         </footer>
       </div>
-      <div className="meco__right">
-        <EcoBlocks blocks={data.right} />
-        <p className="meco__note">*{data.note}</p>
-        <footer className="meco__brand meco__brand--ink">
-          <span>ГЕРОФАРМ</span>
-          <img src={asset(data.logo)} alt="" aria-hidden />
-          <span>ТРАНСФОРМАЦИЯ</span>
+    </article>
+  )
+}
+
+export function MissionEcosystemPage() {
+  const data = missionEcosystem
+  const rowCount = Math.max(data.left.length, data.right.length)
+  const rows = Array.from({ length: rowCount }, (_, i) => ({
+    left: data.left[i] ?? null,
+    right: data.right[i] ?? null,
+  }))
+
+  return (
+    <article className="page-shell page-bleed page-mission-eco">
+      <div className="ecosystem-layout">
+        <div className="ecosystem-paint ecosystem-paint--left" aria-hidden />
+        <div className="ecosystem-paint ecosystem-paint--right" aria-hidden />
+
+        <header className="ecosystem-cell ecosystem-cell--left ecosystem-header">
+          <span className="section-label">{data.badge}</span>
+          <h1 className="page-title">{data.title}</h1>
+        </header>
+        <div className="ecosystem-cell ecosystem-cell--right ecosystem-header" aria-hidden />
+
+        {rows.map(({ left, right }) => (
+          <div className="ecosystem-row" key={left?.title ?? right?.title}>
+            <div className="ecosystem-cell ecosystem-cell--left">
+              <EcoBlockCell block={left} tone="light" />
+            </div>
+            <div className="ecosystem-cell ecosystem-cell--right">
+              <EcoBlockCell block={right} tone="dark" />
+            </div>
+          </div>
+        ))}
+
+        <footer className="ecosystem-cell ecosystem-cell--left ecosystem-footer">
+          <div className="meco__brand">
+            <span>ГЕРОФАРМ</span>
+            <span className="meco__mark" aria-hidden />
+            <span>ТРАНСФОРМАЦИЯ</span>
+          </div>
+        </footer>
+        <footer className="ecosystem-cell ecosystem-cell--right ecosystem-footer">
+          <p className="meco__note">*{data.note}</p>
+          <div className="meco__brand meco__brand--ink">
+            <span>ГЕРОФАРМ</span>
+            <span className="meco__mark" aria-hidden />
+            <span>ТРАНСФОРМАЦИЯ</span>
+          </div>
         </footer>
       </div>
     </article>
@@ -184,14 +252,16 @@ export function MissionLongevityPage() {
   return (
     <article className="page-shell page-bleed page-mission-panel page-mission-longevity">
       <div className="mpanel__frame">
-        <div className="mpanel__top">
-          <h2 className="mpanel__title mpanel__title--long">{data.title}</h2>
-          <span className="mpanel__badge">{data.badge}</span>
-        </div>
-        <div className="mpanel__intro">
-          {data.body.map((p) => (
-            <p key={p.slice(0, 28)}>{p}</p>
-          ))}
+        <div className="mpanel__head-block">
+          <div className="mpanel__top">
+            <h2 className="mpanel__title mpanel__title--long">{data.title}</h2>
+            <span className="mpanel__badge">{data.badge}</span>
+          </div>
+          <div className="mpanel__intro">
+            {data.body.map((p) => (
+              <p key={p.slice(0, 28)}>{p}</p>
+            ))}
+          </div>
         </div>
         <ul className="mlong__list">
           {data.items.map((item) => (
@@ -211,6 +281,129 @@ export function MissionLongevityPage() {
             <span>ТРАНСФОРМАЦИЯ</span>
           </footer>
         </div>
+      </div>
+    </article>
+  )
+}
+
+export function MissionStrategySpreadPage() {
+  const left = missionStrategy
+  const right = missionStrategyRole
+
+  return (
+    <article className="page-shell page-bleed page-strategy-spread">
+      <section className="strategy-spread__half strategy-spread__half--left">
+        <div
+          className="strategy__photo"
+          style={{ backgroundImage: `url(${asset(left.photo)})` }}
+          aria-hidden
+        />
+        <div className="strategy__veil strategy__veil--2030" aria-hidden />
+        <div className="strategy__inner">
+          <span className="strategy__badge">{left.badge}</span>
+          <h2 className="strategy__title">{left.title}</h2>
+          <h3 className="strategy__subtitle">{left.subtitle}</h3>
+          <div className="strategy__body">
+            {left.body.map((p) => (
+              <p key={p.slice(0, 28)}>{p}</p>
+            ))}
+          </div>
+          <footer className="strategy__brand">
+            <span>ГЕРОФАРМ</span>
+            <img src={asset(left.logo)} alt="" aria-hidden />
+            <span>ТРАНСФОРМАЦИЯ</span>
+          </footer>
+        </div>
+      </section>
+
+      <section className="strategy-spread__half strategy-spread__half--right">
+        <div
+          className="strategy__photo"
+          style={{ backgroundImage: `url(${asset(right.photo)})` }}
+          aria-hidden
+        />
+        <div className="strategy__veil strategy__veil--role" aria-hidden />
+        <div className="strategy__inner strategy__inner--role">
+          <div className="strategy__panel">
+            <h2 className="strategy__title strategy__title--role">{right.title}</h2>
+            <p className="strategy__intro">{right.intro}</p>
+            <ul className="strategy__list">
+              {right.items.map((item) => (
+                <li key={item} className="strategy__list-item">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+    </article>
+  )
+}
+
+function StrategyHouseSectionBlock({ section }: { section: StrategyHouseSection }) {
+  return (
+    <div className="strategy-house__section">
+      <h3 className="strategy-house__section-title">{section.title}</h3>
+      {section.lead && (
+        <p className="strategy-house__section-lead">{section.lead}</p>
+      )}
+      {section.items && section.items.length > 0 && (
+        <ul className="strategy-house__list">
+          {section.items.map((item) => (
+            <li key={item} className="strategy-house__list-item">
+              {item}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
+export function MissionStrategyHousePage() {
+  const data = missionStrategyHouse
+
+  return (
+    <article className="page-shell page-bleed page-strategy-house">
+      <div
+        className="strategy-house__bg"
+        style={{ backgroundImage: `url(${asset(data.background)})` }}
+        aria-hidden
+      />
+      <div className="strategy-house__grid">
+        <section className="strategy-house__col strategy-house__col--left">
+          <div className="strategy-house__veil strategy-house__veil--left" aria-hidden />
+          <div className="strategy-house__inner">
+            <span className="strategy__badge">{data.badge}</span>
+            <h2 className="strategy-house__title">{data.left.title}</h2>
+            <div className="strategy-house__intro">
+              {data.left.intro.map((p) => (
+                <p key={p.slice(0, 28)}>{p}</p>
+              ))}
+            </div>
+            {data.left.sections.map((section) => (
+              <StrategyHouseSectionBlock key={section.title} section={section} />
+            ))}
+            <div className="strategy-house__footnotes">
+              {data.left.footnotes.map((note) => (
+                <p key={note.slice(0, 24)}>{note}</p>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="strategy-house__col strategy-house__col--right">
+          <div className="strategy-house__veil strategy-house__veil--right" aria-hidden />
+          <div className="strategy-house__inner strategy-house__inner--right">
+            <h2 className="strategy-house__title strategy-house__title--right">
+              {data.right.title}
+            </h2>
+            {data.right.sections.map((section) => (
+              <StrategyHouseSectionBlock key={section.title} section={section} />
+            ))}
+          </div>
+        </section>
       </div>
     </article>
   )

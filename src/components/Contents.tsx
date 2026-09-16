@@ -1,4 +1,4 @@
-import { BOOK_META, sections } from '../data/book'
+import { BOOK_META, navSections, sections } from '../data/book'
 import '../styles/contents.css'
 
 interface ContentsProps {
@@ -32,7 +32,7 @@ export function Contents({ onStart, onSelectSection, onBack }: ContentsProps) {
         </header>
 
         <div className="contents__list" role="list">
-          {sections.map((section) => (
+          {navSections.map((section) => (
             <button
               key={section.id}
               type="button"

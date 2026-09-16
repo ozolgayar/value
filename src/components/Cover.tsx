@@ -15,15 +15,7 @@ const particles = [
   { left: '8%', top: '78%', size: 5, delay: '1.6s', color: '#3BB9B8' },
 ]
 
-const TICKER_ITEMS = [
-  'ОТКРЫТОСТЬ',
-  'ДОВЕРИЕ',
-  'РАЗВИТИЕ',
-  'ОТВЕТСТВЕННОСТЬ',
-  'КОМАНДА',
-  'АМБИЦИОЗНОСТЬ',
-  'СТРАСТЬ',
-]
+const TICKER_ITEMS = ['СТРАСТЬ', 'ОТВЕТСТВЕННОСТЬ', 'АМБИЦИОЗНОСТЬ']
 
 function Logo25() {
   const uid = useId().replace(/:/g, '')
