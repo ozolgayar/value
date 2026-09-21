@@ -269,10 +269,17 @@
   flex: 0 0 auto;
   width: 100%;
   overflow: hidden;
-  background: linear-gradient(90deg, #2c1264 0%, #1e5a9c 50%, #0f3a6b 100%);
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 1rem 0;
-  color: #fff;
+  background: linear-gradient(
+    90deg,
+    rgba(44, 30, 78, 0.55) 0%,
+    rgba(40, 72, 112, 0.48) 50%,
+    rgba(28, 52, 88, 0.55) 100%
+  );
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.85rem 0;
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .cover-ticker__track {
@@ -286,8 +293,8 @@
 .cover-ticker__item {
   display: inline-flex;
   align-items: center;
-  gap: 1.25rem;
-  padding-right: 1.25rem;
+  gap: 1.15rem;
+  padding-right: 1.15rem;
   font-family: var(--btn-font);
   font-size: clamp(0.92rem, 1.85vw, 1.15rem);
   font-weight: 700;
@@ -295,9 +302,13 @@
   white-space: nowrap;
 }
 
-.cover-ticker__sep {
-  color: #ffa100;
-  opacity: 0.9;
+.cover-ticker__icon {
+  width: clamp(1.15rem, 2.2vw, 1.45rem);
+  height: clamp(1.15rem, 2.2vw, 1.45rem);
+  object-fit: contain;
+  flex-shrink: 0;
+  opacity: 0.82;
+  filter: saturate(0.7) brightness(1.05);
 }
 
 @keyframes fade-up {

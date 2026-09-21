@@ -1,5 +1,6 @@
 import { asset } from '../asset'
 import { valueAmbition } from '../data/valueAmbition'
+import { fixPrepositions } from '../lib/fixPrepositions'
 import '../styles/value-ambition.css'
 
 export function ValueAmbitionPage() {
@@ -9,16 +10,17 @@ export function ValueAmbitionPage() {
     <article className="page-shell page-bleed page-value-ambition">
       <section className="va__half va__half--left" aria-label={left.title}>
         <div className="va__top">
-          <div className="va__inset">
+          <div className="va__inset text-col--narrow">
             <span className="va__badge va__badge--light">{left.badge}</span>
-            <h1 className="va__title">{left.title}</h1>
-            <p className="va__lead">{left.lead}</p>
+            <h1 className="va__title">{fixPrepositions(left.title)}</h1>
+            <p className="va__lead">{fixPrepositions(left.lead)}</p>
             <ul className="va__steps">
-              {left.items.map((item, i) => (
-                <li key={item.bold} className={`va__step va__step--${i + 1}`}>
+              {left.items.map((item) => (
+                <li key={item.bold} className="va__step">
                   <span className="va__step-dash">—</span>
                   <span>
-                    <strong>{item.bold}</strong> {item.rest}
+                    <strong>{fixPrepositions(item.bold)}</strong>{' '}
+                    {fixPrepositions(item.rest)}
                   </span>
                 </li>
               ))}
@@ -43,14 +45,14 @@ export function ValueAmbitionPage() {
         <div className="va__edge" aria-hidden />
         <div className="va__right-inner">
           <header className="va__right-head">
-            <h1 className="va__right-title">{right.title}</h1>
+            <h1 className="va__right-title">{fixPrepositions(right.title)}</h1>
             <span className="va__badge va__badge--ink">{right.badge}</span>
           </header>
-          <h2 className="va__section">{right.section}</h2>
-          <div className="va__story">
+          <h2 className="va__section">{fixPrepositions(right.section)}</h2>
+          <div className="va__story text-col">
             {right.blocks.map((block) => (
               <p key={block.label}>
-                <strong>{block.label}:</strong> {block.text}
+                <strong>{block.label}:</strong> {fixPrepositions(block.text)}
               </p>
             ))}
           </div>

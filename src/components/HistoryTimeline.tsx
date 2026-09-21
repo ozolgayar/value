@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type WheelEvent } from 'react'
 import { historyPianoYears, type HistoryPage } from '../data/history'
+import { fixPrepositions } from '../lib/fixPrepositions'
 import '../styles/history-timeline.css'
 
 type HistoryTimelineProps = {
@@ -60,6 +61,8 @@ export function HistoryTimeline({
 
   const hasIncoming = page.index > 0
   const hasOutgoing = page.index < pageCount - 1
+  const isLastPage = !hasOutgoing
+  const showEpilogue = isLastPage && allOpen
 
   let spineProgress = 0
   if (reduced || allOpen) {
@@ -284,16 +287,25 @@ export function HistoryTimeline({
 
   return (
     <section
-      className={`tlh tlh--${page.accent} tlh--aside-${page.asideSide}`}
+      className={`tlh tlh--${page.accent} tlh--aside-left`}
       aria-label={`История ГЕРОФАРМ ${page.index + 1}/${pageCount}`}
     >
       <aside className="tlh__aside">
         <div className="tlh__aside-content">
           <span className="tlh__eyebrow">{page.eyebrow}</span>
-          <h2 className="tlh__quote">{page.quote}</h2>
+          <h2 className="tlh__quote">{fixPrepositions(page.quote)}</h2>
           <div className="tlh__body">
             {page.body.map((p) => (
-              <p key={p.slice(0, 32)}>{p}</p>
+              <p key={p.slice(0, 32)}>
+                {fixPrepositions(p)
+                  .split('\n')
+                  .map((line, i, arr) => (
+                    <span key={`${i}-${line.slice(0, 16)}`}>
+                      {line}
+                      {i < arr.length - 1 ? <br /> : null}
+                    </span>
+                  ))}
+              </p>
             ))}
           </div>
         </div>
@@ -301,15 +313,20 @@ export function HistoryTimeline({
 
       <div className="tlh__stage">
         <div className="tlh__main">
-          <div className="tlh__counter" aria-live="polite">
-            История ГЕРОФАРМ {page.index + 1}/{pageCount}
+          <div className="tlh__head">
+            <div className="tlh__counter" aria-live="polite">
+              История ГЕРОФАРМ {page.index + 1}/{pageCount}
+            </div>
+            <p className="tlh__empty">
+              Нажмите → или крутите колесо, чтобы открыть годы
+            </p>
           </div>
 
           <div
             ref={cardsRef}
             className={`tlh__cards${hasIncoming ? ' has-in' : ''}${
               hasOutgoing && allOpen ? ' has-out' : ''
-            }`}
+            }${isLastPage ? ' tlh__cards--top' : ''}`}
             aria-live="polite"
             onWheel={onCardsWheel}
           >
@@ -323,10 +340,6 @@ export function HistoryTimeline({
                 }
               />
             </div>
-
-            {openYears.length === 0 && !reduced && (
-              <p className="tlh__empty">Нажмите → или крутите колесо, чтобы открыть годы</p>
-            )}
 
             {openYears.map(({ entry, i }, visualIndex) => (
               <div
@@ -355,13 +368,23 @@ export function HistoryTimeline({
                   <span className="tlh__card-pill">{entry.year}</span>
                   {entry.items.map((block) => (
                     <div className="tlh__block" key={block.title}>
-                      <h3 className="tlh__block-title">{block.title}</h3>
-                      <p className="tlh__block-text">{block.text}</p>
+                      <h3 className="tlh__block-title">
+                        {fixPrepositions(block.title)}
+                      </h3>
+                      <p className="tlh__block-text">
+                        {fixPrepositions(block.text)}
+                      </p>
                     </div>
                   ))}
                 </article>
               </div>
             ))}
+
+            {showEpilogue ? (
+              <p className="tlh__epilogue" aria-live="polite">
+                Продолжение следует...
+              </p>
+            ) : null}
           </div>
         </div>
 

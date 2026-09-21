@@ -1,0 +1,244 @@
+.house-lab {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: #e4ebe7;
+  color: #143f37;
+  font-family: Verdana, Geneva, sans-serif;
+}
+
+.house-lab__header {
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem clamp(1rem, 3vw, 2rem);
+  pointer-events: none;
+}
+
+.house-lab__header > * {
+  pointer-events: auto;
+}
+
+.house-lab__eyebrow {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #516e65;
+}
+
+.house-lab__title {
+  margin: 0.35rem 0 0;
+  font-size: clamp(1.25rem, 2.4vw, 1.6rem);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.house-lab__progress {
+  margin: 0;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.house-lab__viewport {
+  position: absolute;
+  inset: 0 0 9.5rem;
+}
+
+.house-lab__viewport canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.house-lab__loading {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 42%;
+  transform: translateX(-50%);
+  background: #fff;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(36, 74, 54, 0.12);
+}
+
+.house-lab__card {
+  position: absolute;
+  z-index: 3;
+  right: clamp(0.75rem, 3vw, 1.5rem);
+  top: 5.5rem;
+  width: min(365px, calc(100vw - 1.5rem));
+  max-height: calc(100% - 12rem);
+  overflow: auto;
+  background: rgba(255, 252, 244, 0.96);
+  border: 1px solid #fff;
+  border-radius: 22px;
+  padding: 1.5rem 1.6rem;
+  box-shadow: 0 12px 45px rgba(36, 74, 54, 0.12);
+}
+
+.house-lab__card-close {
+  float: right;
+  font-size: 1.35rem;
+  line-height: 1;
+  padding: 0 0.45rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.house-lab__card-title {
+  margin: 0 0 0.85rem;
+  font-size: 1.4rem;
+  line-height: 1.15;
+}
+
+.house-lab__card-status {
+  margin: 0 0 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #167b63;
+}
+
+.house-lab__card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.house-lab__card-text p {
+  margin: 0;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid rgba(23, 68, 56, 0.08);
+  line-height: 1.5;
+  font-size: 0.92rem;
+}
+
+.house-lab__complete {
+  width: 100%;
+  border: 0;
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  background: #167b63;
+  color: #fff;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.house-lab__complete:hover {
+  background: #126654;
+}
+
+.house-lab__nav {
+  position: absolute;
+  z-index: 3;
+  left: 4%;
+  right: 4%;
+  bottom: 3.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  justify-content: center;
+}
+
+.house-lab__nav-btn {
+  flex: 1 1 140px;
+  max-width: 230px;
+  min-height: 52px;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid rgba(23, 107, 88, 0.2);
+  border-radius: 10px;
+  background: #f7fbf7;
+  color: inherit;
+  font: inherit;
+  font-size: 0.75rem;
+  line-height: 1.25;
+  cursor: pointer;
+  text-align: left;
+}
+
+.house-lab__nav-btn:hover {
+  background: #d6ebe0;
+}
+
+.house-lab__nav-btn.is-active {
+  outline: 2px solid #248c73;
+  outline-offset: 1px;
+}
+
+.house-lab__nav-btn.is-done {
+  background: #187b62;
+  color: #fff;
+}
+
+.house-lab__footer {
+  position: absolute;
+  z-index: 3;
+  left: 4%;
+  right: 4%;
+  bottom: 0.55rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.7rem;
+  color: #516e65;
+}
+
+.house-lab__footer button {
+  font: inherit;
+  font-size: 0.7rem;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid rgba(23, 107, 88, 0.2);
+  border-radius: 8px;
+  background: #f7fbf7;
+  color: inherit;
+  cursor: pointer;
+}
+
+.house-lab__footer button:hover {
+  background: #d6ebe0;
+}
+
+@media (max-width: 700px) {
+  .house-lab__viewport {
+    inset: 0 0 13.5rem;
+  }
+
+  .house-lab__nav {
+    bottom: 5.5rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .house-lab__nav-btn {
+    max-width: none;
+    font-size: 0.65rem;
+    min-height: 46px;
+  }
+
+  .house-lab__card {
+    top: auto;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    max-height: 55%;
+    border-radius: 22px 22px 0 0;
+  }
+}

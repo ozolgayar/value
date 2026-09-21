@@ -6,7 +6,7 @@ interface PreloaderProps {
   onDone: () => void
 }
 
-const GRADIENT_COLORS = ['#FF9C1B', '#DE56C2', '#1E88FE', '#DE56C2']
+const GRADIENT_COLORS = ['#FFA100', '#E040A0', '#1AA0FF', '#7B3DFF']
 
 /** Brand mark: CSS-masked silhouette that fills L→R with gradient */
 function TransSymbol({ progress }: { progress: number }) {
@@ -68,10 +68,11 @@ export function Preloader({ onDone }: PreloaderProps) {
     >
       <Velaris
         className="preloader__velaris"
-        bg="#1a0840"
+        bg="#439EBC"
         colors={GRADIENT_COLORS}
         speed={2.2}
-        grain={0.22}
+        grain={0.18}
+        vignette={0}
       />
 
       <div className="preloader__center">

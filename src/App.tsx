@@ -1,25 +1,28 @@
 import { useCallback, useState } from 'react'
-import { flatPages } from './data/book'
 import { AkonyGate, requestAkonyClose } from './components/AkonyGate'
-import { Contents } from './components/Contents'
 import { Cover } from './components/Cover'
+import { House3DLab } from './components/House3DLab'
+import { MissionStrategyHousePage } from './components/StrategyHouse'
 import { Preloader } from './components/Preloader'
 import { Cursor } from './components/Cursor'
 import { Reader } from './components/Reader'
+import { Welcome } from './components/Welcome'
 import './styles/global.css'
+import './styles/typography.css'
 
-type View = 'cover' | 'contents' | 'reader'
+type View = 'cover' | 'welcome' | 'reader'
 
 const VIEW_TRANSITION_MS = 650
 
-function firstIndexOfSection(sectionId: string) {
-  return Math.max(
-    0,
-    flatPages.findIndex((p) => p.sectionId === sectionId),
-  )
+function isHouse3dLab() {
+  return new URLSearchParams(window.location.search).has('house3d')
 }
 
-export default function App() {
+function isStrategyHousePreview() {
+  return new URLSearchParams(window.location.search).has('strategyHouse')
+}
+
+function BookApp() {
   const [booting, setBooting] = useState(true)
   const [view, setView] = useState<View>('cover')
   const [prevView, setPrevView] = useState<View | null>(null)
@@ -36,20 +39,22 @@ export default function App() {
     [view],
   )
 
-  const akonyActive = view === 'cover' || view === 'contents'
+  const gateOpen = view === 'welcome'
+  const akonyActive = view === 'cover' || gateOpen
   const showAkony =
-    akonyActive || prevView === 'cover' || prevView === 'contents'
+    akonyActive || prevView === 'cover' || prevView === 'welcome'
   const showReader = view === 'reader' || prevView === 'reader'
 
-  /** Keep contents "open" while fading out into the reader */
-  const contentsOpen =
-    view === 'contents' || (view === 'reader' && prevView === 'contents')
+  /** Keep welcome page visible while fading out into the reader */
+  const gatePageOpen = gateOpen || (view === 'reader' && prevView === 'welcome')
 
-  const bookOpenTransition = view === 'reader' && prevView === 'contents'
+  const bookOpenTransition = view === 'reader' && prevView === 'welcome'
   const shellTheme =
-    view === 'reader' || bookOpenTransition || (view === 'cover' && prevView === 'reader')
+    view === 'reader' ||
+    bookOpenTransition ||
+    (view === 'cover' && prevView === 'reader')
       ? 'theme-reader'
-      : view === 'contents' || contentsOpen
+      : gateOpen || gatePageOpen
         ? 'theme-contents'
         : 'theme-cover'
 
@@ -69,17 +74,15 @@ export default function App() {
           }`}
         >
           <AkonyGate
-            open={contentsOpen}
-            onOpen={() => setView('contents')}
+            open={gatePageOpen}
+            onOpen={() => setView('welcome')}
             onClose={() => setView('cover')}
             cover={({ openBook }) => <Cover onOpen={openBook} />}
             coverInert={({ openBook }) => <Cover onOpen={openBook} inert />}
             contents={
-              <Contents
-                revealed={contentsOpen}
+              <Welcome
                 onBack={() => requestAkonyClose()}
-                onStart={() => go('reader', 0)}
-                onSelectSection={(id) => go('reader', firstIndexOfSection(id))}
+                onContinue={() => go('reader', 0)}
               />
             }
           />
@@ -99,9 +102,30 @@ export default function App() {
           <Reader
             initialIndex={readerIndex}
             onExitToHome={() => go('cover')}
+            onBackToWelcome={() => go('welcome')}
           />
         </div>
       )}
     </div>
   )
+}
+
+export default function App() {
+  if (isStrategyHousePreview()) {
+    return (
+      <div className="app-shell theme-reader" style={{ height: '100vh' }}>
+        <MissionStrategyHousePage />
+      </div>
+    )
+  }
+
+  if (isHouse3dLab()) {
+    return (
+      <div className="app-shell theme-reader">
+        <House3DLab />
+      </div>
+    )
+  }
+
+  return <BookApp />
 }

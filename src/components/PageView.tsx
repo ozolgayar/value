@@ -1,5 +1,6 @@
 import type { BookPage } from '../data/book'
 import { asset } from '../asset'
+import { fixPrepositions } from '../lib/fixPrepositions'
 import { CountUp } from './CountUp'
 import { HistoryTimeline } from './HistoryTimeline'
 import {
@@ -69,10 +70,10 @@ export function PageView({
         <div className="page-ceo__main">
           <div className="page-ceo__main-inner">
             {page.badge && <span className="pill page-badge">{page.badge}</span>}
-            {page.title && <h2 className="page-title">{page.title}</h2>}
+            {page.title && <h2 className="page-title">{fixPrepositions(page.title)}</h2>}
             <div className="page-ceo__text">
               {page.body?.map((p) => (
-                <p key={p.slice(0, 24)}>{p}</p>
+                <p key={p.slice(0, 24)}>{fixPrepositions(p)}</p>
               ))}
             </div>
             {(page.meta?.name || page.meta?.role) && (
@@ -92,10 +93,12 @@ export function PageView({
       <article className="page-shell page-bleed page-split">
         <div className="page-split__left">
           <div className="page-split__left-inner">
-            {page.title && <h2 className="page-split__title">{page.title}</h2>}
+            {page.title && (
+              <h2 className="page-split__title">{fixPrepositions(page.title)}</h2>
+            )}
             <div className="page-split__body">
               {page.body?.map((p) => (
-                <p key={p.slice(0, 24)}>{p}</p>
+                <p key={p.slice(0, 24)}>{fixPrepositions(p)}</p>
               ))}
             </div>
           </div>
@@ -121,13 +124,7 @@ export function PageView({
               <>
                 <div className="page-split__divider" aria-hidden />
                 <p className="page-split__slogan">
-                  <span className="page-split__quote-mark" aria-hidden>
-                    «
-                  </span>
                   {page.footerSlogan.replace(/\n/g, ' ')}
-                  <span className="page-split__quote-mark" aria-hidden>
-                    »
-                  </span>
                 </p>
               </>
             )}
@@ -142,43 +139,49 @@ export function PageView({
       <article className="page-shell page-bleed page-route">
         <div className="page-route__left">
           <div className="page-route__left-inner">
-            {page.title && <h2 className="page-route__title">{page.title}</h2>}
+            {page.title && (
+              <h2 className="page-route__title">{fixPrepositions(page.title)}</h2>
+            )}
             <div className="page-route__body">
               {page.body?.map((p) => (
-                <p key={p.slice(0, 24)}>{p}</p>
+                <p key={p.slice(0, 24)}>{fixPrepositions(p)}</p>
               ))}
             </div>
           </div>
         </div>
         <div className="page-route__right">
-          <ul className="chapters-timeline">
-            {page.routeItems?.map((item, index) => {
-              const num = String(index + 1).padStart(2, '0')
-              return (
-                <li key={item.sectionId}>
-                  <button
-                    type="button"
-                    className="chapter-item"
-                    onClick={() =>
-                      item.pageId ? onGoToPage?.(item.pageId) : onGoToSection?.(item.sectionId)
-                    }
-                  >
-                    <div className="chapter-spine" aria-hidden>
-                      <div className="chapter-dot" />
-                      <div className="chapter-connector" />
-                    </div>
-                    <div className="chapter-card">
-                      <div className="chapter-header">
-                        <span className="chapter-num">{num}</span>
-                        <h3 className="chapter-title">{item.title}</h3>
+          <div className="page-route__toc">
+            <h2 className="page-route__toc-title">Содержание путеводителя</h2>
+            <p className="page-route__toc-hint">Выбери раздел или листай дальше</p>
+            <ul className="chapters-timeline">
+              {page.routeItems?.map((item, index) => {
+                const num = String(index + 1).padStart(2, '0')
+                return (
+                  <li key={item.sectionId}>
+                    <button
+                      type="button"
+                      className="chapter-item"
+                      onClick={() =>
+                        item.pageId ? onGoToPage?.(item.pageId) : onGoToSection?.(item.sectionId)
+                      }
+                    >
+                      <div className="chapter-spine" aria-hidden>
+                        <div className="chapter-dot" />
+                        <div className="chapter-connector" />
                       </div>
-                      <p className="chapter-desc">{item.desc}</p>
-                    </div>
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
+                      <div className="chapter-card">
+                        <div className="chapter-header">
+                          <span className="chapter-num">{num}</span>
+                          <h3 className="chapter-title">{item.title}</h3>
+                        </div>
+                        <p className="chapter-desc">{item.desc}</p>
+                      </div>
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
           {page.meta?.logo && (
             <img
               className="page-route__logo"
@@ -196,11 +199,11 @@ export function PageView({
       <article className="page-shell page-bleed page-facts">
         <div className="page-facts__inner">
           {page.badge && <span className="pill page-badge">{page.badge}</span>}
-          {page.title && <h2 className="page-title">{page.title}</h2>}
+          {page.title && <h2 className="page-title">{fixPrepositions(page.title)}</h2>}
           {page.body && (
             <div className="page-body page-facts__lead">
               {page.body.map((p) => (
-                <p key={p.slice(0, 24)}>{p}</p>
+                <p key={p.slice(0, 24)}>{fixPrepositions(p)}</p>
               ))}
             </div>
           )}
@@ -268,13 +271,14 @@ export function PageView({
           )}
           <h2 className="page-interstitial__title">
             {titleLines.map((line) => (
-              <span key={line}>{line}</span>
+              <span key={line}>{fixPrepositions(line)}</span>
             ))}
           </h2>
           <div className="page-interstitial__rule" aria-hidden />
           <div className="page-interstitial__body">
             {page.body?.map((p) => {
-              const lead = p.match(/^(Миссия|Стратегия)(\s*[—–-]\s*)(.*)$/s)
+              const fixed = fixPrepositions(p)
+              const lead = fixed.match(/^(Миссия|Стратегия)(\s*[—–-]\s*)(.*)$/s)
               return (
                 <p key={p.slice(0, 24)}>
                   {lead ? (
@@ -284,7 +288,7 @@ export function PageView({
                       {lead[3]}
                     </>
                   ) : (
-                    p
+                    fixed
                   )}
                 </p>
               )
@@ -434,10 +438,10 @@ export function PageView({
       <article className="page-shell page-bleed page-open">
         <div className="page-open__inner">
           {page.badge && <span className="pill page-badge">{page.badge}</span>}
-          {page.title && <h2 className="page-title">{page.title}</h2>}
+          {page.title && <h2 className="page-title">{fixPrepositions(page.title)}</h2>}
           <div className="page-body">
             {page.body?.map((p) => (
-              <p key={p.slice(0, 24)}>{p}</p>
+              <p key={p.slice(0, 24)}>{fixPrepositions(p)}</p>
             ))}
           </div>
         </div>
@@ -450,10 +454,10 @@ export function PageView({
       <article className="page-shell page-bleed page-quote">
         <div className="page-pad">
           {page.badge && <span className="pill page-badge">{page.badge}</span>}
-          {page.quote && <blockquote>{page.quote}</blockquote>}
+          {page.quote && <blockquote>{fixPrepositions(page.quote)}</blockquote>}
           <div className="page-body">
             {page.body?.map((p) => (
-              <p key={p.slice(0, 24)}>{p}</p>
+              <p key={p.slice(0, 24)}>{fixPrepositions(p)}</p>
             ))}
           </div>
         </div>
@@ -466,10 +470,10 @@ export function PageView({
       <article className="page-shell page-bleed page-timeline">
         <div className="page-pad">
           {page.badge && <span className="pill page-badge">{page.badge}</span>}
-          {page.title && <h2 className="page-title">{page.title}</h2>}
+          {page.title && <h2 className="page-title">{fixPrepositions(page.title)}</h2>}
           <div className="page-body">
             {page.body?.map((p) => (
-              <p key={p.slice(0, 24)}>{p}</p>
+              <p key={p.slice(0, 24)}>{fixPrepositions(p)}</p>
             ))}
           </div>
           {page.years && (
@@ -492,12 +496,12 @@ export function PageView({
       <article className="page-shell page-bleed">
         <div className="page-pad">
           {page.badge && <span className="pill page-badge">{page.badge}</span>}
-          {page.title && <h2 className="page-title">{page.title}</h2>}
+          {page.title && <h2 className="page-title">{fixPrepositions(page.title)}</h2>}
           <div className="values-grid">
             {page.values?.map((v) => (
               <div className="value-card" key={v.name} style={{ ['--accent' as string]: v.color }}>
-                <h3>{v.name}</h3>
-                <p>{v.desc}</p>
+                <h3>{fixPrepositions(v.name)}</h3>
+                <p>{fixPrepositions(v.desc)}</p>
               </div>
             ))}
           </div>
@@ -510,10 +514,10 @@ export function PageView({
     <article className="page-shell page-bleed">
       <div className="page-pad">
         {page.badge && <span className="pill page-badge">{page.badge}</span>}
-        {page.title && <h2 className="page-title">{page.title}</h2>}
+        {page.title && <h2 className="page-title">{fixPrepositions(page.title)}</h2>}
         <div className="page-body">
           {page.body?.map((p) => (
-            <p key={p.slice(0, 24)}>{p}</p>
+            <p key={p.slice(0, 24)}>{fixPrepositions(p)}</p>
           ))}
         </div>
       </div>

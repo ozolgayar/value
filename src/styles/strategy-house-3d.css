@@ -1,0 +1,313 @@
+.page-shell.page-strategy-house3d {
+  --sh3d-blue: #004ea6;
+  position: relative;
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  color: #14325f;
+  background: #f4f8fd;
+}
+
+.sh3d {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+}
+
+.sh3d__viewport {
+  position: absolute;
+  inset: 0;
+}
+
+.sh3d__viewport canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.sh3d__markers {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.sh3d__pointer {
+  position: absolute;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 78, 166, 0.82);
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.5),
+    0 4px 10px rgba(0, 40, 100, 0.22);
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  cursor: pointer;
+  animation: sh3d-pointer-pulse 1.6s ease-in-out infinite;
+}
+
+.sh3d__pointer.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sh3d__pointer.is-active,
+.sh3d__pointer.is-done {
+  background: var(--sh3d-blue);
+  animation: none;
+}
+
+.sh3d__pointer-icon {
+  display: block;
+  width: 58%;
+  height: 58%;
+  margin: 21% auto 0;
+  background: #ffffff;
+  -webkit-mask: var(--sh3d-pointer-mask) center / contain no-repeat;
+  mask: var(--sh3d-pointer-mask) center / contain no-repeat;
+}
+
+.sh3d__hud {
+  position: absolute;
+  z-index: 3;
+  top: calc(var(--nav-safe, 1rem) + 0.55rem);
+  left: max(1rem, var(--nav-arrow-lane-left, 1rem));
+  right: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  max-width: min(360px, 34vw);
+  pointer-events: none;
+}
+
+.sh3d__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.sh3d__intro-title {
+  margin: 0;
+  font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: #0f2f6b;
+  text-wrap: balance;
+}
+
+.sh3d__intro-body {
+  margin: 0;
+  font-size: clamp(0.82rem, 1.05vw, 0.95rem);
+  line-height: 1.45;
+  color: #35507a;
+}
+
+.sh3d__rotate-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  box-sizing: border-box;
+  padding: 0.7rem 0.95rem 0.7rem 0.95rem;
+  overflow: visible;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 24px rgba(20, 50, 80, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.sh3d__rotate-icon {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  overflow: visible;
+  background: var(--sh3d-blue);
+  -webkit-mask: var(--sh3d-rotate-mask) center / contain no-repeat;
+  mask: var(--sh3d-rotate-mask) center / contain no-repeat;
+}
+
+.sh3d__rotate-hint p,
+.sh3d__guide {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: #1d3a66;
+}
+
+.sh3d__guide {
+  font-weight: 700;
+  padding-left: 0.15rem;
+}
+
+.sh3d__loading {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%);
+  padding: 0.9rem 1.2rem;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(20, 50, 80, 0.12);
+  font-size: 0.92rem;
+}
+
+.sh3d__card {
+  position: absolute;
+  z-index: 5;
+  top: calc(var(--nav-safe, 1rem) + 4.75rem);
+  right: max(1rem, var(--nav-arrow-lane-right, 1rem));
+  width: min(365px, calc(100vw - 2rem));
+  max-height: calc(100% - var(--nav-safe, 1rem) * 2 - 6rem);
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 1.45rem 1.5rem 1.35rem;
+  border-radius: 22px;
+  background: rgba(255, 252, 248, 0.97);
+  border: 1px solid #fff;
+  box-shadow: 0 14px 40px rgba(0, 40, 100, 0.16);
+  color: #14325f;
+  animation: sh3d-card-in 220ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.sh3d__card-close {
+  float: right;
+  margin: -0.25rem -0.15rem 0 0;
+  border: 0;
+  background: transparent;
+  color: #35507a;
+  font-size: 1.45rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.15rem 0.4rem;
+}
+
+.sh3d__card-status {
+  margin: 0 0 0.55rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sh3d-blue);
+}
+
+.sh3d__card-title {
+  margin: 0 0 0.7rem;
+  font-size: clamp(1.2rem, 2vw, 1.45rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #0f2f6b;
+}
+
+.sh3d__card-lead {
+  margin: 0 0 0.85rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: #35507a;
+  white-space: pre-line;
+}
+
+.sh3d__card-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.sh3d__card-list p {
+  margin: 0;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid rgba(0, 78, 166, 0.12);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: #1c355f;
+}
+
+.sh3d__card-list p:first-child {
+  padding-top: 0.15rem;
+}
+
+.sh3d__card-list p:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.sh3d__card-notes {
+  margin-top: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.sh3d__card-notes p {
+  margin: 0;
+  font-size: 0.68rem;
+  line-height: 1.35;
+  color: rgba(30, 55, 100, 0.7);
+}
+
+@keyframes sh3d-pointer-pulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow:
+      0 0 0 3px rgba(255, 255, 255, 0.5),
+      0 8px 18px rgba(0, 40, 100, 0.25);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.08);
+    box-shadow:
+      0 0 0 6px rgba(255, 255, 255, 0.28),
+      0 0 22px rgba(0, 78, 166, 0.45),
+      0 10px 20px rgba(0, 40, 100, 0.28);
+  }
+}
+
+@keyframes sh3d-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 900px) {
+  .page-shell.page-strategy-house3d {
+    overflow: auto;
+  }
+
+  .sh3d {
+    min-height: 100%;
+  }
+
+  .sh3d__card {
+    top: auto;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    max-height: 52%;
+    border-radius: 22px 22px 0 0;
+  }
+
+  .sh3d__hud {
+    max-width: calc(100% - 2rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sh3d__pointer,
+  .sh3d__card {
+    animation: none;
+  }
+}

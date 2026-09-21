@@ -1,0 +1,265 @@
+/* 3D cover-flow carousel — GEROPHARM ecosystem 360° */
+.page-shell.page-mission-eco.mc3d {
+  --mc3d-blue: #0057b8;
+  --mission-blue: #0057b8;
+  --mc3d-panel-w: min(300px, 58vw);
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  color: var(--mc3d-blue);
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 42%, rgba(0, 87, 184, 0.08), transparent 70%),
+    linear-gradient(180deg, #f4f8fd 0%, #ffffff 48%, #eef4fb 100%);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding:
+    calc(var(--nav-safe) + 0.25rem)
+    var(--nav-arrow-lane-right)
+    calc(var(--nav-safe) + 0.35rem)
+    var(--nav-arrow-lane-left);
+}
+
+.mc3d__head {
+  flex: 0 0 auto;
+  max-width: 40rem;
+  margin-bottom: 0.25rem;
+  z-index: 3;
+}
+
+.mc3d__badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mc3d-blue);
+  border: 1px solid rgba(0, 87, 184, 0.35);
+  border-radius: 999px;
+  padding: 4px 12px;
+  margin-bottom: 0.5rem;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.mc3d__title {
+  margin: 0;
+  font-size: clamp(1.1rem, 2.1vw, 1.75rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  white-space: pre-line;
+  color: var(--mc3d-blue);
+}
+
+.mc3d__viewport {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  perspective: 1800px;
+  perspective-origin: 50% 45%;
+  transform-style: preserve-3d;
+  outline: none;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  opacity: 0;
+}
+
+.mc3d.is-ready .mc3d__viewport {
+  opacity: 1;
+  transition: opacity 320ms ease;
+}
+
+.mc3d__viewport:active {
+  cursor: grabbing;
+}
+
+.mc3d__viewport:focus-visible {
+  box-shadow: inset 0 0 0 2px rgba(0, 87, 184, 0.25);
+  border-radius: 16px;
+}
+
+.mc3d__stage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  transform-style: preserve-3d;
+}
+
+.mc3d__stage.is-anim .mc3d__panel {
+  transition:
+    transform 520ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 420ms ease;
+}
+
+.mc3d__panel {
+  position: absolute;
+  width: var(--mc3d-panel-w);
+  max-height: min(420px, 58vh);
+  padding: 1.15rem 1.2rem 1.2rem;
+  box-sizing: border-box;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1.5px solid rgba(0, 87, 184, 0.16);
+  box-shadow:
+    0 16px 40px rgba(0, 40, 100, 0.12),
+    0 1px 0 rgba(255, 255, 255, 0.8);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  overflow: auto;
+  scrollbar-width: thin;
+  cursor: pointer;
+  will-change: transform, opacity;
+}
+
+.mc3d__panel.is-far {
+  visibility: hidden;
+}
+
+.mc3d__panel.is-active {
+  border-color: rgba(0, 87, 184, 0.45);
+  box-shadow:
+    0 22px 52px rgba(0, 50, 120, 0.2),
+    0 0 0 1px rgba(0, 87, 184, 0.08);
+  cursor: default;
+}
+
+.mc3d__panel-title {
+  margin: 0 0 0.55rem;
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--mc3d-blue);
+}
+
+.mc3d__panel-text {
+  margin: 0 0 0.85rem;
+  font-size: clamp(0.84rem, 1.15vw, 0.95rem);
+  line-height: 1.45;
+  color: rgba(24, 52, 96, 0.88);
+}
+
+.mc3d__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.mc3d__tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1.5px solid rgba(0, 87, 184, 0.28);
+  background: rgba(0, 87, 184, 0.06);
+  color: var(--mc3d-blue);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.mc3d__tag:hover {
+  background: rgba(0, 87, 184, 0.12);
+  border-color: var(--mc3d-blue);
+  transform: translateY(-1px);
+}
+
+.mc3d__controls {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.35rem;
+  z-index: 3;
+}
+
+.mc3d__dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.mc3d__dot {
+  width: 12px;
+  height: 12px;
+  min-width: 12px;
+  min-height: 12px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1.5px solid rgba(0, 87, 184, 0.4);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    transform 180ms ease,
+    border-color 180ms ease;
+}
+
+.mc3d__dot.is-active {
+  background: var(--mc3d-blue);
+  border-color: var(--mc3d-blue);
+  transform: scale(1.15);
+}
+
+.mc3d__hint {
+  margin: 0;
+  max-width: 42rem;
+  text-align: center;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: rgba(0, 87, 184, 0.72);
+}
+
+@media (max-width: 900px) {
+  .page-shell.page-mission-eco.mc3d {
+    --mc3d-panel-w: min(280px, 76vw);
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .mc3d__viewport {
+    perspective: 1300px;
+  }
+
+  .mc3d__panel-title {
+    font-size: 16px;
+  }
+
+  .mc3d__panel-text {
+    font-size: 14px;
+  }
+
+  .mc3d__tag {
+    min-height: 44px;
+    font-size: 12px;
+    padding: 0.45rem 0.85rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .mc3d__hint {
+    font-size: 0.68rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mc3d.is-ready .mc3d__viewport {
+    transition: none;
+  }
+
+  .mc3d__stage.is-anim .mc3d__panel {
+    transition: none;
+  }
+}

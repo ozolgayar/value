@@ -15,7 +15,11 @@ const particles = [
   { left: '8%', top: '78%', size: 5, delay: '1.6s', color: '#3BB9B8' },
 ]
 
-const TICKER_ITEMS = ['СТРАСТЬ', 'ОТВЕТСТВЕННОСТЬ', 'АМБИЦИОЗНОСТЬ']
+const TICKER_ITEMS = [
+  { word: 'СТРАСТЬ', icon: 'img/12.png' },
+  { word: 'ОТВЕТСТВЕННОСТЬ', icon: 'img/13.png' },
+  { word: 'АМБИЦИОЗНОСТЬ', icon: 'img/11.png' },
+]
 
 function Logo25() {
   const uid = useId().replace(/:/g, '')
@@ -64,11 +68,14 @@ function Ticker() {
     <div className="cover-ticker" aria-label="Ценности компании">
       <div className="cover-ticker__track">
         {sequence.map((item, i) => (
-          <span key={`${item}-${i}`} className="cover-ticker__item">
-            <span>{item}</span>
-            <span className="cover-ticker__sep" aria-hidden>
-              ✦
-            </span>
+          <span key={`${item.word}-${i}`} className="cover-ticker__item">
+            <img
+              className="cover-ticker__icon"
+              src={asset(item.icon)}
+              alt=""
+              aria-hidden
+            />
+            <span>{item.word}</span>
           </span>
         ))}
       </div>
@@ -128,11 +135,11 @@ export function Cover({ onOpen, inert = false }: CoverProps) {
 
         <div className="cover__content">
           <h1 className="cover__title cover-fade cover-fade--title">
-            Культурный
+            История.
             <br />
-            путеводитель
+            Культура.
             <br />
-            ГЕРОФАРМ
+            Будущее
           </h1>
           <p className="cover__hash cover-fade cover-fade--hash">{BOOK_META.hashtag}</p>
           <div className="cover__actions cover-fade cover-fade--cta">

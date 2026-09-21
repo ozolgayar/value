@@ -17,6 +17,7 @@ import '../styles/quotes.css'
 interface ReaderProps {
   initialIndex?: number
   onExitToHome: () => void
+  onBackToWelcome?: () => void
 }
 
 function labelFor(index: number) {
@@ -24,13 +25,13 @@ function labelFor(index: number) {
   return fp.page.title ?? fp.paragraphTitle
 }
 
-export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
+export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: ReaderProps) {
   const isMobile = useMediaQuery('(max-width: 860px)')
   const [index, setIndex] = useState(initialIndex)
   const [rollOpen, setRollOpen] = useState(false)
   const [tocOpen, setTocOpen] = useState(false)
   const [quotesOpen, setQuotesOpen] = useState(false)
-  const [hintVisible, setHintVisible] = useState(false)
+  const [hintVisible, setHintVisible] = useState(() => initialIndex === 0)
   const [toast, setToast] = useState<string | null>(null)
   const [selectionUi, setSelectionUi] = useState<{ text: string; x: number; y: number } | null>(
     null,
@@ -53,16 +54,19 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
   const [historyJumpYear, setHistoryJumpYear] = useState<string | null>(null)
   const touchStart = useRef<{ x: number; y: number } | null>(null)
   const suppressSwipe = useRef(false)
+  const wheelLock = useRef(false)
   const zoomTimers = useRef<number[]>([])
   const curtainTimers = useRef<number[]>([])
   const slideTimers = useRef<number[]>([])
+  const readerRef = useRef<HTMLElement | null>(null)
   const { quotes, add: addQuote, remove: removeQuote } = useQuotes()
 
   const current = flatPages[index]
-  const anyOverlay = rollOpen || tocOpen || quotesOpen
   const isInterstitial = current.page.kind === 'interstitial'
   const isClosingCover = current.page.kind === 'closing-cover'
   const isHistoryEra = current.page.kind === 'history-era'
+  const showNavCoach = hintVisible && index === 0 && !isInterstitial && !isHistoryEra
+  const anyOverlay = rollOpen || tocOpen || quotesOpen || showNavCoach
   const chromeHidden =
     isInterstitial ||
     isClosingCover ||
@@ -173,21 +177,19 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
   }, [initialIndex])
 
   useEffect(() => {
-    const KEY = 'gph-reader-nav-hint-seen'
-    try {
-      if (localStorage.getItem(KEY)) return
-      setHintVisible(true)
-      const t = window.setTimeout(() => {
-        setHintVisible(false)
-        localStorage.setItem(KEY, '1')
-      }, 4500)
-      return () => window.clearTimeout(t)
-    } catch {
-      setHintVisible(true)
-      const t = window.setTimeout(() => setHintVisible(false), 4500)
-      return () => window.clearTimeout(t)
-    }
+    if (index === 0) setHintVisible(true)
+    else setHintVisible(false)
+  }, [index])
+
+  const dismissHint = useCallback(() => {
+    setHintVisible(false)
   }, [])
+
+  useEffect(() => {
+    if (!showNavCoach) return
+    const btn = document.querySelector<HTMLButtonElement>('.reader__nav-coach-ok')
+    btn?.focus()
+  }, [showNavCoach])
 
   useEffect(() => {
     if (!toast) return
@@ -292,9 +294,9 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
         const t1 = window.setTimeout(() => {
           setIndex(clamped)
           setHistoryCurtain((prev) => (prev ? { ...prev, phase: 'exit' } : null))
-          const t2 = window.setTimeout(() => setHistoryCurtain(null), 520)
+          const t2 = window.setTimeout(() => setHistoryCurtain(null), 560)
           curtainTimers.current.push(t2)
-        }, 640)
+        }, 720)
         curtainTimers.current.push(tArm, t1)
         return
       }
@@ -409,12 +411,82 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
       }
       if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
         e.preventDefault()
+        if (index === 0) {
+          onBackToWelcome?.()
+          return
+        }
         go(index - 1)
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [go, index, anyOverlay, zoomPhase, historyCurtain, missionSlide])
+  }, [go, index, anyOverlay, zoomPhase, historyCurtain, missionSlide, onBackToWelcome])
+
+  useEffect(() => {
+    if (isMobile) return
+    const root = readerRef.current
+    if (!root) return
+
+    const canScrollFurther = (el: HTMLElement, deltaY: number) => {
+      const style = window.getComputedStyle(el)
+      const overflowY = style.overflowY
+      if (overflowY !== 'auto' && overflowY !== 'scroll' && overflowY !== 'overlay') {
+        return false
+      }
+      if (el.scrollHeight <= el.clientHeight + 2) return false
+      if (deltaY > 0) return el.scrollTop + el.clientHeight < el.scrollHeight - 2
+      if (deltaY < 0) return el.scrollTop > 2
+      return false
+    }
+
+    const onWheel = (e: WheelEvent) => {
+      if (anyOverlay || zoomPhase !== 'idle' || historyCurtain || missionSlide) return
+      if (Math.abs(e.deltaY) < 8 && Math.abs(e.deltaX) < 8) return
+
+      let node = e.target as HTMLElement | null
+      while (node && node !== root) {
+        if (canScrollFurther(node, e.deltaY)) return
+        node = node.parentElement
+      }
+
+      // Strategy house: wheel zooms the 3D model, never flips pages.
+      if (flatPages[index]?.page.kind === 'mission-strategy-house') {
+        e.preventDefault()
+        return
+      }
+
+      const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX
+      if (delta === 0) return
+
+      e.preventDefault()
+      if (wheelLock.current) return
+      wheelLock.current = true
+      window.setTimeout(() => {
+        wheelLock.current = false
+      }, 520)
+
+      if (delta > 0) {
+        go(index + 1)
+      } else if (index === 0) {
+        onBackToWelcome?.()
+      } else {
+        go(index - 1)
+      }
+    }
+
+    root.addEventListener('wheel', onWheel, { passive: false })
+    return () => root.removeEventListener('wheel', onWheel)
+  }, [
+    go,
+    index,
+    anyOverlay,
+    zoomPhase,
+    historyCurtain,
+    missionSlide,
+    onBackToWelcome,
+    isMobile,
+    flatPages,
+  ])
 
   const onTouchStart = (e: TouchEvent) => {
     const t = e.changedTouches[0]
@@ -439,12 +511,21 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
     const dy = t.clientY - touchStart.current.y
     touchStart.current = null
     const threshold = 48
+    const goPrev = () => {
+      if (index === 0) {
+        onBackToWelcome?.()
+        return
+      }
+      go(index - 1)
+    }
     if (isMobile) {
       if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > threshold) {
-        go(dy < 0 ? index + 1 : index - 1)
+        if (dy < 0) go(index + 1)
+        else goPrev()
       }
     } else if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > threshold) {
-      go(dx < 0 ? index + 1 : index - 1)
+      if (dx < 0) go(index + 1)
+      else goPrev()
     }
   }
 
@@ -471,11 +552,12 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
 
   return (
     <section
+      ref={readerRef}
       className={`reader${isMobile ? ' is-vertical' : ''}${
         zoomPhase === 'out' ? ' is-zoom-out' : ''
       }${zoomPhase === 'in' ? ' is-zoom-in' : ''}${isInterstitial ? ' is-interstitial' : ''}${
         isHistoryEra ? ' is-history' : ''
-      }`}
+      }${showNavCoach ? ' is-coaching' : ''}`}
       aria-label="Чтение книги"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
@@ -525,6 +607,10 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
           style={{ background: historyCurtain.color }}
           aria-hidden
         >
+          <div className="history-curtain__rail">
+            <span className="history-curtain__rail-line" />
+            <span className="history-curtain__rail-dot" />
+          </div>
           <div className="history-curtain__years">
             {historyCurtain.years.map((year) => (
               <span key={year} className="history-curtain__year">
@@ -540,6 +626,43 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
           className={`mission-slide is-${missionSlide.phase} is-${missionSlide.dir}`}
           aria-hidden
         />
+      )}
+
+      {showNavCoach && (
+        <div className="reader__nav-coach-layer">
+          <div className="reader__nav-coach-backdrop" aria-hidden />
+          <div
+            className="reader__nav-coach"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="reader-nav-coach-title"
+          >
+            <p className="reader__nav-coach-title" id="reader-nav-coach-title">
+              Как пользоваться книгой
+            </p>
+            <ul className="reader__nav-coach-list">
+              <li>
+                {isMobile
+                  ? 'Листайте страницы свайпом вверх или вниз'
+                  : 'Листайте стрелками ← → по краям экрана или клавишами влево / вправо или колесом мыши'}
+              </li>
+              <li>
+                На первой странице ← возвращает к экрану «Добро пожаловать»
+              </li>
+              <li>
+                Кнопка <strong>Меню</strong> внизу — содержание, цитаты и выход на
+                главную
+              </li>
+            </ul>
+            <button
+              type="button"
+              className="reader__nav-coach-ok"
+              onClick={dismissHint}
+            >
+              Понятно
+            </button>
+          </div>
+        </div>
       )}
 
       <div className={`reader__chrome${chromeHidden ? ' is-dimmed' : ''}`}>
@@ -583,8 +706,19 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
               type="button"
               className="nav-arrow nav-arrow--prev"
               aria-label="Предыдущая страница"
-              disabled={index === 0 || anyOverlay || zoomPhase !== 'idle' || transitionBusy}
-              onClick={() => go(index - 1)}
+              disabled={
+                (index === 0 && !onBackToWelcome) ||
+                anyOverlay ||
+                zoomPhase !== 'idle' ||
+                transitionBusy
+              }
+              onClick={() => {
+                if (index === 0) {
+                  onBackToWelcome?.()
+                  return
+                }
+                go(index - 1)
+              }}
             >
               ←
             </button>
@@ -610,14 +744,6 @@ export function Reader({ initialIndex = 0, onExitToHome }: ReaderProps) {
         >
           {`${index + 1} / ${totalPages}`}
         </div>
-
-        {hintVisible && !isInterstitial && !isHistoryEra && (
-          <div className="reader__hint">
-            {isMobile
-              ? 'Листайте вертикально свайпом вверх/вниз'
-              : 'Листайте кнопками ← → или клавишами влево/вправо'}
-          </div>
-        )}
 
         {toast && (
           <div className="reader__toast" role="status">

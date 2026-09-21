@@ -3,30 +3,7 @@
   inset: 0;
   z-index: 1;
   height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-.akony::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
-}
-
-.akony.is-open,
-.akony.is-fading-home,
-.akony.is-opening,
-.akony.is-flipping {
   overflow: hidden;
-}
-
-.akony__pin {
-  position: relative;
-  width: 100%;
-  height: 100dvh;
 }
 
 .akony__stage {
@@ -34,12 +11,6 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  perspective: 2400px;
-  perspective-origin: 50% 50%;
-}
-
-.akony.is-flipping .akony__stage {
-  perspective-origin: 18% 50%;
 }
 
 /* —— Cover curtain —— */
@@ -49,18 +20,15 @@
   z-index: 10;
   pointer-events: auto;
   opacity: 1;
-  transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .akony__curtain.is-parked {
   pointer-events: none;
-  opacity: 0;
+  visibility: hidden;
 }
 
-/* Instant unpark under fading contents — no opacity flash/jump */
 .akony.is-fading-home .akony__curtain {
-  transition: none;
-  opacity: 1;
+  visibility: visible;
   pointer-events: none;
 }
 
@@ -68,9 +36,8 @@
   position: absolute;
   inset: 0;
   z-index: 2;
-  transform-origin: left center;
-  transform-style: preserve-3d;
   will-change: transform;
+  box-shadow: 12px 0 40px rgba(15, 42, 68, 0.28);
 }
 
 .akony__face {
@@ -78,22 +45,11 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
 }
 
 .akony__face--front {
   z-index: 2;
-  transform: translateZ(1px);
   pointer-events: auto;
-}
-
-.akony__face--verso {
-  z-index: 1;
-  transform: rotateY(180deg) translateZ(1px);
-  /* Match contents wash — avoids a dark flash while the cover swings open */
-  background: linear-gradient(160deg, #e4eef8 0%, #d7e8f4 45%, #cfe0f0 100%);
-  pointer-events: none;
 }
 
 .akony__face .cover {
@@ -102,38 +58,24 @@
   pointer-events: auto;
 }
 
-.akony.is-flipping .uc-akony-cover::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 36px;
-  z-index: 3;
-  pointer-events: none;
-  background: linear-gradient(90deg, rgba(0, 0, 0, 0.35), transparent);
-  transform: translateZ(2px);
-}
-
-/* —— Contents layer —— */
+/* —— Welcome layer —— */
 .akony__page {
   position: absolute;
   inset: 0;
-  z-index: 5; /* under the cover while it swings open */
+  z-index: 5;
   visibility: hidden;
   pointer-events: none;
 }
 
 .akony.is-open .akony__page,
 .akony.is-opening .akony__page,
-.akony.is-flipping .akony__page,
 .akony.is-fading-home .akony__page {
   visibility: visible;
   opacity: 1;
 }
 
 .akony.is-opening .akony__page,
-.akony.is-flipping .akony__page {
+.akony.is-fading-home .akony__page {
   pointer-events: none;
 }
 
@@ -143,7 +85,7 @@
 }
 
 .akony.is-fading-home .akony__page {
-  z-index: 20;
+  z-index: 1;
   pointer-events: none;
 }
 
@@ -152,10 +94,4 @@
   inset: 0;
   background: #e4eff8;
   overflow: hidden;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .akony__curtain {
-    transition: none !important;
-  }
 }

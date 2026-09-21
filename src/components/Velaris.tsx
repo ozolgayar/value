@@ -16,6 +16,7 @@ varying vec2 vUv;
 uniform vec2  u_resolution;
 uniform float u_time;
 uniform float u_grain;
+uniform float u_vignette;
 uniform vec3  u_colors[4];
 uniform vec3  u_bg;
 
@@ -72,7 +73,8 @@ void main() {
   float glow = smoothstep(0.8, 0.0, dist) * 0.3;
   col += u_colors[1] * glow;
 
-  col = mix(col * 0.2, col, vignette);
+  float edgeMul = mix(1.0, 0.2, clamp(u_vignette, 0.0, 1.0));
+  col = mix(col * edgeMul, col, vignette);
 
   float grain = fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453 + u_time);
   col += (grain - 0.5) * u_grain * 0.1;
@@ -86,6 +88,8 @@ export interface VelarisProps {
   colors?: string[]
   speed?: number
   grain?: number
+  /** 0 = no edge darkening, 1 = strong dark vignette (default) */
+  vignette?: number
   className?: string
   children?: ReactNode
 }
@@ -106,6 +110,7 @@ export function Velaris({
   colors = DEFAULT_COLORS,
   speed = 2.0,
   grain = 0.25,
+  vignette = 1,
   className,
   children,
 }: VelarisProps) {
@@ -150,6 +155,7 @@ export function Velaris({
       res: gl.getUniformLocation(program, 'u_resolution'),
       time: gl.getUniformLocation(program, 'u_time'),
       grain: gl.getUniformLocation(program, 'u_grain'),
+      vignette: gl.getUniformLocation(program, 'u_vignette'),
       colors: gl.getUniformLocation(program, 'u_colors'),
       bg: gl.getUniformLocation(program, 'u_bg'),
     }
@@ -161,6 +167,7 @@ export function Velaris({
       gl.uniform2f(locs.res, canvas.width, canvas.height)
       gl.uniform1f(locs.time, timeSec)
       gl.uniform1f(locs.grain, grain)
+      gl.uniform1f(locs.vignette, vignette)
       gl.uniform3f(locs.bg, ...hexToRgb(bg))
       gl.uniform3fv(locs.colors, colorFlat)
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
@@ -225,7 +232,7 @@ export function Velaris({
       io.disconnect()
       ro.disconnect()
     }
-  }, [bg, colorsKey, speed, grain])
+  }, [bg, colorsKey, speed, grain, vignette])
 
   return (
     <div ref={containerRef} className={className ? `velaris ${className}` : 'velaris'}>

@@ -1,0 +1,3 @@
+Licensed Verdana loaded from C:\Users\Пользователь\Desktop\Cursor\value-book\house\fonts\Verdana.ttf
+
+The generator accepts VERDANA_FONT=/path/to/licensed/Verdana.ttf.

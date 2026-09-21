@@ -11,7 +11,7 @@ export interface HistoryYear {
 export interface HistoryEra {
   id: string
   accent: 'purple' | 'blue'
-  /** purple = aside left; blue = aside right (как на макетах) */
+  /** purple / blue accents remain; text column always on the left */
   asideSide: 'left' | 'right'
   eyebrow: string
   quote: string
@@ -87,11 +87,11 @@ export const historyEras: HistoryEra[] = [
   {
     id: 'era-2010s',
     accent: 'blue',
-    asideSide: 'right',
+    asideSide: 'left',
     eyebrow: 'История ГЕРОФАРМ',
     quote: 'Успех приходит тогда, когда бизнес чутко реагирует на потребности общества',
     body: [
-      'В 2011 г. начался период крупных инвестиций: R&D-центр и новые производственные площадки. Наша философия изменилась: мы перестали зависеть от внешних обстоятельств и сами начали формировать рынок. Мы преодолели недоверие рынка к отечественным препаратам. В результате — за 4 года доля рынка выросла до 27% и наша компания стала лидером.',
+      'В 2011 г. начался период крупных инвестиций: R&D-центр и новые производственные площадки. Наша философия изменилась: мы перестали зависеть от внешних обстоятельств и сами начали формировать рынок. Мы преодолели недоверие рынка к отечественным препаратам. В результате — за 4 года доля\u000Aрынка выросла до 27% и наша компания стала лидером.',
     ],
     years: [
       {
@@ -212,7 +212,7 @@ export const historyEras: HistoryEra[] = [
   {
     id: 'era-2020s',
     accent: 'blue',
-    asideSide: 'right',
+    asideSide: 'left',
     eyebrow: 'История ГЕРОФАРМ',
     quote:
       'Препараты ГЕРОФАРМ оказывают влияние на жизни десятков людей. Нас вдохновляет и объединяет то, что наша работа меняет мир',
@@ -379,7 +379,7 @@ export const historyPages: HistoryPage[] = Array.from({ length: historyPageCount
     id: `history-page-${index}`,
     index,
     accent: leadEra.accent,
-    asideSide: leadEra.asideSide,
+    asideSide: 'left',
     eyebrow: leadEra.eyebrow,
     quote: leadEra.quote,
     body: leadEra.body,

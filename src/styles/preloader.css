@@ -5,7 +5,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #1a0840;
+  background: #439ebc;
   color: #fff;
   overflow: hidden;
   transform: translateY(0);
@@ -127,9 +127,9 @@
 }
 
 .preloader-symbol__fill {
-  background: linear-gradient(90deg, #ff9c1b 0%, #de56c2 50%, #1e88fe 100%);
+  background: linear-gradient(90deg, #ffa100 0%, #e040a0 50%, #1aa0ff 100%);
   transition: clip-path 60ms linear;
-  filter: drop-shadow(0 0 10px rgba(222, 86, 194, 0.35));
+  filter: drop-shadow(0 0 10px rgba(224, 64, 160, 0.35));
 }
 
 .preloader__count {
