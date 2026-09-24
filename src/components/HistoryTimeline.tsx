@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type WheelEvent } from 'react'
+import { useEffect, useRef, useState, type WheelEvent as ReactWheelEvent } from 'react'
 import { historyPianoYears, type HistoryPage } from '../data/history'
 import { useMediaQuery } from '../hooks'
 import { fixPrepositions } from '../lib/fixPrepositions'
@@ -258,7 +258,7 @@ export function HistoryTimeline({
     const root = rootRef.current
     if (!root) return
 
-    const onWheelBack = (e: WheelEvent) => {
+    const onWheelBack = (e: globalThis.WheelEvent) => {
       const {
         years,
         activeYear: current,
@@ -344,7 +344,7 @@ export function HistoryTimeline({
     return () => root.removeEventListener('wheel', onWheelBack, { capture: true })
   }, [page.index])
 
-  const onCardsWheel = (e: WheelEvent<HTMLDivElement>) => {
+  const onCardsWheel = (e: ReactWheelEvent<HTMLDivElement>) => {
     const el = cardsRef.current
     if (!el) return
     if (retreatState.current.phone) return
