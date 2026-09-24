@@ -146,6 +146,42 @@
   }
 }
 
+@media (max-width: 1024px) {
+  .menu-overlay {
+    align-items: stretch;
+    justify-items: center;
+    padding: 0.75rem;
+  }
+
+  .menu-panel {
+    display: flex;
+    flex-direction: column;
+    width: min(100%, 720px);
+    max-height: min(90dvh, 100%);
+    overflow: hidden;
+  }
+
+  .menu-panel__head {
+    flex: 0 0 auto;
+  }
+
+  .bento {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .bento__item:first-child {
+    grid-column: span 1;
+  }
+}
+
 @media (max-width: 640px) {
   .menu-panel {
     width: min(100%, 100%);

@@ -383,7 +383,7 @@
 
   .vs__brand--ink {
     position: static;
-    align-self: flex-end;
+    align-self: flex-start;
     margin-top: 1.5rem;
   }
 }

@@ -20,7 +20,12 @@ export function BentoMenu({ open, current, onClose, onBack, onGoPageId }: BentoM
       aria-label="Содержание"
       onClick={onClose}
     >
-      <div className="menu-panel" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="menu-panel"
+        onClick={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
+      >
         <div className="menu-panel__head">
           <button
             type="button"

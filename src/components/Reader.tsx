@@ -74,6 +74,7 @@ function shortPageLabel(pageIndex: number) {
 
 export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: ReaderProps) {
   const isMobile = useMediaQuery('(max-width: 860px)')
+  const isCoachTouch = useMediaQuery('(max-width: 1024px)')
   const [index, setIndex] = useState(initialIndex)
   const [rollOpen, setRollOpen] = useState(false)
   const [tocOpen, setTocOpen] = useState(false)
@@ -277,13 +278,15 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
   }, [])
 
   const coachSteps = useMemo(() => {
+    const swipeHint =
+      'Листай страницы свайпом вниз, чтобы идти вперёд, или свайпом вверх, чтобы вернуться назад'
     if (isMobile) {
       return [
         {
           id: 'swipe',
           placement: 'center' as const,
           title: 'Как пользоваться книгой',
-          text: 'Листай страницы свайпом вверх, чтобы идти вперёд, или вниз, чтобы вернуться назад.',
+          text: swipeHint,
         },
         {
           id: 'progress',
@@ -310,7 +313,9 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
         id: 'arrows',
         placement: 'center' as const,
         title: 'Как пользоваться книгой',
-        text: 'Листай стрелками ← → по краям экрана или клавишами влево / вправо или колесом мыши. Наведи на кнопку, чтобы узнать, куда она ведёт.',
+        text: isCoachTouch
+          ? swipeHint
+          : 'Листай стрелками ← → по краям экрана или клавишами влево / вправо или колесом мыши. Наведи на кнопку, чтобы узнать, куда она ведёт.',
       },
       {
         id: 'progress',
@@ -331,7 +336,7 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
         text: 'Выдели текст на странице. Появится кнопка с блокнотом — нажми её, чтобы сохранить фрагмент в заметки.',
       },
     ]
-  }, [isMobile])
+  }, [isMobile, isCoachTouch])
 
   const coachCurrent = coachSteps[Math.min(coachStep, coachSteps.length - 1)]
   const coachIsLast = coachStep >= coachSteps.length - 1
@@ -752,6 +757,14 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
   }
 
   const onTouchStart = (e: TouchEvent) => {
+    const target = e.target
+    if (
+      target instanceof Element &&
+      target.closest('.menu-overlay, .quotes-overlay, .roll-menu')
+    ) {
+      touchStart.current = null
+      return
+    }
     if (swipeLock.current) {
       touchStart.current = null
       return
@@ -796,8 +809,8 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
       const threshold = 56
       const fingerUp = dy < -threshold && Math.abs(dy) > Math.abs(dx)
       const fingerDown = dy > threshold && Math.abs(dy) > Math.abs(dx)
-      if (fingerUp && startedAtBottom) turn('next')
-      else if (fingerDown && startedAtTop) turn('prev')
+      if (fingerDown && startedAtBottom) turn('next')
+      else if (fingerUp && startedAtTop) turn('prev')
     } else if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 48) {
       if (dx < 0) turn('next')
       else turn('prev')
@@ -809,6 +822,13 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
     const root = readerRef.current
     if (!root) return
     const onMove = (e: globalThis.TouchEvent) => {
+      const target = e.target
+      if (
+        target instanceof Element &&
+        target.closest('.menu-overlay, .quotes-overlay, .roll-menu')
+      ) {
+        return
+      }
       const start = touchStart.current
       if (!start || swipeLock.current) return
       const t = e.touches[0]
@@ -816,7 +836,7 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
       const dy = t.clientY - start.y
       const dx = t.clientX - start.x
       if (Math.abs(dy) < 10 || Math.abs(dy) <= Math.abs(dx)) return
-      if ((dy < 0 && start.atBottom) || (dy > 0 && start.atTop)) {
+      if ((dy > 0 && start.atBottom) || (dy < 0 && start.atTop)) {
         e.preventDefault()
       }
     }

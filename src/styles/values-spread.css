@@ -470,9 +470,11 @@
   }
 
   .values-spread__bar-item h2 {
-    font-size: clamp(0.85rem, 3.5vw, 1rem);
+    font-size: clamp(0.62rem, 2.65vw, 0.78rem);
     font-weight: 700;
-    padding: 0.45rem 12px;
+    padding: 0.45rem 8px 0.45rem 12px;
+    letter-spacing: 0;
+    white-space: nowrap;
   }
 
   .values-spread__bar-item p {
