@@ -78,9 +78,12 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
     y: number
     atBottom: boolean
     atTop: boolean
+    scrollTop: number
   } | null>(null)
   const suppressSwipe = useRef(false)
   const wheelLock = useRef(false)
+  const swipeLock = useRef(false)
+  const swipeLockTimer = useRef(0)
   const zoomTimers = useRef<number[]>([])
   const curtainTimers = useRef<number[]>([])
   const slideTimers = useRef<number[]>([])
@@ -544,6 +547,15 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
     return () => cancelAnimationFrame(raf)
   }, [index])
 
+  useLayoutEffect(() => {
+    if (!isMobile) return
+    const root = readerRef.current
+    if (!root) return
+    const page = root.querySelectorAll<HTMLElement>('.reader__page')[index]
+    if (!page) return
+    page.scrollTop = 0
+  }, [index, isMobile])
+
   const goById = useCallback(
     (pageId: string) => {
       const found = flatPages.findIndex((p) => p.page.id === pageId)
@@ -704,7 +716,19 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
     index,
   ])
 
+  const armSwipeLock = () => {
+    swipeLock.current = true
+    window.clearTimeout(swipeLockTimer.current)
+    swipeLockTimer.current = window.setTimeout(() => {
+      swipeLock.current = false
+    }, 1100)
+  }
+
   const onTouchStart = (e: TouchEvent) => {
+    if (swipeLock.current) {
+      touchStart.current = null
+      return
+    }
     const t = e.changedTouches[0]
     const scroller = (e.target as Element | null)?.closest?.(
       '.reader__page',
@@ -713,12 +737,19 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
       !scroller ||
       scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight <= 16
     const atTop = !scroller || scroller.scrollTop <= 16
-    touchStart.current = { x: t.clientX, y: t.clientY, atBottom, atTop }
+    touchStart.current = {
+      x: t.clientX,
+      y: t.clientY,
+      atBottom,
+      atTop,
+      scrollTop: scroller?.scrollTop ?? 0,
+    }
   }
 
   const onTouchEnd = (e: TouchEvent) => {
     if (
       !touchStart.current ||
+      swipeLock.current ||
       anyOverlay ||
       suppressSwipe.current ||
       zoomPhase !== 'idle' ||
@@ -732,39 +763,30 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
     const t = e.changedTouches[0]
     const startedAtBottom = touchStart.current.atBottom
     const startedAtTop = touchStart.current.atTop
+    const startScroll = touchStart.current.scrollTop
     const dx = t.clientX - touchStart.current.x
     const dy = t.clientY - touchStart.current.y
     touchStart.current = null
-    const threshold = 48
-    if (isMobile) {
-      if (isHistoryEra) {
-        const fingerUp = dy < -threshold && Math.abs(dy) > Math.abs(dx)
-        if (fingerUp && startedAtBottom) navigateNext()
-        return
-      }
-      if (
-        current.page.kind === 'mastery-gallery' ||
-        current.page.kind === 'mastery-semavic' ||
-        current.page.kind === 'mastery-venezuela' ||
-        current.page.kind === 'mastery-third-line' ||
-        current.page.kind === 'mastery-putin' ||
-        current.page.kind === 'env-navigator' ||
-        current.page.kind === 'practice-gallery' ||
-        isPracticeStory
-      ) {
-        const fingerUp = dy < -threshold && Math.abs(dy) > Math.abs(dx)
-        const fingerDown = dy > threshold && Math.abs(dy) > Math.abs(dx)
-        if (fingerUp && startedAtBottom) navigateNext()
-        else if (fingerDown && startedAtTop) navigatePrev()
-        return
-      }
-      if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > threshold) {
-        if (dy < 0) navigateNext()
-        else navigatePrev()
-      }
-    } else if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > threshold) {
-      if (dx < 0) navigateNext()
+    const scroller = (e.target as Element | null)?.closest?.(
+      '.reader__page',
+    ) as HTMLElement | null
+    const scrolled =
+      !!scroller && Math.abs(scroller.scrollTop - startScroll) > 6
+    const turn = (dir: 'next' | 'prev') => {
+      armSwipeLock()
+      if (dir === 'next') navigateNext()
       else navigatePrev()
+    }
+    if (isMobile) {
+      if (scrolled) return
+      const threshold = 84
+      const fingerUp = dy < -threshold && Math.abs(dy) > Math.abs(dx)
+      const fingerDown = dy > threshold && Math.abs(dy) > Math.abs(dx)
+      if (fingerUp && startedAtBottom) turn('next')
+      else if (fingerDown && startedAtTop) turn('prev')
+    } else if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 48) {
+      if (dx < 0) turn('next')
+      else turn('prev')
     }
   }
 
