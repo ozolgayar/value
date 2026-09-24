@@ -39,6 +39,33 @@ function labelFor(index: number) {
   return fp.page.title ?? fp.paragraphTitle
 }
 
+const SCROLL_EDGE = 72
+
+function scrollEdges(target: EventTarget | null) {
+  const start = target instanceof Element ? target : null
+  const page = start?.closest('.reader__page') as HTMLElement | null
+  let node: HTMLElement | null = start instanceof HTMLElement ? start : null
+
+  while (node) {
+    const overflowY = window.getComputedStyle(node).overflowY
+    const scrollable =
+      node.scrollHeight > node.clientHeight + 8 &&
+      (overflowY === 'auto' || overflowY === 'scroll' || overflowY === 'overlay')
+    if (scrollable) {
+      const gap = node.scrollHeight - node.scrollTop - node.clientHeight
+      return {
+        atBottom: gap <= SCROLL_EDGE,
+        atTop: node.scrollTop <= SCROLL_EDGE,
+        scrollTop: node.scrollTop,
+      }
+    }
+    if (!page || node === page) break
+    node = node.parentElement
+  }
+
+  return { atBottom: true, atTop: true, scrollTop: page?.scrollTop ?? 0 }
+}
+
 function shortPageLabel(pageIndex: number) {
   const raw = labelFor(pageIndex)?.replace(/\s*\n\s*/g, ' ').replace(/\s+/g, ' ').trim()
   if (!raw) return 'страницу'
@@ -730,19 +757,13 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
       return
     }
     const t = e.changedTouches[0]
-    const scroller = (e.target as Element | null)?.closest?.(
-      '.reader__page',
-    ) as HTMLElement | null
-    const atBottom =
-      !scroller ||
-      scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight <= 16
-    const atTop = !scroller || scroller.scrollTop <= 16
+    const edges = scrollEdges(e.target)
     touchStart.current = {
       x: t.clientX,
       y: t.clientY,
-      atBottom,
-      atTop,
-      scrollTop: scroller?.scrollTop ?? 0,
+      atBottom: edges.atBottom,
+      atTop: edges.atTop,
+      scrollTop: edges.scrollTop,
     }
   }
 
@@ -763,23 +784,16 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
     const t = e.changedTouches[0]
     const startedAtBottom = touchStart.current.atBottom
     const startedAtTop = touchStart.current.atTop
-    const startScroll = touchStart.current.scrollTop
     const dx = t.clientX - touchStart.current.x
     const dy = t.clientY - touchStart.current.y
     touchStart.current = null
-    const scroller = (e.target as Element | null)?.closest?.(
-      '.reader__page',
-    ) as HTMLElement | null
-    const scrolled =
-      !!scroller && Math.abs(scroller.scrollTop - startScroll) > 6
     const turn = (dir: 'next' | 'prev') => {
       armSwipeLock()
       if (dir === 'next') navigateNext()
       else navigatePrev()
     }
     if (isMobile) {
-      if (scrolled) return
-      const threshold = 84
+      const threshold = 56
       const fingerUp = dy < -threshold && Math.abs(dy) > Math.abs(dx)
       const fingerDown = dy > threshold && Math.abs(dy) > Math.abs(dx)
       if (fingerUp && startedAtBottom) turn('next')
@@ -789,6 +803,26 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
       else turn('prev')
     }
   }
+
+  useEffect(() => {
+    if (!isMobile) return
+    const root = readerRef.current
+    if (!root) return
+    const onMove = (e: globalThis.TouchEvent) => {
+      const start = touchStart.current
+      if (!start || swipeLock.current) return
+      const t = e.touches[0]
+      if (!t) return
+      const dy = t.clientY - start.y
+      const dx = t.clientX - start.x
+      if (Math.abs(dy) < 10 || Math.abs(dy) <= Math.abs(dx)) return
+      if ((dy < 0 && start.atBottom) || (dy > 0 && start.atTop)) {
+        e.preventDefault()
+      }
+    }
+    root.addEventListener('touchmove', onMove, { passive: false })
+    return () => root.removeEventListener('touchmove', onMove)
+  }, [isMobile])
 
   const trackStyle = useMemo(() => {
     const transform = isMobile
@@ -822,6 +856,7 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
       aria-label="Чтение книги"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
+      onTouchCancel={onTouchEnd}
     >
       <div className="reader__track" style={trackStyle} key={`track-${totalPages}`}>
         {flatPages.map((fp) => (
