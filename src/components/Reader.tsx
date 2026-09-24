@@ -279,7 +279,7 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
 
   const coachSteps = useMemo(() => {
     const swipeHint =
-      'Листай страницы свайпом вниз, чтобы идти вперёд, или свайпом вверх, чтобы вернуться назад'
+      'Листай страницы свайпом вверх, чтобы идти вперёд, или свайпом вниз, чтобы вернуться назад'
     if (isMobile) {
       return [
         {
@@ -809,8 +809,8 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
       const threshold = 56
       const fingerUp = dy < -threshold && Math.abs(dy) > Math.abs(dx)
       const fingerDown = dy > threshold && Math.abs(dy) > Math.abs(dx)
-      if (fingerDown && startedAtBottom) turn('next')
-      else if (fingerUp && startedAtTop) turn('prev')
+      if (fingerUp && startedAtBottom) turn('next')
+      else if (fingerDown && startedAtTop) turn('prev')
     } else if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 48) {
       if (dx < 0) turn('next')
       else turn('prev')
@@ -836,7 +836,7 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
       const dy = t.clientY - start.y
       const dx = t.clientX - start.x
       if (Math.abs(dy) < 10 || Math.abs(dy) <= Math.abs(dx)) return
-      if ((dy > 0 && start.atBottom) || (dy < 0 && start.atTop)) {
+      if ((dy < 0 && start.atBottom) || (dy > 0 && start.atTop)) {
         e.preventDefault()
       }
     }
