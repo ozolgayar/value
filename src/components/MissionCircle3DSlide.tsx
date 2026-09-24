@@ -6,12 +6,14 @@ import {
   type PointerEvent as ReactPointerEvent,
   type KeyboardEvent,
 } from 'react'
+import { asset } from '../asset'
+import { useMediaQuery } from '../hooks'
 import { fixPrepositions } from '../lib/fixPrepositions'
 import '../styles/mission-circle-3d.css'
 
 /**
- * Ссылки в тегах карточек кликабельны (href="#").
- * Позже можно подставить реальные URL в поле `href` у тегов.
+ * Теги с `href` открываются в новой вкладке.
+ * Теги без адреса остаются подписями и не уводят со страницы.
  */
 
 export type Circle3DTag = {
@@ -32,46 +34,79 @@ const PANELS: Circle3DPanel[] = [
     id: 'reproductive',
     title: 'Репродуктивное долголетие',
     text: 'Мы поддерживаем активность и достоинство пациентов, корректируя возрастные изменения и предотвращая патологии.',
-    tags: [
-      { label: 'Здоровье женщины' },
-      { label: 'Здоровье мужчины' },
-      { label: 'Планирование семьи' },
-    ],
+    tags: [],
   },
   {
     id: 'mental',
     title: 'Ментальное здоровье',
     text: 'Мы защищаем нейронные сети и помогаем сохранять ментальную независимость в любом возрасте.',
-    tags: [{ label: 'ПРОМОЗГ' }, { label: 'СПЕКТРОГРАММА' }],
+    tags: [
+      { label: 'ПРОМОЗГ' },
+      {
+        label: 'СПЕКТРОГРАММА',
+        href: 'https://geropharm.ru/about/sotsialnaya-otvetstvennost/zabota-o-patsiyente/nevrologiya/spektrogramma?ysclid=mtrjl53dp7214597105',
+      },
+    ],
   },
   {
     id: 'metabolic',
     title: 'Метаболическое здоровье',
     text: 'Мы работаем с причинами, которые запускают старение: ожирение и лишний вес.',
-    tags: [{ label: 'ОРБИТА' }, { label: 'Stroynee' }, { label: 'Ничего лишнего' }],
+    tags: [
+      {
+        label: 'ОРБИТА',
+        href: 'https://geropharm.ru/news/zapuscheno-pervoe-v-rossii-issledovanie-po-izucheniyu-problemy-oghireniya-v-regionah?ysclid=mtrjg07c2450246688',
+      },
+      {
+        label: 'Stroynee',
+        href: 'https://geropharm.ru/stroynee?ysclid=mtrjgpukfw709038533',
+      },
+      {
+        label: 'Ничего лишнего',
+        href: 'https://geropharm.ru/news/gerofarm-predstavlyaet-proekt-nichego-lishnego-iskusstvo-menyayuschee-vzglyad-na-problemu-oghireniya?ysclid=mtrjh8ozh2770785552',
+      },
+    ],
   },
   {
     id: 'diabetes',
     title: 'Сахарный диабет',
     text: 'Мы создаём препараты инсулина и среду для полноценной жизни с диабетом — рядом с пациентом с момента постановки диагноза.',
     tags: [
-      { label: 'Диабет в лицах' },
-      { label: 'Лисена-сластена' },
-      { label: '5 оттенков красоты' },
+      { label: 'Диабет в лицах', href: 'https://diainpersons.ru/?ysclid=mtrji2om5q675125257' },
+      {
+        label: 'Лисена-сластена',
+        href: 'https://geropharm.ru/about/sotsialnaya-otvetstvennost/zabota-o-patsiyente/endokrinologiya/diaskazki-lisena-slastena?ysclid=mtrjijz3fr120310112',
+      },
+      {
+        label: '5 оттенков красоты',
+        href: 'https://diainpersons.ru/photoproject_2024?ysclid=mtrjj00bz26544699',
+      },
     ],
   },
   {
     id: 'partnership',
     title: 'Партнёрство',
     text: 'Мы растём вместе с профессиональным сообществом и внедряем цифровые решения.',
-    tags: [
-      { label: 'Врач будущего' },
-      { label: 'цифровые решения' },
-      { label: 'врачебное сообщество' },
-      { label: 'образование' },
-    ],
+    tags: [{ label: 'Врач будущего', href: 'https://vrachbudushego.ru/' }],
   },
 ]
+
+function CircleTag({ tag }: { tag: Circle3DTag }) {
+  if (!tag.href || tag.href === '#') {
+    return <span className="mc3d__tag">{tag.label}</span>
+  }
+  return (
+    <a
+      className="mc3d__tag"
+      href={tag.href}
+      target="_blank"
+      rel="noreferrer"
+      onClick={(ev) => ev.stopPropagation()}
+    >
+      {tag.label}
+    </a>
+  )
+}
 
 const N = PANELS.length
 const STEP = 360 / N
@@ -116,6 +151,9 @@ function panelPose(
 }
 
 export function MissionCircle3DSlide() {
+  const phone = useMediaQuery('(max-width: 768px)')
+  const coarse = useMediaQuery('(pointer: coarse)')
+  const [openId, setOpenId] = useState(PANELS[0].id)
   const [rotation, setRotation] = useState(0)
   const [animating, setAnimating] = useState(false)
   const [ready, setReady] = useState(false)
@@ -169,6 +207,11 @@ export function MissionCircle3DSlide() {
       window.cancelAnimationFrame(id)
     }
   }, [])
+
+  useEffect(() => {
+    if (!phone) return
+    setOpenId(PANELS[normalizeIndex(rotationRef.current)].id)
+  }, [phone])
 
   useEffect(() => {
     if (!animating) return
@@ -227,10 +270,21 @@ export function MissionCircle3DSlide() {
       className={`page-shell page-bleed page-mission-eco mc3d${ready ? ' is-ready' : ''}`}
     >
       <header className="mc3d__head">
-        <span className="mc3d__badge">МИССИЯ ГЕРОФАРМ</span>
-        <h1 className="mc3d__title">
-          {fixPrepositions('ГЕРОФАРМ в экосистеме\nздорового долголетия 360°')}
-        </h1>
+        <div className="mc3d__head-copy">
+          <span className="mc3d__badge">МИССИЯ ГЕРОФАРМ</span>
+          <h1 className="mc3d__title">
+            {fixPrepositions('ГЕРОФАРМ в экосистеме\nздорового долголетия 360°')}
+          </h1>
+        </div>
+        <span
+          className="mc3d__icon-360"
+          role="img"
+          aria-label="360 градусов"
+          style={{
+            WebkitMaskImage: `url(${asset('icons/free-icon-360-degrees-974556.png')})`,
+            maskImage: `url(${asset('icons/free-icon-360-degrees-974556.png')})`,
+          }}
+        />
       </header>
 
       <div
@@ -241,16 +295,47 @@ export function MissionCircle3DSlide() {
         aria-roledescription="3D-карусель"
         aria-label="Экосистема здорового долголетия"
         aria-live="polite"
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
-        onKeyDown={onKeyDown}
+        onPointerDown={phone ? undefined : onPointerDown}
+        onPointerMove={phone ? undefined : onPointerMove}
+        onPointerUp={phone ? undefined : endDrag}
+        onPointerCancel={phone ? undefined : endDrag}
+        onKeyDown={phone ? undefined : onKeyDown}
       >
         <div className={`mc3d__stage${animating ? ' is-anim' : ''}`}>
           {PANELS.map((panel, i) => {
             const pose = panelPose(i, rotation, orbit.x, orbit.z)
             const isActive = i === active
+            const open = openId === panel.id
+            if (phone) {
+              return (
+                <article
+                  key={panel.id}
+                  className={`mc3d__panel${open ? ' is-open' : ''}`}
+                >
+                  <button
+                    type="button"
+                    className="mc3d__acc-toggle"
+                    aria-expanded={open}
+                    onClick={() => setOpenId(panel.id)}
+                  >
+                    <h2 className="mc3d__panel-title">
+                      {fixPrepositions(panel.title)}
+                    </h2>
+                    <span className="mc3d__chevron" aria-hidden />
+                  </button>
+                  <div className="mc3d__acc-body">
+                    <div className="mc3d__acc-inner">
+                      <p className="mc3d__panel-text">{fixPrepositions(panel.text)}</p>
+                      <div className="mc3d__tags">
+                        {panel.tags.map((tag) => (
+                          <CircleTag key={tag.label} tag={tag} />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              )
+            }
             return (
               <article
                 key={panel.id}
@@ -274,19 +359,7 @@ export function MissionCircle3DSlide() {
                 <p className="mc3d__panel-text">{fixPrepositions(panel.text)}</p>
                 <div className="mc3d__tags">
                   {panel.tags.map((tag) => (
-                    <a
-                      key={tag.label}
-                      className="mc3d__tag"
-                      href={tag.href || '#'}
-                      target={tag.href && tag.href !== '#' ? '_blank' : undefined}
-                      rel={tag.href && tag.href !== '#' ? 'noreferrer' : undefined}
-                      onClick={(ev) => {
-                        if (!tag.href || tag.href === '#') ev.preventDefault()
-                        ev.stopPropagation()
-                      }}
-                    >
-                      {tag.label}
-                    </a>
+                    <CircleTag key={tag.label} tag={tag} />
                   ))}
                 </div>
               </article>
@@ -311,8 +384,9 @@ export function MissionCircle3DSlide() {
         </div>
 
         <p className="mc3d__hint">
-          Зажмите карточку мышью и переместите влево или вправо, чтобы крутить.
-          Нажмите на название проекта и откроется подробная информация.
+          {phone || coarse
+            ? 'Нажми на карточку, чтобы раскрыть'
+            : 'Зажми карточку мышью и перемести влево или вправо, чтобы крутить. Нажми на название проекта — откроется подробная информация.'}
         </p>
       </nav>
     </article>

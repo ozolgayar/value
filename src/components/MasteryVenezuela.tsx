@@ -1,4 +1,6 @@
+import { fixPrepositions } from '../lib/fixPrepositions'
 import { masteryVenezuela } from '../data/masteryVenezuela'
+import { MasteryDoor } from './MasteryDoor'
 import '../styles/mastery-semavic.css'
 
 export function MasteryVenezuelaPage() {
@@ -10,10 +12,10 @@ export function MasteryVenezuelaPage() {
         <div className="ms__edge ms__edge--left" aria-hidden />
         <div className="ms__left-inner">
           <span className="ms__badge">{left.badge}</span>
-          <h1 className="ms__title">{left.title}</h1>
+          <h1 className="ms__title">{fixPrepositions(left.title)}</h1>
           <div className="ms__story">
             {left.paragraphs.map((p) => (
-              <p key={p.slice(0, 36)}>{p}</p>
+              <p key={p.slice(0, 36)}>{fixPrepositions(p)}</p>
             ))}
           </div>
           <div className="ms__brand ms__brand--ink">
@@ -29,22 +31,23 @@ export function MasteryVenezuelaPage() {
           <div className="ms__right-cols">
             <div className="ms__col-story">
               {right.story.map((p) => (
-                <p key={p.slice(0, 36)}>{p}</p>
+                <p key={p.slice(0, 36)}>{fixPrepositions(p)}</p>
               ))}
             </div>
             <div className="ms__col-values">
-              <h2 className="ms__right-lead">{right.lead}</h2>
+              <h2 className="ms__right-lead">{fixPrepositions(right.lead)}</h2>
               <div className="ms__rc-values">
                 {right.values.map((item) => (
                   <p key={item.name} className="ms__rc-value">
                     <span className="ms__value-term">{item.name} — </span>
-                    {item.text}
+                    {fixPrepositions(item.text)}
                   </p>
                 ))}
               </div>
             </div>
           </div>
         </div>
+        <MasteryDoor />
       </section>
     </article>
   )

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type WheelEvent } from 'react'
 import { historyPianoYears, type HistoryPage } from '../data/history'
+import { useMediaQuery } from '../hooks'
 import { fixPrepositions } from '../lib/fixPrepositions'
 import '../styles/history-timeline.css'
 
@@ -9,6 +10,7 @@ type HistoryTimelineProps = {
   revealed: Set<number>
   onReveal: (index: number) => void
   onAdvance?: () => void
+  onRetreat?: () => void
   onJumpYear?: (year: string) => void
   jumpYear?: string | null
   onJumpYearHandled?: () => void
@@ -21,6 +23,7 @@ export function HistoryTimeline({
   revealed,
   onReveal,
   onAdvance,
+  onRetreat,
   onJumpYear,
   jumpYear = null,
   onJumpYearHandled,
@@ -32,10 +35,12 @@ export function HistoryTimeline({
 
   const [spineReady, setSpineReady] = useState(reduced)
   const [activeYear, setActiveYear] = useState<string | null>(null)
+  const rootRef = useRef<HTMLElement>(null)
   const cardsRef = useRef<HTMLDivElement>(null)
   const pianoRef = useRef<HTMLDivElement>(null)
   const wheelLock = useRef(false)
   const pendingYearRef = useRef<string | null>(null)
+  const pinnedYearRef = useRef<string | null>(null)
 
   useEffect(() => {
     if (reduced) {
@@ -53,11 +58,12 @@ export function HistoryTimeline({
   }, [page.index])
 
   const total = page.years.length
-  const allOpen = revealed.size >= total || reduced
+  const phone = useMediaQuery('(max-width: 768px)')
+  const allOpen = revealed.size >= total || reduced || phone
   const latest = revealed.size ? Math.max(...revealed) : -1
   const openYears = page.years
     .map((entry, i) => ({ entry, i }))
-    .filter(({ i }) => revealed.has(i) || reduced)
+    .filter(({ i }) => phone || revealed.has(i) || reduced)
 
   const hasIncoming = page.index > 0
   const hasOutgoing = page.index < pageCount - 1
@@ -127,6 +133,7 @@ export function HistoryTimeline({
   }
 
   const syncActiveFromScroll = () => {
+    if (pinnedYearRef.current) return
     const root = cardsRef.current
     if (!root) return
     const items = [
@@ -238,9 +245,109 @@ export function HistoryTimeline({
     }
   }
 
+  const retreatState = useRef({
+    years: openYears,
+    activeYear,
+    onRetreat,
+    onAdvance,
+    phone,
+  })
+  retreatState.current = { years: openYears, activeYear, onRetreat, onAdvance, phone }
+
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+
+    const onWheelBack = (e: WheelEvent) => {
+      const {
+        years,
+        activeYear: current,
+        onRetreat: retreat,
+        onAdvance: advance,
+        phone: isPhone,
+      } = retreatState.current
+
+      if (isPhone) {
+        if (e.deltaY <= 8) return
+        const pageEl = root.closest('.reader__page')
+        if (!pageEl) return
+        const atBottom =
+          pageEl.scrollHeight - pageEl.scrollTop - pageEl.clientHeight <= 16
+        if (!atBottom || !advance) return
+        e.preventDefault()
+        e.stopPropagation()
+        if (wheelLock.current) return
+        wheelLock.current = true
+        advance()
+        window.setTimeout(() => {
+          wheelLock.current = false
+        }, 520)
+        return
+      }
+
+      if (e.deltaY >= -8) return
+
+      if (!years.length) return
+
+      let idx = years.findIndex(({ entry }) => entry.year === current)
+      if (idx < 0) idx = years.length - 1
+
+      e.preventDefault()
+      e.stopPropagation()
+      if (wheelLock.current) return
+
+      if (idx > 0) {
+        const year = years[idx - 1].entry.year
+        wheelLock.current = true
+        pinnedYearRef.current = year
+        setActiveYear(year)
+        const cards = cardsRef.current
+        const card = cards?.querySelector<HTMLElement>(
+          `.tlh__item[data-year="${year}"]`,
+        )
+        if (cards && card) {
+          const top =
+            card.getBoundingClientRect().top -
+            cards.getBoundingClientRect().top +
+            cards.scrollTop -
+            8
+          cards.scrollTo({ top: Math.max(0, top), behavior: 'auto' })
+        }
+        const piano = pianoRef.current
+        const key = piano?.querySelector<HTMLElement>(
+          `.piano-key[data-year="${year}"]`,
+        )
+        if (piano && key && piano.scrollHeight > piano.clientHeight + 2) {
+          const top =
+            key.getBoundingClientRect().top -
+            piano.getBoundingClientRect().top +
+            piano.scrollTop -
+            8
+          piano.scrollTo({ top: Math.max(0, top), behavior: 'auto' })
+        }
+        window.setTimeout(() => {
+          pinnedYearRef.current = null
+          wheelLock.current = false
+        }, 280)
+        return
+      }
+
+      if (!retreat) return
+      wheelLock.current = true
+      retreat()
+      window.setTimeout(() => {
+        wheelLock.current = false
+      }, 520)
+    }
+
+    root.addEventListener('wheel', onWheelBack, { capture: true, passive: false })
+    return () => root.removeEventListener('wheel', onWheelBack, { capture: true })
+  }, [page.index])
+
   const onCardsWheel = (e: WheelEvent<HTMLDivElement>) => {
     const el = cardsRef.current
     if (!el) return
+    if (retreatState.current.phone) return
 
     // Reveal next card on wheel down before free-scrolling
     if (e.deltaY > 0 && !allOpen) {
@@ -287,6 +394,7 @@ export function HistoryTimeline({
 
   return (
     <section
+      ref={rootRef}
       className={`tlh tlh--${page.accent} tlh--aside-left`}
       aria-label={`История ГЕРОФАРМ ${page.index + 1}/${pageCount}`}
     >
@@ -317,8 +425,11 @@ export function HistoryTimeline({
             <div className="tlh__counter" aria-live="polite">
               История ГЕРОФАРМ {page.index + 1}/{pageCount}
             </div>
-            <p className="tlh__empty">
-              Нажмите → или крутите колесо, чтобы открыть годы
+            <p className="tlh__empty tlh__empty--desktop">
+              Нажми → или крути колесо, чтобы открыть годы
+            </p>
+            <p className="tlh__empty tlh__empty--mobile">
+              Нажми на год, чтобы открыть карточку
             </p>
           </div>
 
@@ -382,7 +493,7 @@ export function HistoryTimeline({
 
             {showEpilogue ? (
               <p className="tlh__epilogue" aria-live="polite">
-                Продолжение следует...
+                Реализуем стратегию и ищем новые возможности
               </p>
             ) : null}
           </div>
@@ -418,7 +529,7 @@ export function HistoryTimeline({
 
       {showHint && !allOpen && (
         <div className="hint-right">
-          <span>Листайте вправо</span>
+          <span>Листай вправо</span>
           <span className="hint-right__arrow" aria-hidden>
             →
           </span>

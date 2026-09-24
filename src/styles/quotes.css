@@ -1,7 +1,7 @@
 .quotes-overlay {
   position: absolute;
   inset: 0;
-  z-index: 50;
+  z-index: 1300;
   display: grid;
   place-items: center;
   padding: 1.25rem;
@@ -114,20 +114,44 @@
 
 .quote-pop {
   position: fixed;
-  z-index: 60;
+  z-index: 1200;
   transform: translate(-50%, -120%);
-  min-height: 40px;
-  padding: 0.55rem 0.95rem;
-  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 14px;
   border: none;
   background: #1a1c22;
   color: #fff;
-  font-family: var(--btn-font);
-  font-size: 0.85rem;
-  font-weight: 700;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
-  white-space: nowrap;
   animation: quote-pop-in 0.2s ease both;
+}
+
+.quote-pop img {
+  width: 22px;
+  height: 22px;
+  display: block;
+  pointer-events: none;
+}
+
+.quote-pop--static {
+  position: static;
+  transform: none;
+  animation: none;
+  flex: 0 0 auto;
+}
+
+.reader__nav-coach-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 1.1rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--ink);
 }
 
 .quote-pop:hover {

@@ -16,6 +16,7 @@ import { ValueAmbitionPage } from './ValueAmbition'
 import { ValuePassionPage } from './ValuePassion'
 import { ValueResponsibilityPage } from './ValueResponsibility'
 import { EnvNavigatorPage } from './EnvNavigator'
+import { MasteryGalleryPage } from './MasteryGallery'
 import { MasteryPutinPage } from './MasteryPutin'
 import { MasterySemavicPage } from './MasterySemavic'
 import { MasteryThirdLinePage } from './MasteryThirdLine'
@@ -23,6 +24,7 @@ import { MasteryVenezuelaPage } from './MasteryVenezuela'
 import { PracticeAiPage } from './PracticeAi'
 import { PracticeBureaucracyPage } from './PracticeBureaucracy'
 import { ClosingCoverPage } from './ClosingCover'
+import { PracticeGalleryPage } from './PracticeGallery'
 import { PracticeEquipmentPage } from './PracticeEquipment'
 import { PracticeErrorFirstPage } from './PracticeErrorFirst'
 import { PracticeHabitsPage } from './PracticeHabits'
@@ -41,6 +43,7 @@ export function PageView({
   historyRevealed,
   onHistoryReveal,
   onHistoryAdvance,
+  onHistoryRetreat,
   onHistoryJumpYear,
   historyJumpYear = null,
   onHistoryJumpYearHandled,
@@ -52,11 +55,13 @@ export function PageView({
   historyRevealed?: Set<number>
   onHistoryReveal?: (index: number) => void
   onHistoryAdvance?: () => void
+  onHistoryRetreat?: () => void
   onHistoryJumpYear?: (year: string) => void
   historyJumpYear?: string | null
   onHistoryJumpYearHandled?: () => void
   historyHint?: boolean
 }) {
+  const finishPractice = () => onGoToPage?.('p-closing-cover')
   if (page.kind === 'ceo') {
     return (
       <article className="page-shell page-bleed page-ceo">
@@ -151,7 +156,7 @@ export function PageView({
         </div>
         <div className="page-route__right">
           <div className="page-route__toc">
-            <h2 className="page-route__toc-title">Содержание путеводителя</h2>
+            <h2 className="page-route__toc-title">Содержание книги</h2>
             <p className="page-route__toc-hint">Выбери раздел или листай дальше</p>
             <ul className="chapters-timeline">
               {page.routeItems?.map((item, index) => {
@@ -245,12 +250,13 @@ export function PageView({
           bg={velarisBg}
           colors={velarisColors}
           speed={
-            theme === 'values' ||
-            theme === 'mastery' ||
-            theme === 'environment' ||
-            theme === 'practice'
-              ? 1.55
-              : 1.35
+            theme === 'values'
+              ? 7.5
+              : theme === 'mastery' ||
+                  theme === 'environment' ||
+                  theme === 'practice'
+                ? 1.55
+                : 1.35
           }
           grain={
             theme === 'values' ||
@@ -349,6 +355,10 @@ export function PageView({
     return <ValueResponsibilityPage />
   }
 
+  if (page.kind === 'mastery-gallery') {
+    return <MasteryGalleryPage onOpenStory={onGoToPage} />
+  }
+
   if (page.kind === 'mastery-semavic') {
     return <MasterySemavicPage />
   }
@@ -369,44 +379,48 @@ export function PageView({
     return <EnvNavigatorPage />
   }
 
+  if (page.kind === 'practice-gallery') {
+    return <PracticeGalleryPage onOpenStory={onGoToPage} />
+  }
+
   if (page.kind === 'practice-equipment') {
-    return <PracticeEquipmentPage />
+    return <PracticeEquipmentPage onFinishSection={finishPractice} />
   }
 
   if (page.kind === 'practice-weeks') {
-    return <PracticeWeeksPage />
+    return <PracticeWeeksPage onFinishSection={finishPractice} />
   }
 
   if (page.kind === 'practice-error-first') {
-    return <PracticeErrorFirstPage />
+    return <PracticeErrorFirstPage onFinishSection={finishPractice} />
   }
 
   if (page.kind === 'practice-market') {
-    return <PracticeMarketPage />
+    return <PracticeMarketPage onFinishSection={finishPractice} />
   }
 
   if (page.kind === 'practice-modernization') {
-    return <PracticeModernizationPage />
+    return <PracticeModernizationPage onFinishSection={finishPractice} />
   }
 
   if (page.kind === 'practice-ai') {
-    return <PracticeAiPage />
+    return <PracticeAiPage onFinishSection={finishPractice} />
   }
 
   if (page.kind === 'practice-long-term') {
-    return <PracticeLongTermPage />
+    return <PracticeLongTermPage onFinishSection={finishPractice} />
   }
 
   if (page.kind === 'practice-methodology') {
-    return <PracticeMethodologyPage />
+    return <PracticeMethodologyPage onFinishSection={finishPractice} />
   }
 
   if (page.kind === 'practice-bureaucracy') {
-    return <PracticeBureaucracyPage />
+    return <PracticeBureaucracyPage onFinishSection={finishPractice} />
   }
 
   if (page.kind === 'practice-habits') {
-    return <PracticeHabitsPage />
+    return <PracticeHabitsPage onFinishSection={finishPractice} />
   }
 
   if (page.kind === 'closing-cover') {
@@ -424,6 +438,7 @@ export function PageView({
           revealed={historyRevealed ?? new Set()}
           onReveal={onHistoryReveal ?? (() => {})}
           onAdvance={onHistoryAdvance}
+          onRetreat={onHistoryRetreat}
           onJumpYear={onHistoryJumpYear}
           jumpYear={historyJumpYear}
           onJumpYearHandled={onHistoryJumpYearHandled}

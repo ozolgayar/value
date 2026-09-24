@@ -1,0 +1,386 @@
+[
+  {
+    "name": "Value_0",
+    "section": "foundation",
+    "text": "Страсть\nМы увлечены работой",
+    "font": "Verdana.ttf",
+    "fontSizePx": 20,
+    "worldSize": [
+      3.55,
+      0.72
+    ],
+    "vertical": false
+  },
+  {
+    "name": "Value_1",
+    "section": "foundation",
+    "text": "Амбициозность\nМы устремлены в будущее",
+    "font": "Verdana.ttf",
+    "fontSizePx": 20,
+    "worldSize": [
+      3.55,
+      0.72
+    ],
+    "vertical": false
+  },
+  {
+    "name": "Value_2",
+    "section": "foundation",
+    "text": "Ответственность\nМы отвечаем за результат",
+    "font": "Verdana.ttf",
+    "fontSizePx": 20,
+    "worldSize": [
+      3.55,
+      0.72
+    ],
+    "vertical": false
+  },
+  {
+    "name": "Values_title",
+    "section": "foundation",
+    "text": "ЦЕННОСТИ\nГЕРОФАРМ",
+    "font": "Verdana.ttf",
+    "fontSizePx": 19,
+    "worldSize": [
+      1.45,
+      0.72
+    ],
+    "vertical": false
+  },
+  {
+    "name": "ColumnText_1",
+    "section": "floor1",
+    "text": "Трансформация культуры",
+    "font": "Verdana.ttf",
+    "fontSizePx": 17,
+    "worldSize": [
+      0.46,
+      1.75
+    ],
+    "vertical": true
+  },
+  {
+    "name": "ColumnText_2",
+    "section": "floor1",
+    "text": "Лидерство и карьера",
+    "font": "Verdana.ttf",
+    "fontSizePx": 17,
+    "worldSize": [
+      0.46,
+      1.75
+    ],
+    "vertical": true
+  },
+  {
+    "name": "ColumnText_3",
+    "section": "floor1",
+    "text": "Эффективность и мотивация",
+    "font": "Verdana.ttf",
+    "fontSizePx": 17,
+    "worldSize": [
+      0.46,
+      1.75
+    ],
+    "vertical": true
+  },
+  {
+    "name": "ColumnText_4",
+    "section": "floor1",
+    "text": "Мышление долголетия",
+    "font": "Verdana.ttf",
+    "fontSizePx": 17,
+    "worldSize": [
+      0.46,
+      1.75
+    ],
+    "vertical": true
+  },
+  {
+    "name": "ColumnText_5",
+    "section": "floor1",
+    "text": "Сильный бренд работодателя",
+    "font": "Verdana.ttf",
+    "fontSizePx": 17,
+    "worldSize": [
+      0.46,
+      1.75
+    ],
+    "vertical": true
+  },
+  {
+    "name": "Employer",
+    "section": "floor1",
+    "text": "СИ: ГЕРОФАРМ — лучший работодатель фармацевтического рынка России",
+    "font": "Verdana.ttf",
+    "fontSizePx": 18,
+    "worldSize": [
+      5.6,
+      0.85
+    ],
+    "vertical": false
+  },
+  {
+    "name": "Floor1Title",
+    "section": "floor1",
+    "text": "1 ЭТАЖ: КОМАНДА И ЛИДЕРСТВО",
+    "font": "Verdana.ttf",
+    "fontSizePx": 15,
+    "worldSize": [
+      6.2,
+      0.26
+    ],
+    "vertical": false
+  },
+  {
+    "name": "ProductionLeft",
+    "section": "floor2",
+    "text": "СИ: Развитие биотехнологического производства для увеличения годовой мощности до 2000 кг в год\n\nСИ: Модернизация производства продуктов экстрактов сухих для увеличения годовой мощности производства",
+    "font": "Verdana.ttf",
+    "fontSizePx": 17,
+    "worldSize": [
+      3.5,
+      1.45
+    ],
+    "vertical": false
+  },
+  {
+    "name": "TabletProduction",
+    "section": "floor2",
+    "text": "СИ: Повышение мощности и эффективности производства ТЛФ до 1 миллиарда таблеток в год",
+    "font": "Verdana.ttf",
+    "fontSizePx": 17,
+    "worldSize": [
+      3.8,
+      0.8
+    ],
+    "vertical": false
+  },
+  {
+    "name": "ObolenskProduction",
+    "section": "floor2",
+    "text": "СИ: Модернизация производства продуктов в шприц-ручках, флаконированных и картриджных форм\n\nСИ: Модернизация производства биотехнологических субстанций",
+    "font": "Verdana.ttf",
+    "fontSizePx": 16,
+    "worldSize": [
+      5.25,
+      1.35
+    ],
+    "vertical": false
+  },
+  {
+    "name": "PushkinoName",
+    "section": "floor2",
+    "text": "Производственная площадка в Пушкине:",
+    "font": "Verdana.ttf",
+    "fontSizePx": 14,
+    "worldSize": [
+      5.7,
+      0.27
+    ],
+    "vertical": false
+  },
+  {
+    "name": "ObolenskName",
+    "section": "floor2",
+    "text": "Производственная площадка в Оболенске:",
+    "font": "Verdana.ttf",
+    "fontSizePx": 14,
+    "worldSize": [
+      5.7,
+      0.27
+    ],
+    "vertical": false
+  },
+  {
+    "name": "SharedGoal",
+    "section": "floor2",
+    "text": "Цель производственных площадок: Обеспечить бездефектурное производство препаратов",
+    "font": "Verdana.ttf",
+    "fontSizePx": 14,
+    "worldSize": [
+      12.6,
+      0.3
+    ],
+    "vertical": false
+  },
+  {
+    "name": "Planning",
+    "section": "floor2",
+    "text": "СИ: Развитие интегрированного бизнес-планирование",
+    "font": "Verdana.ttf",
+    "fontSizePx": 15,
+    "worldSize": [
+      5.4,
+      0.55
+    ],
+    "vertical": false
+  },
+  {
+    "name": "Floor2Title",
+    "section": "floor2",
+    "text": "2 ЭТАЖ: БИЗНЕС-ПРОЦЕССЫ И ПРОИЗВОДСТВО",
+    "font": "Verdana.ttf",
+    "fontSizePx": 14,
+    "worldSize": [
+      7.0,
+      0.27
+    ],
+    "vertical": false
+  },
+  {
+    "name": "Portfolio_0",
+    "section": "floor3",
+    "text": "СИ: Инновации",
+    "font": "Verdana.ttf",
+    "fontSizePx": 15,
+    "worldSize": [
+      1.5,
+      1.45
+    ],
+    "vertical": false
+  },
+  {
+    "name": "Portfolio_1",
+    "section": "floor3",
+    "text": "СИ: Формирование портфеля продуктами с выручкой до 1 млрд*\n\nСИ: Развитие функции обеспечения дсотупа на рынок",
+    "font": "Verdana.ttf",
+    "fontSizePx": 15,
+    "worldSize": [
+      2.0,
+      1.45
+    ],
+    "vertical": false
+  },
+  {
+    "name": "Portfolio_2",
+    "section": "floor3",
+    "text": "СИ: Наполнение портфеля биоаналогами, препаратами first-in-class, best-in-class через партнерство",
+    "font": "Verdana.ttf",
+    "fontSizePx": 15,
+    "worldSize": [
+      1.7,
+      1.45
+    ],
+    "vertical": false
+  },
+  {
+    "name": "Portfolio_3",
+    "section": "floor3",
+    "text": "СИ: Лидерство в сегменте метаболическое здоровье",
+    "font": "Verdana.ttf",
+    "fontSizePx": 15,
+    "worldSize": [
+      1.4,
+      1.45
+    ],
+    "vertical": false
+  },
+  {
+    "name": "Portfolio_4",
+    "section": "floor3",
+    "text": "СИ: Обеспечение эффективности продаж продуктов основного портфеля",
+    "font": "Verdana.ttf",
+    "fontSizePx": 15,
+    "worldSize": [
+      1.55,
+      1.45
+    ],
+    "vertical": false
+  },
+  {
+    "name": "Portfolio_5",
+    "section": "floor3",
+    "text": "СИ: Развитие экспорта",
+    "font": "Verdana.ttf",
+    "fontSizePx": 15,
+    "worldSize": [
+      1.3,
+      1.45
+    ],
+    "vertical": false
+  },
+  {
+    "name": "Floor3Title",
+    "section": "floor3",
+    "text": "3 ЭТАЖ: ПОРТФЕЛЬ И РЫНКИ",
+    "font": "Verdana.ttf",
+    "fontSizePx": 14,
+    "worldSize": [
+      5.6,
+      0.28
+    ],
+    "vertical": false
+  },
+  {
+    "name": "Finance",
+    "section": "floor4",
+    "text": "EBITA* ≥ 35%\nРентабельность по валовой прибыли > 55%\nROA** > 15% (эффективность активов)\nROE*** > 25% (отдача на капитал)",
+    "font": "Verdana.ttf",
+    "fontSizePx": 19,
+    "worldSize": [
+      4.9,
+      1.15
+    ],
+    "vertical": false
+  },
+  {
+    "name": "Floor4Title",
+    "section": "floor4",
+    "text": "ФИНАНСОВЫЕ ПОКАЗАТЕЛИ",
+    "font": "Verdana.ttf",
+    "fontSizePx": 14,
+    "worldSize": [
+      4.4,
+      0.28
+    ],
+    "vertical": false
+  },
+  {
+    "name": "MissionBand",
+    "section": "mission",
+    "text": "МИССИЯ КОМПАНИИ:  Создаем инновации для увеличения продолжительности жизни в России и мире",
+    "font": "Verdana.ttf",
+    "fontSizePx": 16,
+    "worldSize": [
+      7.9,
+      0.48
+    ],
+    "vertical": false
+  },
+  {
+    "name": "LogoG",
+    "section": "mission",
+    "text": "g",
+    "font": "Verdana.ttf",
+    "fontSizePx": 31,
+    "worldSize": [
+      0.78,
+      0.78
+    ],
+    "roundel": true
+  },
+  {
+    "name": "LogoPh",
+    "section": "mission",
+    "text": "Ph",
+    "font": "Verdana.ttf",
+    "fontSizePx": 23,
+    "worldSize": [
+      0.78,
+      0.78
+    ],
+    "roundel": true
+  },
+  {
+    "name": "Wordmark",
+    "section": "mission",
+    "text": "ГЕРОФАРМ",
+    "font": "Verdana.ttf",
+    "fontSizePx": 35,
+    "worldSize": [
+      4.6,
+      0.56
+    ],
+    "vertical": false
+  }
+]

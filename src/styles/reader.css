@@ -1,6 +1,8 @@
 .reader {
   position: relative;
   width: 100%;
+  max-width: 100%;
+  min-height: 100%;
   height: 100%;
   background: var(--paper);
   overflow: hidden;
@@ -21,14 +23,22 @@
 .reader__page {
   position: relative;
   flex: 0 0 100%;
+  box-sizing: border-box;
   width: 100%;
+  max-width: 100%;
+  min-height: 100%;
   height: 100%;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overflow-anchor: none;
+  -webkit-overflow-scrolling: touch;
   padding: 0;
 }
 
 .page-shell {
+  box-sizing: border-box;
   width: 100%;
+  max-width: 100%;
   margin: 0;
   min-height: 100%;
   display: flex;
@@ -36,6 +46,8 @@
 }
 
 .page-bleed {
+  box-sizing: border-box;
+  max-width: 100%;
   min-height: 100%;
   height: 100%;
 }
@@ -43,11 +55,12 @@
 .page-pad {
   box-sizing: border-box;
   width: 100%;
+  max-width: 100%;
   min-height: 100%;
   padding:
-    calc(var(--nav-safe) + 1rem)
+    88px
     max(var(--nav-arrow-lane-right), 1.5rem)
-    calc(var(--nav-safe) + 1.5rem)
+    88px
     max(var(--nav-arrow-lane-left), 1.5rem);
   display: flex;
   flex-direction: column;
@@ -67,7 +80,8 @@
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--purple);
-  max-width: var(--measure-wide);
+  max-width: min(var(--measure-wide), 100%);
+  overflow-wrap: break-word;
   text-wrap: balance;
 }
 
@@ -90,6 +104,7 @@
 .page-ceo {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: minmax(0, 1fr);
   gap: 0;
   align-items: stretch;
   background: var(--white);
@@ -97,7 +112,9 @@
   border-radius: 0;
   box-shadow: none;
   position: relative;
+  box-sizing: border-box;
   overflow: hidden;
+  max-width: 100%;
   min-height: 100%;
   height: 100%;
   padding: 0;
@@ -105,42 +122,56 @@
 
 .page-ceo__media {
   position: relative;
-  min-height: 100%;
+  min-height: 0;
   height: 100%;
   overflow: hidden;
   background: #1a2740;
 }
 
 .page-ceo__photo {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Keep both people in frame on a half-page crop */
   object-position: 50% 28%;
 }
 
 .page-ceo__main {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
   min-height: 0;
-  overflow: auto;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding:
-    calc(var(--nav-safe) + 0.75rem)
+    88px
     max(var(--nav-arrow-lane-right), clamp(1.35rem, 3vw, 2.5rem))
-    calc(var(--nav-safe) + 0.85rem)
+    88px
     clamp(1.35rem, 3vw, 2.5rem);
   background: var(--white);
   color: var(--ink);
 }
 
+/* Spacers center the column when it fits, and collapse when it doesn't,
+   so the title stays reachable at the top of the scroll. */
+.page-ceo__main::before,
+.page-ceo__main::after {
+  content: '';
+  flex: 1 0 0px;
+}
+
 .page-ceo__main-inner {
   display: flex;
   flex-direction: column;
+  flex: 0 0 auto;
   gap: 1rem;
-  max-width: 38rem;
-  margin-block: auto;
+  max-width: min(38rem, 100%);
+  margin-block: 0;
 }
 
 .page-ceo .page-badge {
@@ -155,10 +186,10 @@
 
 .page-ceo .page-title {
   color: var(--purple);
-  max-width: none;
+  max-width: 100%;
   margin: 0;
-  font-size: clamp(1.35rem, 2.6vw, 2.05rem);
-  line-height: 1.2;
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  line-height: 1.15;
   letter-spacing: -0.02em;
 }
 
@@ -170,7 +201,8 @@
 
 .page-ceo__text p {
   margin: 0;
-  font-size: clamp(0.9rem, 1.3vw, 1.02rem);
+  max-width: 100%;
+  font-size: clamp(0.95rem, 1.2vw, 1.1rem);
   line-height: 1.58;
   color: rgba(28, 24, 48, 0.88);
 }
@@ -198,6 +230,9 @@
 .page-split {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: minmax(0, 1fr);
+  box-sizing: border-box;
+  max-width: 100%;
   height: 100%;
   min-height: 100%;
 }
@@ -206,11 +241,17 @@
 .page-split__right {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  box-sizing: border-box;
+  min-height: 0;
+  height: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding:
-    calc(var(--nav-safe) + 0.75rem)
+    88px
     clamp(1.25rem, 3vw, 2.5rem)
-    calc(var(--nav-safe) + 0.85rem);
+    88px;
 }
 
 .page-split__left {
@@ -368,6 +409,9 @@
 .page-route {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-rows: minmax(0, 1fr);
+  box-sizing: border-box;
+  max-width: 100%;
   height: 100%;
   min-height: 100%;
 }
@@ -376,31 +420,45 @@
 .page-route__right {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  box-sizing: border-box;
+  min-height: 0;
+  height: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding:
-    calc(var(--nav-safe) + 0.85rem)
+    88px
     clamp(1.25rem, 3vw, 2.5rem)
-    calc(var(--nav-safe) + 0.95rem);
+    88px;
 }
 
 .page-route__left {
-  justify-content: center;
+  justify-content: flex-start;
   padding-left: var(--nav-arrow-lane-left);
   background: var(--white);
   color: var(--ink);
 }
 
+.page-route__left::before,
+.page-route__left::after {
+  content: '';
+  flex: 1 0 0px;
+}
+
 .page-route__left-inner {
   display: flex;
   flex-direction: column;
+  flex: 0 0 auto;
   gap: 1.35rem;
-  max-width: 28rem;
-  margin-left: 50px;
+  max-width: min(28rem, 100%);
+  margin-left: clamp(0px, 50px, 3vw);
 }
 
 .page-route__title {
   margin: 0;
-  font-size: clamp(1.55rem, 3vw, 2.45rem);
+  max-width: 100%;
+  font-size: clamp(1.75rem, 4vw, 3rem);
   line-height: 1.12;
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -415,7 +473,8 @@
 
 .page-route__body p {
   margin: 0;
-  font-size: clamp(0.95rem, 1.35vw, 1.08rem);
+  max-width: 100%;
+  font-size: clamp(0.95rem, 1.2vw, 1.1rem);
   line-height: 1.55;
   color: rgba(28, 24, 48, 0.88);
 }
@@ -643,17 +702,27 @@
 .page-facts__inner {
   box-sizing: border-box;
   width: 100%;
+  max-width: 100%;
   height: 100%;
-  min-height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 1.25rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding:
-    calc(var(--nav-safe) + 1rem)
+    88px
     max(var(--nav-arrow-lane-right), 1.75rem)
-    calc(var(--nav-safe) + 1.5rem)
+    88px
     max(var(--nav-arrow-lane-left), 1.75rem);
+}
+
+.page-facts__inner::before,
+.page-facts__inner::after {
+  content: '';
+  flex: 1 0 0px;
 }
 
 .page-facts .page-title {
@@ -804,11 +873,24 @@
 }
 
 .page-interstitial--synergy .page-interstitial__body p {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .page-interstitial--values {
-  background: #3a2a68;
+  background: #1a1030;
+}
+
+.page-interstitial--values .page-interstitial__velaris::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 80% 62% at 50% 52%,
+    rgba(10, 6, 24, 0.22) 0%,
+    rgba(10, 6, 24, 0.1) 62%,
+    rgba(10, 6, 24, 0) 100%
+  );
 }
 
 .page-interstitial--values .page-interstitial__title {
@@ -822,7 +904,7 @@
 }
 
 .page-interstitial--values .page-interstitial__body p {
-  font-weight: 600;
+  font-weight: 700;
   color: rgba(255, 255, 255, 0.96);
   text-shadow: 0 1px 12px rgba(50, 30, 100, 0.4);
 }
@@ -945,7 +1027,7 @@
   margin: 0;
   font-size: clamp(0.98rem, 1.55vw, 1.15rem);
   line-height: 1.55;
-  font-weight: 500;
+  font-weight: 700;
   color: rgba(255, 255, 255, 0.94);
 }
 
@@ -989,7 +1071,17 @@
 }
 
 .reader.is-interstitial .reader__page {
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
+}
+
+.page-shell.page-bleed.page-interstitial {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
 }
 
 .reader.is-zoom-out .reader__page[aria-hidden='false'],
@@ -1028,6 +1120,89 @@
     opacity: 1;
     transform: scale(1);
     filter: blur(0);
+  }
+}
+
+@media (max-width: 1024px), (max-height: 760px) {
+  .page-interstitial .page-interstitial__inner {
+    min-height: 0;
+    justify-content: center;
+    padding:
+      1.15rem
+      1.15rem
+      calc(4.5rem + env(safe-area-inset-bottom))
+      1.15rem;
+    overflow: hidden;
+  }
+
+  .page-interstitial .page-interstitial__title {
+    font-size: clamp(1.45rem, 5.2vw, 2.5rem);
+    line-height: 1.05;
+  }
+
+  .page-interstitial .page-interstitial__rule {
+    height: 1rem;
+    margin: 0.65rem auto;
+    flex: 0 0 auto;
+  }
+
+  .page-interstitial .page-interstitial__body {
+    max-width: 40rem;
+    gap: 0.6rem;
+  }
+
+  .page-interstitial .page-interstitial__body p {
+    font-size: clamp(0.84rem, 2vw, 1.02rem);
+    line-height: 1.4;
+  }
+
+  .page-interstitial .page-interstitial__footer {
+    position: relative;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    margin-top: 0.75rem;
+    gap: 0.4rem;
+  }
+}
+
+@media (max-width: 1024px) and (max-height: 500px) {
+  .page-interstitial .page-interstitial__inner {
+    justify-content: center;
+    padding: 0.55rem 1.35rem 2.1rem;
+  }
+
+  .page-interstitial .page-interstitial__title {
+    font-size: clamp(1.45rem, 3.6vw, 1.85rem);
+    line-height: 1.02;
+  }
+
+  .page-interstitial .page-interstitial__rule {
+    height: 0.65rem;
+    margin: 0.4rem auto;
+  }
+
+  .page-interstitial .page-interstitial__body {
+    width: 100%;
+    max-width: none;
+    gap: 0.5rem;
+  }
+
+  .page-interstitial .page-interstitial__body p {
+    width: 100%;
+    max-width: none;
+    font-size: clamp(0.95rem, 2.2vw, 1.08rem);
+    line-height: 1.35;
+    text-wrap: wrap;
+  }
+
+  .page-interstitial .page-interstitial__footer {
+    margin-top: 0.45rem;
+  }
+
+  .page-interstitial .page-interstitial__brand {
+    font-size: 0.72rem;
   }
 }
 
@@ -1251,16 +1426,26 @@
 .page-open__inner {
   box-sizing: border-box;
   width: 100%;
+  max-width: 100%;
   height: 100%;
-  min-height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding:
-    calc(var(--nav-safe) + 1rem)
+    88px
     max(var(--nav-arrow-lane-right), 1.75rem)
-    calc(var(--nav-safe) + 1.5rem)
+    88px
     max(var(--nav-arrow-lane-left), 1.75rem);
+}
+
+.page-open__inner::before,
+.page-open__inner::after {
+  content: '';
+  flex: 1 0 0px;
 }
 
 .page-quote {
@@ -1348,7 +1533,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 5;
+  z-index: 1000;
 }
 
 .reader__chrome > * {
@@ -1357,26 +1542,34 @@
 
 .reader__progress {
   position: absolute;
-  top: max(0.55rem, env(safe-area-inset-top));
+  top: max(0.45rem, env(safe-area-inset-top));
   left: 50%;
   transform: translateX(-50%);
-  z-index: 6;
-  width: min(720px, calc(100% - 2rem));
-  height: 28px;
+  z-index: 1000;
+  box-sizing: border-box;
+  width: min(720px, calc(100% - 1.5rem));
+  height: auto;
+  min-height: 44px;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
   display: flex;
   align-items: center;
   pointer-events: none;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 8px 22px rgba(20, 16, 40, 0.14);
 }
 
 .reader__progress-track {
   position: absolute;
-  left: 14px;
-  right: 14px;
+  left: 22px;
+  right: 22px;
   top: 50%;
   height: 3px;
   margin-top: -1.5px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.28);
+  background: rgba(44, 18, 100, 0.18);
   overflow: hidden;
   pointer-events: none;
 }
@@ -1385,8 +1578,8 @@
   height: 100%;
   width: 0;
   border-radius: inherit;
-  background: linear-gradient(90deg, #fff 0%, rgba(255, 255, 255, 0.92) 100%);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
+  background: #2c1264;
+  box-shadow: none;
   transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -1401,13 +1594,14 @@
 }
 
 .reader__progress-node {
+  position: relative;
   pointer-events: auto;
   width: 28px;
   height: 28px;
-  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  border: 1.5px solid rgba(44, 18, 100, 0.28);
   border-radius: 50%;
-  background: rgba(20, 28, 56, 0.35);
-  color: rgba(255, 255, 255, 0.85);
+  background: rgba(44, 18, 100, 0.08);
+  color: #2c1264;
   font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', Consolas, monospace;
   font-size: 0.72rem;
   font-weight: 800;
@@ -1427,25 +1621,63 @@
     box-shadow 0.25s ease;
 }
 
+.reader__progress-node[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 0.55rem);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  background: rgba(17, 24, 39, 0.92);
+  color: #fff;
+  font-family: var(--btn-font, inherit);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.22);
+  z-index: 5;
+}
+
+.reader__progress-node[data-tooltip]:hover::after,
+.reader__progress-node[data-tooltip]:focus-visible::after {
+  opacity: 1;
+}
+
+.reader__progress-nodes > .reader__progress-node:first-child[data-tooltip]::after {
+  left: 0;
+  transform: none;
+}
+
+.reader__progress-nodes > .reader__progress-node:last-child[data-tooltip]::after {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
 .reader__progress-node:hover:not(:disabled) {
   transform: translateY(-1px) scale(1.06);
-  border-color: #fff;
-  color: #fff;
+  border-color: #2c1264;
+  color: #2c1264;
+  background: #fff;
 }
 
 .reader__progress-node.is-done {
-  background: rgba(255, 255, 255, 0.92);
-  border-color: #fff;
-  color: var(--purple);
+  background: rgba(44, 18, 100, 0.14);
+  border-color: rgba(44, 18, 100, 0.4);
+  color: #2c1264;
 }
 
 .reader__progress-node.is-active {
-  background: #fff;
-  border-color: #fff;
-  color: var(--purple);
-  box-shadow:
-    0 0 0 3px rgba(255, 255, 255, 0.28),
-    0 6px 16px rgba(0, 0, 0, 0.22);
+  background: #2c1264;
+  border-color: #2c1264;
+  color: #fff;
+  box-shadow: 0 0 0 3px rgba(44, 18, 100, 0.16);
   transform: scale(1.08);
 }
 
@@ -1487,35 +1719,21 @@
   max-width: calc(100% - 2rem);
 }
 
-.reader__nav-coach-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding:
-    max(5rem, env(safe-area-inset-top))
-    max(5.5rem, env(safe-area-inset-right))
-    max(6.5rem, calc(env(safe-area-inset-bottom) + 5.5rem))
-    max(5.5rem, env(safe-area-inset-left));
-  pointer-events: none;
-}
-
 .reader__nav-coach-backdrop {
   position: absolute;
   inset: 0;
+  z-index: 900;
   background: rgba(12, 16, 36, 0.58);
   pointer-events: auto;
   animation: reader-coach-backdrop-in 0.35s ease both;
 }
 
 .reader__nav-coach {
-  position: relative;
-  z-index: 1;
+  position: absolute;
+  z-index: 1200;
   box-sizing: border-box;
-  width: min(28rem, 100%);
-  padding: 1.75rem 1.85rem 1.5rem;
+  width: min(28rem, calc(100% - 2.5rem));
+  padding: 1.5rem 1.65rem 1.35rem;
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.98);
   border: 1px solid rgba(255, 255, 255, 0.7);
@@ -1528,46 +1746,54 @@
   animation: reader-coach-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+.reader__nav-coach--center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.reader__nav-coach--progress {
+  top: max(4.25rem, calc(env(safe-area-inset-top) + 3.5rem));
+  left: 50%;
+  transform: translateX(-50%);
+  animation-name: reader-coach-in-top;
+}
+
+.reader__nav-coach--menu {
+  left: 50%;
+  bottom: max(5.5rem, calc(env(safe-area-inset-bottom) + 4.75rem));
+  transform: translateX(-50%);
+  animation-name: reader-coach-in-bottom;
+}
+
 .reader__nav-coach-title {
-  margin: 0 0 1.1rem;
-  font-size: clamp(1.15rem, 2vw, 1.35rem);
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.1rem, 2vw, 1.3rem);
   font-weight: 800;
   line-height: 1.25;
   color: var(--purple);
   letter-spacing: -0.015em;
 }
 
-.reader__nav-coach-list {
-  margin: 0 0 1.35rem;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-}
-
-.reader__nav-coach-list li {
-  position: relative;
-  padding-left: 1.15rem;
+.reader__nav-coach-text {
+  margin: 0 0 1.2rem;
   font-size: 0.95rem;
   line-height: 1.55;
   color: rgba(26, 22, 48, 0.9);
 }
 
-.reader__nav-coach-list li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.6em;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--orange);
+.reader__nav-coach-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
-.reader__nav-coach-list strong {
-  font-weight: 800;
-  color: var(--purple);
+.reader__nav-coach-step {
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: rgba(44, 18, 100, 0.5);
 }
 
 .reader__nav-coach-ok {
@@ -1602,56 +1828,98 @@
   outline-offset: 3px;
 }
 
-/* Keep arrows + menu above the dimmed coach backdrop */
 .reader.is-coaching .reader__chrome {
-  z-index: 24;
+  z-index: 1000;
 }
 
 .reader.is-coaching .reader__progress,
-.reader.is-coaching .reader__pager {
+.reader.is-coaching .reader__pager,
+.reader.is-coaching .nav-arrow,
+.reader.is-coaching .roll-menu {
   opacity: 0.35;
   pointer-events: none;
 }
 
-.reader.is-coaching .nav-arrow {
+.reader.is-coaching-step-center .nav-arrow {
   z-index: 25;
+  opacity: 1;
+  pointer-events: auto;
   box-shadow:
     0 0 0 3px rgba(255, 255, 255, 0.55),
     0 12px 32px rgba(44, 18, 100, 0.28);
 }
 
-.reader.is-coaching .nav-arrow:disabled {
+.reader.is-coaching-step-center .nav-arrow:disabled {
   opacity: 1;
+  pointer-events: auto;
   cursor: default;
 }
 
-.reader.is-coaching .roll-menu {
-  z-index: 26;
+.reader.is-coaching-step-progress .reader__progress {
+  z-index: 25;
+  opacity: 1;
+  pointer-events: none;
 }
 
-.reader.is-coaching .roll-menu__trigger {
+.reader.is-coaching-step-progress .reader__progress-node {
+  pointer-events: auto;
+}
+
+.reader.is-coaching-step-progress .reader__progress-node {
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.55),
+    0 6px 16px rgba(0, 0, 0, 0.22);
+}
+
+.reader.is-coaching-step-menu .roll-menu {
+  z-index: 1100;
+  opacity: 1;
+  pointer-events: none;
+}
+
+.reader.is-coaching-step-menu .roll-menu__trigger {
+  opacity: 1;
+  pointer-events: none;
   box-shadow:
     0 0 0 3px rgba(255, 255, 255, 0.55),
     0 12px 32px rgba(44, 18, 100, 0.28);
 }
 
 @keyframes reader-coach-backdrop-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes reader-coach-in {
   from {
     opacity: 0;
-    transform: translateY(14px) scale(0.98);
+    transform: translate(-50%, -46%) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes reader-coach-in-top {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+@keyframes reader-coach-in-bottom {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
   }
 }
 
@@ -1662,25 +1930,34 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 860px) {
   .reader__nav-coach {
-    padding: 1.45rem 1.35rem 1.25rem;
+    width: min(22rem, calc(100% - 1.5rem));
+    padding: 1.25rem 1.25rem 1.15rem;
   }
 
-  .reader__nav-coach-list li {
+  .reader__nav-coach-text {
     font-size: 0.9rem;
   }
-}
 
+  .reader__nav-coach--progress {
+    top: max(3.75rem, calc(env(safe-area-inset-top) + 3rem));
+  }
+
+  .reader__nav-coach--menu {
+    bottom: max(5rem, calc(env(safe-area-inset-bottom) + 4.25rem));
+  }
+}
 .reader__toast {
   position: absolute;
   left: 50%;
-  top: max(1.25rem, env(safe-area-inset-top));
+  top: max(4.35rem, calc(env(safe-area-inset-top) + 3.6rem));
+  z-index: 1100;
   transform: translateX(-50%);
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--purple);
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.98);
   padding: 0.55rem 1rem;
   border-radius: 999px;
   box-shadow: 0 10px 28px rgba(44, 18, 100, 0.16);
@@ -1700,7 +1977,8 @@
 }
 
 .nav-arrow {
-  position: absolute;
+  position: fixed;
+  z-index: 200;
   top: 50%;
   transform: translateY(-50%);
   width: 52px;
@@ -1713,6 +1991,44 @@
   place-items: center;
   font-size: 1.35rem;
   border: 1px solid rgba(44, 18, 100, 0.08);
+}
+
+.nav-arrow[data-tooltip] {
+  overflow: visible;
+}
+
+.nav-arrow[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  background: rgba(17, 24, 39, 0.92);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.22);
+  z-index: 2;
+}
+
+.nav-arrow--prev[data-tooltip]::after {
+  left: calc(100% + 0.55rem);
+}
+
+.nav-arrow--next[data-tooltip]::after {
+  right: calc(100% + 0.55rem);
+}
+
+.nav-arrow[data-tooltip]:hover::after,
+.nav-arrow[data-tooltip]:focus-visible::after {
+  opacity: 1;
 }
 
 .nav-arrow:disabled {
@@ -1733,10 +2049,12 @@
 .app-shell:has(.page-value-ambition) .nav-arrow,
 .app-shell:has(.page-value-passion) .nav-arrow,
 .app-shell:has(.page-value-responsibility) .nav-arrow,
+.app-shell:has(.page-mastery-gallery) .nav-arrow,
 .app-shell:has(.page-mastery-semavic) .nav-arrow,
 .app-shell:has(.page-mastery-venezuela) .nav-arrow,
 .app-shell:has(.page-mastery-third-line) .nav-arrow,
 .app-shell:has(.page-mastery-putin) .nav-arrow,
+.app-shell:has(.page-practice-gallery) .nav-arrow,
 .app-shell:has(.page-practice-equipment) .nav-arrow,
 .app-shell:has(.page-facts) .nav-arrow,
 .app-shell:has(.page-mission-eco) .nav-arrow,
@@ -1750,10 +2068,12 @@
 .app-shell:has(.page-value-ambition) .reader__progress-node,
 .app-shell:has(.page-value-passion) .reader__progress-node,
 .app-shell:has(.page-value-responsibility) .reader__progress-node,
+.app-shell:has(.page-mastery-gallery) .reader__progress-node,
 .app-shell:has(.page-mastery-semavic) .reader__progress-node,
 .app-shell:has(.page-mastery-venezuela) .reader__progress-node,
 .app-shell:has(.page-mastery-third-line) .reader__progress-node,
 .app-shell:has(.page-mastery-putin) .reader__progress-node,
+.app-shell:has(.page-practice-gallery) .reader__progress-node,
 .app-shell:has(.page-practice-equipment) .reader__progress-node,
 .app-shell:has(.page-facts) .reader__progress-node,
 .app-shell:has(.page-mission-eco) .reader__progress-node,
@@ -1772,6 +2092,8 @@
 .app-shell:has(.page-value-passion) .reader__progress-node.is-active,
 .app-shell:has(.page-value-responsibility) .reader__progress-node.is-done,
 .app-shell:has(.page-value-responsibility) .reader__progress-node.is-active,
+.app-shell:has(.page-mastery-gallery) .reader__progress-node.is-done,
+.app-shell:has(.page-mastery-gallery) .reader__progress-node.is-active,
 .app-shell:has(.page-mastery-semavic) .reader__progress-node.is-done,
 .app-shell:has(.page-mastery-semavic) .reader__progress-node.is-active,
 .app-shell:has(.page-mastery-venezuela) .reader__progress-node.is-done,
@@ -1780,6 +2102,8 @@
 .app-shell:has(.page-mastery-third-line) .reader__progress-node.is-active,
 .app-shell:has(.page-mastery-putin) .reader__progress-node.is-done,
 .app-shell:has(.page-mastery-putin) .reader__progress-node.is-active,
+.app-shell:has(.page-practice-gallery) .reader__progress-node.is-done,
+.app-shell:has(.page-practice-gallery) .reader__progress-node.is-active,
 .app-shell:has(.page-practice-equipment) .reader__progress-node.is-done,
 .app-shell:has(.page-practice-equipment) .reader__progress-node.is-active,
 .app-shell:has(.page-facts) .reader__progress-node.is-done,
@@ -1800,10 +2124,12 @@
 .app-shell:has(.page-value-ambition) .roll-menu__trigger,
 .app-shell:has(.page-value-passion) .roll-menu__trigger,
 .app-shell:has(.page-value-responsibility) .roll-menu__trigger,
+.app-shell:has(.page-mastery-gallery) .roll-menu__trigger,
 .app-shell:has(.page-mastery-semavic) .roll-menu__trigger,
 .app-shell:has(.page-mastery-venezuela) .roll-menu__trigger,
 .app-shell:has(.page-mastery-third-line) .roll-menu__trigger,
 .app-shell:has(.page-mastery-putin) .roll-menu__trigger,
+.app-shell:has(.page-practice-gallery) .roll-menu__trigger,
 .app-shell:has(.page-practice-equipment) .roll-menu__trigger,
 .app-shell:has(.page-facts) .roll-menu__trigger,
 .app-shell:has(.page-mission-eco) .roll-menu__trigger,
@@ -1816,10 +2142,12 @@
 .app-shell:has(.page-value-ambition) .reader__pager,
 .app-shell:has(.page-value-passion) .reader__pager,
 .app-shell:has(.page-value-responsibility) .reader__pager,
+.app-shell:has(.page-mastery-gallery) .reader__pager,
 .app-shell:has(.page-mastery-semavic) .reader__pager,
 .app-shell:has(.page-mastery-venezuela) .reader__pager,
 .app-shell:has(.page-mastery-third-line) .reader__pager,
 .app-shell:has(.page-mastery-putin) .reader__pager,
+.app-shell:has(.page-practice-gallery) .reader__pager,
 .app-shell:has(.page-practice-equipment) .reader__pager,
 .app-shell:has(.page-facts) .reader__pager,
 .app-shell:has(.page-mission-eco) .reader__pager,
@@ -1831,7 +2159,8 @@
 @media (max-width: 860px) {
   .page-ceo {
     grid-template-columns: 1fr;
-    overflow: auto;
+    grid-template-rows: auto;
+    overflow: visible;
     height: auto;
     min-height: 100%;
   }
@@ -1842,16 +2171,24 @@
   }
 
   .page-ceo__main {
-    padding: 1.25rem max(1.25rem, env(safe-area-inset-right)) calc(var(--nav-safe) + 1rem)
+    min-height: 0;
+    height: auto;
+    overflow: visible;
+    padding:
+      1.25rem
+      max(1.25rem, env(safe-area-inset-right))
+      88px
       max(1.25rem, env(safe-area-inset-left));
   }
 
-  .page-ceo__main-inner {
-    margin-block: 0;
+  .page-ceo__main::before,
+  .page-ceo__main::after {
+    display: none;
   }
 
   .page-split {
     grid-template-columns: 1fr;
+    grid-template-rows: auto;
     height: auto;
     min-height: 100%;
   }
@@ -1859,11 +2196,14 @@
   .page-split__left,
   .page-split__right {
     min-height: auto;
+    height: auto;
+    overflow: visible;
+    padding-bottom: 88px;
   }
 
   .page-split__left {
     padding-left: clamp(1.25rem, 4vw, 2rem);
-    padding-bottom: 1.5rem;
+    padding-bottom: 88px;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
   }
 
@@ -1879,6 +2219,7 @@
 
   .page-route {
     grid-template-columns: 1fr;
+    grid-template-rows: auto;
     height: auto;
     min-height: 100%;
   }
@@ -1886,11 +2227,19 @@
   .page-route__left,
   .page-route__right {
     min-height: auto;
+    height: auto;
+    overflow: visible;
+    padding-bottom: 88px;
+  }
+
+  .page-route__left::before,
+  .page-route__left::after {
+    display: none;
   }
 
   .page-route__left {
     padding-left: clamp(1.25rem, 4vw, 2rem);
-    padding-bottom: 1.5rem;
+    padding-bottom: 88px;
   }
 
   .page-route__left-inner {
@@ -1915,10 +2264,180 @@
   }
 
   .nav-arrow {
-    display: none;
+    display: grid;
+    top: auto;
+    bottom: max(5.5rem, calc(env(safe-area-inset-bottom) + 4.75rem));
+    width: 48px;
+    height: 48px;
+    transform: none;
   }
 
   .page-title {
-    max-width: none;
+    max-width: 100%;
   }
+}
+
+@media (max-width: 1024px) and (min-width: 861px) {
+  .page-ceo__main-inner,
+  .page-split__left-inner,
+  .page-split__right-inner,
+  .page-route__left-inner,
+  .page-facts__inner,
+  .page-body {
+    gap: 0.75rem;
+  }
+
+  .page-pad,
+  .page-ceo__main,
+  .page-facts__inner,
+  .page-open__inner {
+    padding-left: max(1rem, var(--nav-arrow-lane-left));
+    padding-right: max(1rem, var(--nav-arrow-lane-right));
+  }
+
+  .page-facts__grid,
+  .values-grid {
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-ceo,
+  .page-split,
+  .page-route,
+  .page-shell.page-bleed.vs,
+  .page-shell.page-values-spread {
+    grid-template-columns: 1fr;
+  }
+
+  .page-ceo__media {
+    order: -1;
+  }
+
+  .reader__progress {
+    width: calc(100% - 1.5rem);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .reader__progress::-webkit-scrollbar {
+    display: none;
+  }
+
+  .reader__progress-nodes {
+    width: max-content;
+    min-width: 100%;
+    justify-content: flex-start;
+    gap: 0.85rem;
+    padding-inline: 0.15rem;
+  }
+
+  .nav-arrow {
+    display: none;
+  }
+
+  .reader.is-history .reader__page {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .page-history,
+  .page-history.page-bleed {
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+  }
+
+  .page-facts__grid,
+  .values-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.app-shell .reader.is-coaching-step-progress .reader__progress-track {
+  height: 4px;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(44, 18, 100, 0.4);
+}
+
+.app-shell .reader.is-coaching-step-progress .reader__progress-fill {
+  background: #2c1264;
+  box-shadow: none;
+}
+
+.app-shell .reader.is-coaching-step-progress .reader__progress-node,
+.app-shell .reader.is-coaching-step-progress .reader__progress-node.is-done,
+.app-shell .reader.is-coaching-step-progress .reader__progress-node.is-active {
+  width: 32px;
+  height: 32px;
+  background: #fff;
+  border: 2px solid #2c1264;
+  color: #2c1264;
+  opacity: 1;
+  box-shadow:
+    0 0 0 3px #fff,
+    0 8px 18px rgba(20, 16, 40, 0.35);
+}
+
+.app-shell .reader.is-coaching-step-progress .reader__progress-node.is-active {
+  background: #2c1264;
+  color: #fff;
+  border-color: #fff;
+}
+
+.page-ceo__main,
+.page-split__left,
+.page-split__right,
+.page-route__left,
+.page-route__right,
+.page-facts__inner,
+.page-open__inner,
+.page-pad,
+.muniq__inner {
+  padding-bottom: 120px;
+}
+
+@media (min-width: 861px) {
+  .page-ceo__main {
+    padding-top: 64px;
+    padding-bottom: 72px;
+    overflow: hidden;
+  }
+
+  .page-ceo__main-inner {
+    gap: 0.55rem;
+  }
+
+  .page-ceo .page-title {
+    font-size: clamp(1.25rem, 2vw, 1.85rem);
+    line-height: 1.08;
+  }
+
+  .page-ceo__text {
+    gap: 0.45rem;
+  }
+
+  .page-ceo__text p {
+    font-size: clamp(0.78rem, 0.92vw, 0.92rem);
+    line-height: 1.38;
+  }
+
+  .page-ceo__byline {
+    margin-top: 0.1rem;
+    padding-top: 0.45rem;
+  }
+
+  .page-ceo__name {
+    font-size: 0.92rem;
+  }
+
+  .page-ceo__role {
+    font-size: 0.78rem;
+  }
+}
+
+.app-shell:has(.reader__page:not([aria-hidden='true']) .page-interstitial)
+  .reader__chrome::before {
+  content: none;
+  display: none;
 }

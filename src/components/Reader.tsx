@@ -1,5 +1,18 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type TouchEvent,
+} from 'react'
 import { flatPages, navIndexForSectionId, navSections, totalPages } from '../data/book'
+import { masteryGalleryPageId, masteryStoryPageIds } from '../data/masteryGallery'
+import {
+  practiceGalleryPageId,
+  practiceStoryPageIds,
+} from '../data/practiceGallery'
 import {
   getHistoryPage,
   getHistoryPageIndexForYear,
@@ -11,6 +24,7 @@ import { BentoMenu } from './BentoMenu'
 import { PageView } from './PageView'
 import { QuotesPanel } from './QuotesPanel'
 import { RollUpMenu } from './RollUpMenu'
+import notebookIcon from '../../icons/notebook-text.svg'
 import '../styles/reader.css'
 import '../styles/quotes.css'
 
@@ -25,6 +39,12 @@ function labelFor(index: number) {
   return fp.page.title ?? fp.paragraphTitle
 }
 
+function shortPageLabel(pageIndex: number) {
+  const raw = labelFor(pageIndex)?.replace(/\s*\n\s*/g, ' ').replace(/\s+/g, ' ').trim()
+  if (!raw) return 'страницу'
+  return raw.length > 44 ? `${raw.slice(0, 42)}…` : raw
+}
+
 export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: ReaderProps) {
   const isMobile = useMediaQuery('(max-width: 860px)')
   const [index, setIndex] = useState(initialIndex)
@@ -32,6 +52,7 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
   const [tocOpen, setTocOpen] = useState(false)
   const [quotesOpen, setQuotesOpen] = useState(false)
   const [hintVisible, setHintVisible] = useState(() => initialIndex === 0)
+  const [coachStep, setCoachStep] = useState(0)
   const [toast, setToast] = useState<string | null>(null)
   const [selectionUi, setSelectionUi] = useState<{ text: string; x: number; y: number } | null>(
     null,
@@ -52,7 +73,12 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
   const [historyRevealed, setHistoryRevealed] = useState<Record<string, number[]>>({})
   const [historyHint, setHistoryHint] = useState(true)
   const [historyJumpYear, setHistoryJumpYear] = useState<string | null>(null)
-  const touchStart = useRef<{ x: number; y: number } | null>(null)
+  const touchStart = useRef<{
+    x: number
+    y: number
+    atBottom: boolean
+    atTop: boolean
+  } | null>(null)
   const suppressSwipe = useRef(false)
   const wheelLock = useRef(false)
   const zoomTimers = useRef<number[]>([])
@@ -65,8 +91,17 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
   const isInterstitial = current.page.kind === 'interstitial'
   const isClosingCover = current.page.kind === 'closing-cover'
   const isHistoryEra = current.page.kind === 'history-era'
+  const masteryStoryIndex = masteryStoryPageIds.indexOf(current.page.id)
+  const isMasteryStory = masteryStoryIndex >= 0
+  const hasNextMasteryStory =
+    masteryStoryIndex >= 0 && masteryStoryIndex < masteryStoryPageIds.length - 1
+  const practiceStoryIndex = practiceStoryPageIds.indexOf(current.page.id)
+  const isPracticeStory = practiceStoryIndex >= 0
+  const hasNextPracticeStory =
+    practiceStoryIndex >= 0 && practiceStoryIndex < practiceStoryPageIds.length - 1
   const showNavCoach = hintVisible && index === 0 && !isInterstitial && !isHistoryEra
   const anyOverlay = rollOpen || tocOpen || quotesOpen || showNavCoach
+  const navLocked = rollOpen || tocOpen || quotesOpen
   const chromeHidden =
     isInterstitial ||
     isClosingCover ||
@@ -74,6 +109,27 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
     !!historyCurtain ||
     !!missionSlide
 
+  const prevTooltip = useMemo(() => {
+    if (isPracticeStory) return 'К практикам'
+    if (isMasteryStory) return 'Вернуться в галерею историй'
+    if (index === 0) {
+      return onBackToWelcome ? 'К экрану «Добро пожаловать»' : 'Начало книги'
+    }
+    return `Назад: ${shortPageLabel(index - 1)}`
+  }, [isPracticeStory, isMasteryStory, index, onBackToWelcome])
+
+  const nextTooltip = useMemo(() => {
+    if (isPracticeStory && hasNextPracticeStory) return 'Следующая практика'
+    if (isMasteryStory && hasNextMasteryStory) return 'К следующей истории'
+    if (index >= totalPages - 1) return 'Конец книги'
+    return `Далее: ${shortPageLabel(index + 1)}`
+  }, [
+    isPracticeStory,
+    hasNextPracticeStory,
+    isMasteryStory,
+    hasNextMasteryStory,
+    index,
+  ])
   const historyAccent = (accent: 'purple' | 'blue') =>
     accent === 'blue' ? '#1e3a8a' : '#7c3aed'
 
@@ -177,19 +233,92 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
   }, [initialIndex])
 
   useEffect(() => {
-    if (index === 0) setHintVisible(true)
-    else setHintVisible(false)
+    if (index === 0) {
+      setHintVisible(true)
+      setCoachStep(0)
+    } else {
+      setHintVisible(false)
+    }
   }, [index])
 
   const dismissHint = useCallback(() => {
     setHintVisible(false)
+    setCoachStep(0)
   }, [])
+
+  const coachSteps = useMemo(() => {
+    if (isMobile) {
+      return [
+        {
+          id: 'swipe',
+          placement: 'center' as const,
+          title: 'Как пользоваться книгой',
+          text: 'Листай страницы свайпом вверх, чтобы идти вперёд, или вниз, чтобы вернуться назад.',
+        },
+        {
+          id: 'progress',
+          placement: 'progress' as const,
+          title: 'Разделы',
+          text: 'Здесь ты можешь перемещаться между разделами книги. Нажми на цифру, чтобы открыть нужный раздел.',
+        },
+        {
+          id: 'menu',
+          placement: 'menu' as const,
+          title: 'Меню',
+          text: 'Это Меню. Здесь содержание книги и твои заметки. Из Меню можно выйти в начало книги или на главную страницу.',
+        },
+        {
+          id: 'notes',
+          placement: 'center' as const,
+          title: 'Заметки',
+          text: 'Выдели текст на странице. Появится кнопка с блокнотом — нажми её, чтобы сохранить фрагмент в заметки.',
+        },
+      ]
+    }
+    return [
+      {
+        id: 'arrows',
+        placement: 'center' as const,
+        title: 'Как пользоваться книгой',
+        text: 'Листай стрелками ← → по краям экрана или клавишами влево / вправо или колесом мыши. Наведи на кнопку, чтобы узнать, куда она ведёт.',
+      },
+      {
+        id: 'progress',
+        placement: 'progress' as const,
+        title: 'Разделы',
+        text: 'Здесь ты можешь перемещаться между разделами книги. Наведи на цифру, чтобы узнать, как называется раздел.',
+      },
+      {
+        id: 'menu',
+        placement: 'menu' as const,
+        title: 'Меню',
+        text: 'Это раздел Меню. Здесь ты найдешь содержание книги и свои заметки. Из Меню можно выйти в начало книги или на главную страницу.',
+      },
+      {
+        id: 'notes',
+        placement: 'center' as const,
+        title: 'Заметки',
+        text: 'Выдели текст на странице. Появится кнопка с блокнотом — нажми её, чтобы сохранить фрагмент в заметки.',
+      },
+    ]
+  }, [isMobile])
+
+  const coachCurrent = coachSteps[Math.min(coachStep, coachSteps.length - 1)]
+  const coachIsLast = coachStep >= coachSteps.length - 1
+
+  const advanceCoach = useCallback(() => {
+    if (coachIsLast) {
+      dismissHint()
+      return
+    }
+    setCoachStep((s) => s + 1)
+  }, [coachIsLast, dismissHint])
 
   useEffect(() => {
     if (!showNavCoach) return
     const btn = document.querySelector<HTMLButtonElement>('.reader__nav-coach-ok')
     btn?.focus()
-  }, [showNavCoach])
+  }, [showNavCoach, coachStep])
 
   useEffect(() => {
     if (!toast) return
@@ -241,9 +370,14 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
       if (zoomPhase !== 'idle' || historyCurtain || missionSlide) return
       if (clamped === index) return
 
-      // History: reveal all year cards before advancing to the next page
+      // History: reveal year cards before advancing, except on the phone
+      // layout where every card of the page is already on screen.
+      const historyPhone =
+        typeof window !== 'undefined' &&
+        window.matchMedia('(max-width: 768px)').matches
       if (
         !opts?.force &&
+        !historyPhone &&
         isHistoryEra &&
         currentHistoryPage &&
         clamped === index + 1
@@ -377,6 +511,39 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
     setHistoryJumpYear(null)
   }, [])
 
+  useLayoutEffect(() => {
+    const kind = flatPages[index]?.page.kind
+    const opensAtStart =
+      kind === 'mastery-semavic' ||
+      kind === 'mastery-venezuela' ||
+      kind === 'mastery-third-line' ||
+      kind === 'mastery-putin' ||
+      kind === 'env-navigator' ||
+      kind === 'practice-gallery'
+    if (!opensAtStart) return
+
+    const root = readerRef.current
+    if (!root) return
+    const active = document.activeElement
+    if (active instanceof HTMLElement && root.contains(active)) active.blur()
+
+    const page = root.querySelectorAll<HTMLElement>('.reader__page')[index]
+    if (!page) return
+    const snap = () => {
+      page.scrollTop = 0
+      page
+        .querySelectorAll<HTMLElement>(
+          '.ms__left-inner, .ms__right-inner, .ms__col-story, .ms__col-values, .en__inner',
+        )
+        .forEach((el) => {
+          el.scrollTop = 0
+        })
+    }
+    snap()
+    const raf = requestAnimationFrame(snap)
+    return () => cancelAnimationFrame(raf)
+  }, [index])
+
   const goById = useCallback(
     (pageId: string) => {
       const found = flatPages.findIndex((p) => p.page.id === pageId)
@@ -385,10 +552,60 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
     [go],
   )
 
+  const navigatePrev = useCallback(() => {
+    if (showNavCoach) return
+    if (isMasteryStory) {
+      goById(masteryGalleryPageId)
+      return
+    }
+    if (isPracticeStory) {
+      goById(practiceGalleryPageId)
+      return
+    }
+    if (index === 0) {
+      onBackToWelcome?.()
+      return
+    }
+    go(index - 1)
+  }, [showNavCoach, isMasteryStory, isPracticeStory, goById, index, onBackToWelcome, go])
+
+  const navigateNext = useCallback(() => {
+    if (showNavCoach) return
+    if (isMasteryStory) {
+      if (hasNextMasteryStory) {
+        goById(masteryStoryPageIds[masteryStoryIndex + 1])
+        return
+      }
+      go(index + 1)
+      return
+    }
+    if (isPracticeStory) {
+      if (hasNextPracticeStory) {
+        goById(practiceStoryPageIds[practiceStoryIndex + 1])
+        return
+      }
+      go(index + 1)
+      return
+    }
+    go(index + 1)
+  }, [
+    isMasteryStory,
+    hasNextMasteryStory,
+    masteryStoryIndex,
+    isPracticeStory,
+    hasNextPracticeStory,
+    practiceStoryIndex,
+    goById,
+    index,
+    go,
+    showNavCoach,
+  ])
+
   const goToSection = useCallback(
     (sectionIndex: number) => {
       const section = navSections[sectionIndex]
-      const firstPage = section?.paragraphs[0]?.pages[0]
+      if (!section) return
+      const firstPage = section.paragraphs[0]?.pages[0]
       if (firstPage) goById(firstPage.id)
     },
     [goById],
@@ -407,20 +624,23 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
       if (anyOverlay || zoomPhase !== 'idle' || historyCurtain || missionSlide) return
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         e.preventDefault()
-        go(index + 1)
+        navigateNext()
       }
       if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
         e.preventDefault()
-        if (index === 0) {
-          onBackToWelcome?.()
-          return
-        }
-        go(index - 1)
+        navigatePrev()
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [go, index, anyOverlay, zoomPhase, historyCurtain, missionSlide, onBackToWelcome])
+  }, [
+    navigateNext,
+    navigatePrev,
+    anyOverlay,
+    zoomPhase,
+    historyCurtain,
+    missionSlide,
+  ])
 
   useEffect(() => {
     if (isMobile) return
@@ -449,8 +669,9 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
         node = node.parentElement
       }
 
-      // Strategy house: wheel zooms the 3D model, never flips pages.
-      if (flatPages[index]?.page.kind === 'mission-strategy-house') {
+      // Strategy house / practice gallery: wheel drives local UI, never flips pages.
+      const pageKind = flatPages[index]?.page.kind
+      if (pageKind === 'mission-strategy-house' || pageKind === 'practice-gallery') {
         e.preventDefault()
         return
       }
@@ -465,32 +686,34 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
         wheelLock.current = false
       }, 520)
 
-      if (delta > 0) {
-        go(index + 1)
-      } else if (index === 0) {
-        onBackToWelcome?.()
-      } else {
-        go(index - 1)
-      }
+      if (delta > 0) navigateNext()
+      else navigatePrev()
     }
 
     root.addEventListener('wheel', onWheel, { passive: false })
     return () => root.removeEventListener('wheel', onWheel)
   }, [
-    go,
-    index,
+    navigateNext,
+    navigatePrev,
     anyOverlay,
     zoomPhase,
     historyCurtain,
     missionSlide,
-    onBackToWelcome,
     isMobile,
     flatPages,
+    index,
   ])
 
   const onTouchStart = (e: TouchEvent) => {
     const t = e.changedTouches[0]
-    touchStart.current = { x: t.clientX, y: t.clientY }
+    const scroller = (e.target as Element | null)?.closest?.(
+      '.reader__page',
+    ) as HTMLElement | null
+    const atBottom =
+      !scroller ||
+      scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight <= 16
+    const atTop = !scroller || scroller.scrollTop <= 16
+    touchStart.current = { x: t.clientX, y: t.clientY, atBottom, atTop }
   }
 
   const onTouchEnd = (e: TouchEvent) => {
@@ -507,25 +730,41 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
       return
     }
     const t = e.changedTouches[0]
+    const startedAtBottom = touchStart.current.atBottom
+    const startedAtTop = touchStart.current.atTop
     const dx = t.clientX - touchStart.current.x
     const dy = t.clientY - touchStart.current.y
     touchStart.current = null
     const threshold = 48
-    const goPrev = () => {
-      if (index === 0) {
-        onBackToWelcome?.()
+    if (isMobile) {
+      if (isHistoryEra) {
+        const fingerUp = dy < -threshold && Math.abs(dy) > Math.abs(dx)
+        if (fingerUp && startedAtBottom) navigateNext()
         return
       }
-      go(index - 1)
-    }
-    if (isMobile) {
+      if (
+        current.page.kind === 'mastery-gallery' ||
+        current.page.kind === 'mastery-semavic' ||
+        current.page.kind === 'mastery-venezuela' ||
+        current.page.kind === 'mastery-third-line' ||
+        current.page.kind === 'mastery-putin' ||
+        current.page.kind === 'env-navigator' ||
+        current.page.kind === 'practice-gallery' ||
+        isPracticeStory
+      ) {
+        const fingerUp = dy < -threshold && Math.abs(dy) > Math.abs(dx)
+        const fingerDown = dy > threshold && Math.abs(dy) > Math.abs(dx)
+        if (fingerUp && startedAtBottom) navigateNext()
+        else if (fingerDown && startedAtTop) navigatePrev()
+        return
+      }
       if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > threshold) {
-        if (dy < 0) go(index + 1)
-        else goPrev()
+        if (dy < 0) navigateNext()
+        else navigatePrev()
       }
     } else if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > threshold) {
-      if (dx < 0) go(index + 1)
-      else goPrev()
+      if (dx < 0) navigateNext()
+      else navigatePrev()
     }
   }
 
@@ -543,7 +782,7 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
   const handleAddQuote = () => {
     if (!selectionUi) return
     const ok = addQuote(selectionUi.text, current.page.id, labelFor(index))
-    setToast(ok ? 'Добавлено в цитаты' : 'Эта цитата уже сохранена')
+    setToast(ok ? 'Добавлено в заметки' : 'Эта заметка уже сохранена')
     setSelectionUi(null)
     window.getSelection()?.removeAllRanges()
   }
@@ -557,7 +796,7 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
         zoomPhase === 'out' ? ' is-zoom-out' : ''
       }${zoomPhase === 'in' ? ' is-zoom-in' : ''}${isInterstitial ? ' is-interstitial' : ''}${
         isHistoryEra ? ' is-history' : ''
-      }${showNavCoach ? ' is-coaching' : ''}`}
+      }${showNavCoach ? ` is-coaching is-coaching-step-${coachCurrent.placement}` : ''}`}
       aria-label="Чтение книги"
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
@@ -585,6 +824,9 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
                 fp.page.id === current.page.id
                   ? () => go(index + 1)
                   : undefined
+              }
+              onHistoryRetreat={
+                fp.page.id === current.page.id ? navigatePrev : undefined
               }
               onHistoryJumpYear={
                 fp.page.id === current.page.id ? jumpToHistoryYear : undefined
@@ -629,40 +871,40 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
       )}
 
       {showNavCoach && (
-        <div className="reader__nav-coach-layer">
+        <>
           <div className="reader__nav-coach-backdrop" aria-hidden />
           <div
-            className="reader__nav-coach"
+            className={`reader__nav-coach reader__nav-coach--${coachCurrent.placement}`}
             role="dialog"
             aria-modal="true"
             aria-labelledby="reader-nav-coach-title"
           >
             <p className="reader__nav-coach-title" id="reader-nav-coach-title">
-              Как пользоваться книгой
+              {coachCurrent.title}
             </p>
-            <ul className="reader__nav-coach-list">
-              <li>
-                {isMobile
-                  ? 'Листайте страницы свайпом вверх или вниз'
-                  : 'Листайте стрелками ← → по краям экрана или клавишами влево / вправо или колесом мыши'}
-              </li>
-              <li>
-                На первой странице ← возвращает к экрану «Добро пожаловать»
-              </li>
-              <li>
-                Кнопка <strong>Меню</strong> внизу — содержание, цитаты и выход на
-                главную
-              </li>
-            </ul>
-            <button
-              type="button"
-              className="reader__nav-coach-ok"
-              onClick={dismissHint}
-            >
-              Понятно
-            </button>
+            <p className="reader__nav-coach-text">{coachCurrent.text}</p>
+            {coachCurrent.id === 'notes' && (
+              <p className="reader__nav-coach-preview">
+                <span className="quote-pop quote-pop--static" aria-hidden>
+                  <img src={notebookIcon} alt="" width={22} height={22} />
+                </span>
+                Добавить в заметки
+              </p>
+            )}
+            <div className="reader__nav-coach-actions">
+              <span className="reader__nav-coach-step" aria-hidden>
+                {coachStep + 1} / {coachSteps.length}
+              </span>
+              <button
+                type="button"
+                className="reader__nav-coach-ok"
+                onClick={advanceCoach}
+              >
+                {coachIsLast ? 'Понятно' : 'Далее'}
+              </button>
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       <div className={`reader__chrome${chromeHidden ? ' is-dimmed' : ''}`}>
@@ -690,8 +932,13 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
                   }`}
                   aria-label={`Раздел ${section.number}: ${section.title}`}
                   aria-current={active ? 'step' : undefined}
-                  disabled={anyOverlay || zoomPhase !== 'idle' || transitionBusy}
-                  onClick={() => goToSection(i)}
+                  title={section.title}
+                  data-tooltip={section.title}
+                  disabled={navLocked || zoomPhase !== 'idle' || transitionBusy}
+                  onClick={() => {
+                    if (showNavCoach) return
+                    goToSection(i)
+                  }}
                 >
                   {Number(section.number) || i + 1}
                 </button>
@@ -700,41 +947,35 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
           </div>
         </div>
 
-        {!isMobile && (
-          <>
-            <button
-              type="button"
-              className="nav-arrow nav-arrow--prev"
-              aria-label="Предыдущая страница"
-              disabled={
-                (index === 0 && !onBackToWelcome) ||
-                anyOverlay ||
-                zoomPhase !== 'idle' ||
-                transitionBusy
-              }
-              onClick={() => {
-                if (index === 0) {
-                  onBackToWelcome?.()
-                  return
-                }
-                go(index - 1)
-              }}
-            >
-              ←
-            </button>
-            <button
-              type="button"
-              className="nav-arrow nav-arrow--next"
-              aria-label="Следующая страница"
-              disabled={
-                index >= totalPages - 1 || anyOverlay || zoomPhase !== 'idle' || transitionBusy
-              }
-              onClick={() => go(index + 1)}
-            >
-              →
-            </button>
-          </>
-        )}
+        <button
+          type="button"
+          className="nav-arrow nav-arrow--prev"
+          aria-label={prevTooltip}
+          title={prevTooltip}
+          data-tooltip={prevTooltip}
+          disabled={
+            (!isMasteryStory && !isPracticeStory && index === 0 && !onBackToWelcome) ||
+            navLocked ||
+            zoomPhase !== 'idle' ||
+            transitionBusy
+          }
+          onClick={navigatePrev}
+        >
+          ←
+        </button>
+        <button
+          type="button"
+          className="nav-arrow nav-arrow--next"
+          aria-label={nextTooltip}
+          title={nextTooltip}
+          data-tooltip={nextTooltip}
+          disabled={
+            index >= totalPages - 1 || navLocked || zoomPhase !== 'idle' || transitionBusy
+          }
+          onClick={navigateNext}
+        >
+          →
+        </button>
 
         <div
           className={`reader__pager${
@@ -757,13 +998,15 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
           type="button"
           className="quote-pop"
           style={{ left: selectionUi.x, top: selectionUi.y }}
+          aria-label="Добавить в заметки"
+          title="Добавить в заметки"
           onMouseDown={(e) => e.preventDefault()}
           onTouchStart={() => {
             suppressSwipe.current = true
           }}
           onClick={handleAddQuote}
         >
-          Добавить в цитаты
+          <img src={notebookIcon} alt="" width={22} height={22} />
         </button>
       )}
 
@@ -773,7 +1016,8 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
           onToggle={() => setRollOpen((v) => !v)}
           onClose={() => setRollOpen(false)}
           onContents={() => setTocOpen(true)}
-          onHome={onExitToHome}
+          onBookStart={() => go(0)}
+          onCover={onExitToHome}
           onQuotes={() => setQuotesOpen(true)}
         />
       )}

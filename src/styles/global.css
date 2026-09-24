@@ -9,7 +9,7 @@
   --white: #ffffff;
   --shadow: 0 18px 50px rgba(44, 18, 100, 0.12);
   --radius: 18px;
-  --nav-safe: 72px;
+  --nav-safe: 88px;
   /* Reserve space for ← / → buttons: offset + 52px circle + gap */
   --nav-arrow-size: 52px;
   --nav-arrow-gap: 16px;
@@ -78,6 +78,8 @@ img {
 .app-shell {
   position: relative;
   width: 100%;
+  max-width: 100%;
+  min-height: 100dvh;
   height: 100dvh;
   overflow: hidden;
 }
@@ -285,8 +287,19 @@ img {
   border: 0;
 }
 
-@media (max-width: 768px) {
-  :root {
-    --nav-safe: 56px;
+@media (max-width: 640px) {
+  .btn-primary,
+  .btn-ghost,
+  .btn-open,
+  .nav-arrow,
+  .roll-menu__trigger,
+  .reader__nav-coach-ok,
+  .quote-pop {
+    min-height: 48px;
+  }
+
+  .nav-arrow,
+  .quote-pop {
+    min-width: 48px;
   }
 }

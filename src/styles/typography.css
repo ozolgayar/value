@@ -2,13 +2,13 @@
    Do not style bare h1/p globally — Cover / Welcome / Preloader stay untouched. */
 
 :root {
-  --h1-size: clamp(1.75rem, 3.6vw, 2.75rem);
+  --h1-size: clamp(1.75rem, 4vw, 3rem);
   --h2-size: clamp(1.45rem, 2.8vw, 2.25rem);
   --h3-size: clamp(1.15rem, 2vw, 1.55rem);
   --h4-size: clamp(1rem, 1.5vw, 1.25rem);
 
-  --body-lg: clamp(0.95rem, 1.25vw, 1.125rem);
-  --body: clamp(0.875rem, 1.1vw, 1rem);
+  --body-lg: clamp(1rem, 1.35vw, 1.2rem);
+  --body: clamp(0.95rem, 1.2vw, 1.1rem);
   --body-sm: clamp(0.8rem, 1vw, 0.9rem);
   --caption: 0.75rem;
 
@@ -34,12 +34,19 @@
   }
 }
 
+@media (max-width: 1024px) {
+  :root {
+    --gap-md: 1.15rem;
+    --gap-lg: 1.75rem;
+  }
+}
+
 @media (max-width: 900px) {
   :root {
-    --h1-size: clamp(1.5rem, 5vw, 2.25rem);
+    --h1-size: clamp(1.75rem, 4vw, 2.4rem);
     --h2-size: clamp(1.3rem, 4vw, 1.85rem);
-    --body: 0.9375rem;
-    --body-lg: 1rem;
+    --body: clamp(0.95rem, 1.2vw, 1.05rem);
+    --body-lg: clamp(1rem, 1.35vw, 1.12rem);
     --measure: 100%;
     --measure-narrow: 100%;
     --measure-wide: 100%;
@@ -48,17 +55,10 @@
 
 @media (max-width: 600px) {
   :root {
-    --h1-size: clamp(1.35rem, 6vw, 1.85rem);
+    --h1-size: clamp(1.75rem, 4vw, 2.1rem);
     --h2-size: clamp(1.2rem, 5vw, 1.55rem);
-    --body: 0.9375rem;
+    --body: clamp(0.95rem, 1.2vw, 1.05rem);
     --lh-body: 1.65;
-  }
-}
-
-@media (max-width: 400px) {
-  :root {
-    --body: 0.875rem;
-    --body-lg: 0.9375rem;
   }
 }
 
@@ -125,13 +125,19 @@
   text-wrap: balance;
 }
 
+.page-shell :is(p, li, td),
+.page-shell .text-content {
+  text-wrap: pretty;
+  word-spacing: 0.05em;
+}
+
 .reader .page-body p,
 .page-shell .body,
 .page-shell .lead,
 .page-shell .mstmt__paras p,
 .page-shell .strategy__body p,
 .page-shell .strategy__intro,
-.page-shell .va__lead,
-.page-shell .va__story p {
+.page-shell .vs__lead,
+.page-shell .vs__story p {
   text-wrap: pretty;
 }

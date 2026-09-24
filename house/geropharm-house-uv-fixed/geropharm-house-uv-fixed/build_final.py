@@ -74,7 +74,7 @@ def add_mat(name,color,texture=None,emissive=False,alpha=False):
  if texture is not None:
   ti=add_texture(texture);m['pbrMetallicRoughness']['baseColorTexture']={'index':ti};m['pbrMetallicRoughness']['baseColorFactor']=[1,1,1,1]
  if alpha or name.startswith('Logo') or name.startswith('Wordmark'):
-  m['alphaMode']='BLEND';m['doubleSided']=True
+   m['alphaMode']='BLEND';m['doubleSided']=True
  mild_emissive=(color in ('glass','gold','niche_light')) or emissive
  if mild_emissive:
   e=rgba(color_value(color))[:3]
@@ -147,9 +147,9 @@ def image_label(name,section,text,x,y,z,w,h,size=20,bg='#D7F0E6',fg='#173D38',bo
    if not paragraph:
     lines.append('')
     continue
-   row=''
-   for word in paragraph.split():
-    test=(row+' '+word).strip()
+  row=''
+  for word in paragraph.split():
+   test=(row+' '+word).strip()
     if d.textlength(test,font=font)>maxw and row:
      lines.append(row);row=word
     else:
@@ -373,7 +373,7 @@ def floor(sec, cx, cy, w, d, z_bottom, h, show_windows=True,
  )
  if show_windows:
   n = max(3, int(w / 1.25))
-  for i in range(n):
+ for i in range(n):
    xx = cx - w / 2 + (i + 0.5) * w / n
    box(sec+'_window', sec, xx, cy - d / 2 - 0.02, z, 0.9, 0.07, h - 0.45, 'glass')
    box(sec+'_winFrame', sec, xx, cy - d / 2 - 0.01, z, 1.02, 0.05, h - 0.32, 'frame')

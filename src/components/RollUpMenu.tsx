@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { asset } from '../asset'
 import '../styles/rollup.css'
 
 interface RollUpMenuProps {
@@ -6,7 +7,8 @@ interface RollUpMenuProps {
   onToggle: () => void
   onClose: () => void
   onContents: () => void
-  onHome: () => void
+  onBookStart: () => void
+  onCover: () => void
   onQuotes: () => void
 }
 
@@ -15,7 +17,8 @@ export function RollUpMenu({
   onToggle,
   onClose,
   onContents,
-  onHome,
+  onBookStart,
+  onCover,
   onQuotes,
 }: RollUpMenuProps) {
   useEffect(() => {
@@ -70,6 +73,8 @@ export function RollUpMenu({
             type="button"
             className="roll-menu__link"
             tabIndex={open ? 0 : -1}
+            title="Открыть содержание разделов"
+            data-tooltip="Открыть содержание разделов"
             onClick={() => {
               onClose()
               onContents()
@@ -81,38 +86,50 @@ export function RollUpMenu({
             type="button"
             className="roll-menu__link"
             tabIndex={open ? 0 : -1}
+            title="К первой странице книги"
+            data-tooltip="К первой странице книги"
             onClick={() => {
               onClose()
-              onHome()
+              onBookStart()
             }}
           >
-            На главную
+            Начало книги
           </button>
           <button
             type="button"
             className="roll-menu__link"
             tabIndex={open ? 0 : -1}
+            title="Открыть сохранённые заметки"
+            data-tooltip="Открыть сохранённые заметки"
             onClick={() => {
               onClose()
               onQuotes()
             }}
           >
-            Цитаты
+            Мои заметки
           </button>
         </nav>
 
         <div className="roll-menu__footer">
-          <p className="roll-menu__tagline">Культурный путеводитель ГЕРОФАРМ</p>
+          <p className="roll-menu__tagline">История. Культура. Будущее</p>
           <button
             type="button"
-            className="roll-menu__cta"
+            className="roll-menu__home"
             tabIndex={open ? 0 : -1}
+            aria-label="На обложку"
+            title="На обложку"
+            data-tooltip="На обложку"
             onClick={() => {
               onClose()
-              onHome()
+              onCover()
             }}
           >
-            На главную
+            <img
+              className="roll-menu__home-icon"
+              src={asset('icons/house.svg')}
+              alt=""
+              aria-hidden
+            />
           </button>
         </div>
       </div>

@@ -28,6 +28,7 @@
 .app-shell:has(.page-value-ambition) .cursor-dot,
 .app-shell:has(.page-value-passion) .cursor-dot,
 .app-shell:has(.page-value-responsibility) .cursor-dot,
+.app-shell:has(.page-mastery-gallery) .cursor-dot,
 .app-shell:has(.page-mastery-semavic) .cursor-dot,
 .app-shell:has(.page-mastery-venezuela) .cursor-dot,
 .app-shell:has(.page-mastery-third-line) .cursor-dot,

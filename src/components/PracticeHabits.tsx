@@ -1,6 +1,10 @@
 import { practiceHabits } from '../data/practiceHabits'
 import { PracticeCasePage } from './PracticeCase'
 
-export function PracticeHabitsPage() {
-  return <PracticeCasePage data={practiceHabits} />
+export function PracticeHabitsPage({
+  onFinishSection,
+}: {
+  onFinishSection?: () => void
+}) {
+  return <PracticeCasePage data={practiceHabits} onFinishSection={onFinishSection} />
 }

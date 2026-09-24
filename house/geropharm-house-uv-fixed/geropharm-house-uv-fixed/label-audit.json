@@ -1,0 +1,581 @@
+[
+  {
+    "text": "ЦЕННОСТИ\nГЕРОФАРМ",
+    "object": "Values_title",
+    "face": "foundation:front",
+    "section": "foundation",
+    "worldSize": [
+      1.5,
+      0.6499999999999999
+    ],
+    "fontSizePx": 18,
+    "lines": 2,
+    "ok": true,
+    "panelLocal": [
+      -6.345,
+      -4.845,
+      -0.32499999999999996,
+      0.32499999999999996
+    ]
+  },
+  {
+    "text": "Страсть\nМы увлечены работой",
+    "object": "Value_0",
+    "face": "foundation:front",
+    "section": "foundation",
+    "worldSize": [
+      3.63,
+      0.6499999999999999
+    ],
+    "fontSizePx": 18,
+    "lines": 2,
+    "ok": true,
+    "panelLocal": [
+      -3.6799999999999997,
+      -0.050000000000000044,
+      -0.32499999999999996,
+      0.32499999999999996
+    ]
+  },
+  {
+    "text": "Амбициозность\nМы устремлены в будущее",
+    "object": "Value_1",
+    "face": "foundation:front",
+    "section": "foundation",
+    "worldSize": [
+      3.63,
+      0.6499999999999999
+    ],
+    "fontSizePx": 18,
+    "lines": 2,
+    "ok": true,
+    "panelLocal": [
+      0.050000000000000044,
+      3.6799999999999997,
+      -0.32499999999999996,
+      0.32499999999999996
+    ]
+  },
+  {
+    "text": "Ответственность\nМы отвечаем за результат",
+    "object": "Value_2",
+    "face": "foundation:front",
+    "section": "foundation",
+    "worldSize": [
+      3.63,
+      0.6499999999999999
+    ],
+    "fontSizePx": 18,
+    "lines": 2,
+    "ok": true,
+    "panelLocal": [
+      3.78,
+      7.41,
+      -0.32499999999999996,
+      0.32499999999999996
+    ]
+  },
+  {
+    "text": "Трансформация культуры",
+    "object": "ColumnText_1",
+    "face": "floor1:column_1",
+    "section": "floor1",
+    "worldSize": [
+      0.39999999999999997,
+      1.5199999999999998
+    ],
+    "fontSizePx": 16,
+    "lines": 1,
+    "ok": true,
+    "panelLocal": [
+      -0.19999999999999998,
+      0.19999999999999998,
+      -0.7599999999999999,
+      0.7599999999999999
+    ]
+  },
+  {
+    "text": "Лидерство и карьера",
+    "object": "ColumnText_2",
+    "face": "floor1:column_2",
+    "section": "floor1",
+    "worldSize": [
+      0.39999999999999997,
+      1.5199999999999998
+    ],
+    "fontSizePx": 16,
+    "lines": 1,
+    "ok": true,
+    "panelLocal": [
+      -0.19999999999999998,
+      0.19999999999999998,
+      -0.7599999999999999,
+      0.7599999999999999
+    ]
+  },
+  {
+    "text": "Эффективность и мотивация",
+    "object": "ColumnText_3",
+    "face": "floor1:column_3",
+    "section": "floor1",
+    "worldSize": [
+      0.39999999999999997,
+      1.5199999999999998
+    ],
+    "fontSizePx": 16,
+    "lines": 1,
+    "ok": true,
+    "panelLocal": [
+      -0.19999999999999998,
+      0.19999999999999998,
+      -0.7599999999999999,
+      0.7599999999999999
+    ]
+  },
+  {
+    "text": "Мышление долголетия",
+    "object": "ColumnText_4",
+    "face": "floor1:column_4",
+    "section": "floor1",
+    "worldSize": [
+      0.39999999999999997,
+      1.5199999999999998
+    ],
+    "fontSizePx": 16,
+    "lines": 1,
+    "ok": true,
+    "panelLocal": [
+      -0.19999999999999998,
+      0.19999999999999998,
+      -0.7599999999999999,
+      0.7599999999999999
+    ]
+  },
+  {
+    "text": "Сильный бренд работодателя",
+    "object": "ColumnText_5",
+    "face": "floor1:column_5",
+    "section": "floor1",
+    "worldSize": [
+      0.39999999999999997,
+      1.5199999999999998
+    ],
+    "fontSizePx": 16,
+    "lines": 1,
+    "ok": true,
+    "panelLocal": [
+      -0.19999999999999998,
+      0.19999999999999998,
+      -0.7599999999999999,
+      0.7599999999999999
+    ]
+  },
+  {
+    "text": "СИ: ГЕРОФАРМ — лучший работодатель фармацевтического рынка России",
+    "object": "Employer",
+    "face": "floor1:body_right",
+    "section": "floor1",
+    "worldSize": [
+      4.2,
+      0.7
+    ],
+    "fontSizePx": 16,
+    "lines": 1,
+    "ok": true,
+    "panelLocal": [
+      -2.1,
+      2.1,
+      -0.35,
+      0.35
+    ]
+  },
+  {
+    "text": "1 ЭТАЖ: КОМАНДА И ЛИДЕРСТВО",
+    "object": "Floor1Title",
+    "face": "floor1:fascia_right",
+    "section": "floor1",
+    "worldSize": [
+      5.04,
+      0.18999999999999997
+    ],
+    "fontSizePx": 13,
+    "lines": 1,
+    "ok": true,
+    "panelLocal": [
+      -2.52,
+      2.52,
+      -0.09499999999999999,
+      0.09499999999999999
+    ]
+  },
+  {
+    "text": "СИ: Развитие биотехнологического производства для увеличения годовой мощности до 2000 кг в год\n\nСИ: Модернизация производства продуктов экстрактов сухих для увеличения годовой мощности производства",
+    "object": "ProductionLeft",
+    "face": "floor2:front",
+    "section": "floor2",
+    "worldSize": [
+      2.7,
+      1.15
+    ],
+    "fontSizePx": 17,
+    "lines": 4,
+    "ok": true,
+    "panelLocal": [
+      -6.5,
+      -3.8000000000000003,
+      -0.4299999999999998,
+      0.7200000000000001
+    ]
+  },
+  {
+    "text": "СИ: Повышение мощности и эффективности производства ТЛФ до 1 миллиарда таблеток в год",
+    "object": "TabletProduction",
+    "face": "floor2:front",
+    "section": "floor2",
+    "worldSize": [
+      1.35,
+      1.05
+    ],
+    "fontSizePx": 17,
+    "lines": 3,
+    "ok": true,
+    "panelLocal": [
+      0.625,
+      1.975,
+      -0.47500000000000003,
+      0.5750000000000001
+    ]
+  },
+  {
+    "text": "СИ: Модернизация производства продуктов в шприц-ручках, флаконированных и картриджных форм\n\nСИ: Модернизация производства биотехнологических субстанций",
+    "object": "ObolenskProduction",
+    "face": "floor2:front",
+    "section": "floor2",
+    "worldSize": [
+      1.85,
+      1.0
+    ],
+    "fontSizePx": 17,
+    "lines": 4,
+    "ok": true,
+    "panelLocal": [
+      2.075,
+      3.925,
+      -0.42,
+      0.58
+    ]
+  },
+  {
+    "text": "Производственная площадка в Пушкине:",
+    "object": "PushkinoName",
+    "face": "floor2:front",
+    "section": "floor2",
+    "worldSize": [
+      3.6,
+      0.2
+    ],
+    "fontSizePx": 13,
+    "lines": 1,
+    "ok": true,
+    "panelLocal": [
+      -3.3,
+      0.30000000000000004,
+      -0.6050000000000001,
+      -0.40500000000000014
+    ]
+  },
+  {
+    "text": "Производственная площадка в Оболенске:",
+    "object": "ObolenskName",
+    "face": "floor2:front",
+    "section": "floor2",
+    "worldSize": [
+      3.4,
+      0.2
+    ],
+    "fontSizePx": 13,
+    "lines": 1,
+    "ok": true,
+    "panelLocal": [
+      2.1500000000000004,
+      5.55,
+      -0.6050000000000001,
+      -0.40500000000000014
+    ]
+  },
+  {
+    "text": "Цель производственных площадок: Обеспечить бездефектурное производство препаратов",
+    "object": "SharedGoal",
+    "face": "floor2:goal_strip",
+    "section": "floor2",
+    "worldSize": [
+      10.2,
+      0.18
+    ],
+    "fontSizePx": 13,
+    "lines": 1,
+    "ok": true,
+    "panelLocal": [
+      -5.1,
+      5.1,
+      -0.09,
+      0.09
+    ]
+  },
+  {
+    "text": "СИ: Развитие интегрированного бизнес-планирование",
+    "object": "Planning",
+    "face": "floor2:front",
+    "section": "floor2",
+    "worldSize": [
+      2.1,
+      0.8
+    ],
+    "fontSizePx": 17,
+    "lines": 1,
+    "ok": true,
+    "panelLocal": [
+      4.47,
+      6.569999999999999,
+      -0.25,
+      0.55
+    ]
+  },
+  {
+    "text": "2 ЭТАЖ: БИЗНЕС-ПРОЦЕССЫ И ПРОИЗВОДСТВО",
+    "object": "Floor2Title",
+    "face": "floor2:fascia_right",
+    "section": "floor2",
+    "worldSize": [
+      4.62,
+      0.15999999999999998
+    ],
+    "fontSizePx": 13,
+    "lines": 1,
+    "ok": true,
+    "panelLocal": [
+      -2.31,
+      2.31,
+      -0.07999999999999999,
+      0.07999999999999999
+    ]
+  },
+  {
+    "text": "СИ: Инновации",
+    "object": "Portfolio_Innov",
+    "face": "floor3:bay_innov",
+    "section": "floor3",
+    "worldSize": [
+      1.27,
+      0.26
+    ],
+    "fontSizePx": 17,
+    "lines": 1,
+    "ok": true,
+    "panelLocal": [
+      -0.635,
+      0.635,
+      0.30000000000000004,
+      0.56
+    ]
+  },
+  {
+    "text": "СИ: Формирование портфеля продуктами с выручкой до 1 млрд*\n\nСИ: Развитие функции обеспечения дсотупа на рынок",
+    "object": "Portfolio_Pair",
+    "face": "floor3:bay_pair",
+    "section": "floor3",
+    "worldSize": [
+      1.66,
+      1.12
+    ],
+    "fontSizePx": 17,
+    "lines": 4,
+    "ok": true,
+    "panelLocal": [
+      -0.83,
+      0.83,
+      -0.54,
+      0.5800000000000001
+    ]
+  },
+  {
+    "text": "СИ: Лидерство в сегменте метаболическое здоровье",
+    "object": "Portfolio_Lead",
+    "face": "floor3:bay_lead",
+    "section": "floor3",
+    "worldSize": [
+      0.9099999999999999,
+      1.12
+    ],
+    "fontSizePx": 17,
+    "lines": 4,
+    "ok": true,
+    "panelLocal": [
+      -0.45499999999999996,
+      0.45499999999999996,
+      -0.54,
+      0.5800000000000001
+    ]
+  },
+  {
+    "text": "СИ: Наполнение портфеля биоаналогами, препаратами first-in-class, best-in-class через партнерство",
+    "object": "Portfolio_Fill",
+    "face": "floor3:bay_fill",
+    "section": "floor3",
+    "worldSize": [
+      1.56,
+      1.12
+    ],
+    "fontSizePx": 17,
+    "lines": 3,
+    "ok": true,
+    "panelLocal": [
+      -0.78,
+      0.78,
+      -0.54,
+      0.5800000000000001
+    ]
+  },
+  {
+    "text": "СИ: Обеспечение эффективности продаж продуктов основного портфеля",
+    "object": "Portfolio_Sales",
+    "face": "floor3:bay_sales",
+    "section": "floor3",
+    "worldSize": [
+      0.9099999999999999,
+      1.12
+    ],
+    "fontSizePx": 17,
+    "lines": 4,
+    "ok": true,
+    "panelLocal": [
+      -0.45499999999999996,
+      0.45499999999999996,
+      -0.54,
+      0.5800000000000001
+    ]
+  },
+  {
+    "text": "СИ: Развитие экспорта",
+    "object": "Portfolio_Export",
+    "face": "floor3:bay_export",
+    "section": "floor3",
+    "worldSize": [
+      0.75,
+      1.12
+    ],
+    "fontSizePx": 17,
+    "lines": 2,
+    "ok": true,
+    "panelLocal": [
+      -0.375,
+      0.375,
+      -0.54,
+      0.5800000000000001
+    ]
+  },
+  {
+    "text": "3 ЭТАЖ: ПОРТФЕЛЬ И РЫНКИ",
+    "object": "Floor3Title",
+    "face": "floor3:fascia_right",
+    "section": "floor3",
+    "worldSize": [
+      3.7099999999999995,
+      0.12999999999999998
+    ],
+    "fontSizePx": 13,
+    "lines": 1,
+    "ok": true,
+    "panelLocal": [
+      -1.8549999999999998,
+      1.8549999999999998,
+      -0.06499999999999999,
+      0.06499999999999999
+    ]
+  },
+  {
+    "text": "EBITA* ≥ 35%\nРентабельность по валовой прибыли > 55%\nROA** > 15% (эффективность активов)\nROE*** > 25% (отдача на капитал)",
+    "object": "Finance",
+    "face": "floor4:front",
+    "section": "floor4",
+    "worldSize": [
+      3.9,
+      0.92
+    ],
+    "fontSizePx": 17,
+    "lines": 4,
+    "ok": true,
+    "panelLocal": [
+      -1.95,
+      1.95,
+      -0.46,
+      0.46
+    ]
+  },
+  {
+    "text": "ФИНАНСОВЫЕ ПОКАЗАТЕЛИ",
+    "object": "Floor4Title",
+    "face": "floor4:fascia_right",
+    "section": "floor4",
+    "worldSize": [
+      3.024,
+      0.11
+    ],
+    "fontSizePx": 13,
+    "lines": 1,
+    "ok": true,
+    "panelLocal": [
+      -1.512,
+      1.512,
+      -0.055,
+      0.055
+    ]
+  },
+  {
+    "text": "МИССИЯ КОМПАНИИ:  Создаем инновации для увеличения продолжительности жизни в России и мире",
+    "object": "MissionBand",
+    "face": "mission:roof_fascia",
+    "section": "mission",
+    "worldSize": [
+      6.75,
+      0.13999999999999999
+    ],
+    "fontSizePx": 13,
+    "lines": 1,
+    "ok": true,
+    "panelLocal": [
+      -3.375,
+      3.375,
+      -0.06999999999999999,
+      0.06999999999999999
+    ]
+  },
+  {
+    "text": "g",
+    "object": "LogoG",
+    "face": null,
+    "section": "mission",
+    "worldSize": [
+      0.7,
+      0.7
+    ],
+    "fontSizePx": 220,
+    "lines": null,
+    "ok": true,
+    "panelLocal": null
+  },
+  {
+    "text": "Ph",
+    "object": "LogoPh",
+    "face": null,
+    "section": "mission",
+    "worldSize": [
+      0.7,
+      0.7
+    ],
+    "fontSizePx": 156,
+    "lines": null,
+    "ok": true,
+    "panelLocal": null
+  }
+]

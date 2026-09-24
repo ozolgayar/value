@@ -135,9 +135,9 @@ export function Cover({ onOpen, inert = false }: CoverProps) {
 
         <div className="cover__content">
           <h1 className="cover__title cover-fade cover-fade--title">
-            История.
+            История
             <br />
-            Культура.
+            Культура
             <br />
             Будущее
           </h1>

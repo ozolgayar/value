@@ -1,7 +1,7 @@
 .roll-menu {
   position: absolute;
   inset: 0;
-  z-index: 40;
+  z-index: 1100;
   pointer-events: none;
 }
 
@@ -25,7 +25,7 @@
   position: absolute;
   left: 50%;
   bottom: max(1.1rem, calc(env(safe-area-inset-bottom) + 0.85rem));
-  z-index: 33;
+  z-index: 200;
   transform: translateX(-50%);
   display: inline-flex;
   align-items: center;
@@ -140,6 +140,7 @@
 }
 
 .roll-menu__link {
+  position: relative;
   font-family: var(--btn-font);
   font-size: clamp(1.65rem, 4vw, 2.15rem);
   font-weight: 700;
@@ -155,6 +156,41 @@
 .roll-menu__link:focus-visible {
   color: var(--orange);
   outline: none;
+}
+
+.roll-menu__link[data-tooltip]::after,
+.roll-menu__home[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 0;
+  top: calc(100% + 0.35rem);
+  white-space: nowrap;
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+  background: rgba(17, 24, 39, 0.92);
+  color: #fff;
+  font-family: var(--btn-font);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.22);
+  z-index: 2;
+}
+
+.roll-menu__home[data-tooltip]::after {
+  left: auto;
+  right: 0;
+}
+
+.roll-menu__link[data-tooltip]:hover::after,
+.roll-menu__link[data-tooltip]:focus-visible::after,
+.roll-menu__home[data-tooltip]:hover::after,
+.roll-menu__home[data-tooltip]:focus-visible::after {
+  opacity: 1;
 }
 
 .roll-menu__footer {
@@ -174,27 +210,33 @@
   color: var(--muted);
 }
 
-.roll-menu__cta {
+.roll-menu__home {
+  position: relative;
   flex: 0 0 auto;
-  min-height: 40px;
-  padding: 0.45rem 1.1rem;
-  border-radius: 999px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
   border: 1.5px solid rgba(44, 18, 100, 0.4);
-  color: var(--purple);
-  font-family: var(--btn-font);
-  font-size: 0.85rem;
-  font-weight: 700;
+  color: #2c1264;
   background: transparent;
   transition:
     background 0.2s ease,
-    color 0.2s ease,
     border-color 0.2s ease;
 }
 
-.roll-menu__cta:hover {
-  background: var(--purple);
-  color: #fff;
-  border-color: var(--purple);
+.roll-menu__home:hover,
+.roll-menu__home:focus-visible {
+  background: rgba(44, 18, 100, 0.08);
+  border-color: #2c1264;
+  outline: none;
+}
+
+.roll-menu__home-icon {
+  width: 22px;
+  height: 22px;
+  display: block;
 }
 
 @media (max-width: 640px) {

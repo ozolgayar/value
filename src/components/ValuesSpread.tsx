@@ -1,3 +1,4 @@
+import { asset } from '../asset'
 import { valuesSpread } from '../data/valuesSpread'
 import '../styles/values-spread.css'
 
@@ -26,6 +27,19 @@ export function ValuesSpreadPage() {
                       <h2>{item.title}</h2>
                     </div>
                     <p>{item.text}</p>
+                    {'icons' in item && item.icons ? (
+                      <div className="values-spread__icons" aria-hidden>
+                        {item.icons.map((src) => (
+                          <img
+                            key={src}
+                            className="values-spread__icon"
+                            src={asset(src)}
+                            alt=""
+                            draggable={false}
+                          />
+                        ))}
+                      </div>
+                    ) : null}
                   </li>
                 ))}
               </ul>

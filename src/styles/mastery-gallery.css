@@ -1,0 +1,353 @@
+/* Must beat .page-shell { display: flex } */
+.page-shell.page-bleed.page-mastery-gallery {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 60% 50% at 12% 18%, rgba(249, 115, 22, 0.12), transparent 55%),
+    radial-gradient(ellipse 50% 45% at 88% 78%, rgba(124, 58, 237, 0.14), transparent 55%),
+    linear-gradient(165deg, #f8fafc 0%, #eef2ff 48%, #f5f3ff 100%);
+  color: #111827;
+}
+
+.mg__inner {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding:
+    calc(var(--nav-safe) + 0.55rem)
+    calc(var(--nav-arrow-lane-right) + 1.5rem)
+    clamp(0.85rem, 1.8vh, 1.25rem)
+    calc(var(--nav-arrow-lane-left) + 1.5rem);
+  overflow: auto;
+}
+
+.mg__badge {
+  align-self: flex-start;
+  font-size: clamp(0.55rem, 0.8vw, 0.66rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #c2410c;
+  border: 1px solid rgba(194, 65, 12, 0.45);
+  border-radius: 999px;
+  padding: 0.28rem 0.7rem;
+}
+
+.mg__title {
+  margin: 0.75rem 0 0;
+  font-size: clamp(1.35rem, 2.6vw, 2rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: #111827;
+}
+
+.mg__grid {
+  --CardsBorderColor: #2a87c5, #8716c1, #fd79c0;
+  --CardsBorderOpacity: 0.35;
+  --CardsOpacity: 1;
+  --CardsBorderRadius: 16px;
+
+  margin-top: 1.25rem;
+  flex: 1 1 auto;
+  min-height: 16rem;
+  max-height: min(58vh, 34rem);
+  display: grid;
+  grid-template-columns: 1.45fr 1fr;
+  grid-template-rows: 1.15fr 0.95fr;
+  gap: 14px;
+}
+
+.mg__card {
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  margin: 0;
+  padding: 1.25rem 1.35rem;
+  border: none;
+  border-radius: var(--CardsBorderRadius);
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  color: #fff;
+  background: transparent;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12);
+}
+
+.mg__card:nth-child(1) {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.mg__card:nth-child(2) {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.mg__card:nth-child(3) {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.mg__card:nth-child(4) {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.mg__card::before,
+.mg__card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  transition: opacity 500ms;
+}
+
+.mg__card::before {
+  z-index: 2;
+  padding: 2px;
+  inset: -2px;
+  background: radial-gradient(
+    550px circle at var(--mouse-x) var(--mouse-y),
+    var(--CardsBorderColor),
+    transparent 50%
+  );
+  opacity: var(--CardsBorderOpacity);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.mg__card::after {
+  z-index: 1;
+  background: radial-gradient(
+    500px circle at var(--mouse-x) var(--mouse-y),
+    rgba(255, 255, 255, 0.35),
+    transparent 40%
+  );
+  opacity: 0;
+}
+
+.mg__card:hover::after,
+.mg__card:focus-visible::after {
+  opacity: 1;
+}
+
+.mg__card:focus-visible {
+  outline: 2px solid #7c3aed;
+  outline-offset: 3px;
+}
+
+.mg__card-face {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(160deg, rgba(15, 23, 42, 0.15), rgba(15, 23, 42, 0.55)),
+    linear-gradient(135deg, var(--mg-tone, #7c3aed), #111827 120%);
+}
+
+.mg__card-title {
+  position: relative;
+  z-index: 3;
+  pointer-events: none;
+  max-width: 14ch;
+  font-size: clamp(1rem, 1.8vw, 1.35rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+}
+
+.mg__instruction {
+  margin: 1.15rem 0 0;
+  font-size: clamp(0.95rem, 1.5vw, 1.2rem);
+  font-weight: 700;
+  line-height: 1.35;
+  color: #1f2937;
+}
+
+.mg__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  align-self: flex-start;
+  font-size: clamp(0.55rem, 0.75vw, 0.68rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6b7280;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.mg__mark {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  background: linear-gradient(90deg, #f0b429 0%, #e85a3c 28%, #a12c8f 62%, #2f6fe8 100%);
+  -webkit-mask-image: var(--asset-trans-mark);
+  mask-image: var(--asset-trans-mark);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+  .mg__inner {
+    padding:
+      max(60px, calc(var(--nav-safe) + 8px))
+      max(24px, var(--nav-arrow-lane-right))
+      40px
+      max(24px, var(--nav-arrow-lane-left));
+  }
+
+  .mg__grid {
+    gap: 16px;
+  }
+
+  .mg__card-title {
+    font-size: clamp(1rem, 2.5vw, 1.35rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .page-shell.page-bleed.page-mastery-gallery {
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+  }
+
+  .mg__inner {
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+    padding: calc(var(--nav-safe) + 12px) 20px 90px;
+  }
+
+  .mg__badge {
+    order: 1;
+    font-size: 10px;
+    padding: 6px 12px;
+  }
+
+  .mg__title {
+    order: 2;
+    margin-bottom: 8px;
+    font-size: clamp(1.5rem, 7vw, 2.2rem);
+  }
+
+  .mg__instruction {
+    order: 3;
+    margin: 0 0 16px;
+    font-size: clamp(1rem, 4.5vw, 1.35rem);
+  }
+
+  .mg__grid {
+    order: 4;
+    flex: 0 0 auto;
+    min-height: 0;
+    max-height: none;
+    height: auto;
+    margin-top: 0;
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    gap: 12px;
+  }
+
+  .mg__card,
+  .mg__card:nth-child(1),
+  .mg__card:nth-child(2),
+  .mg__card:nth-child(3),
+  .mg__card:nth-child(4) {
+    grid-column: 1;
+    grid-row: auto;
+    width: 100%;
+    height: 160px;
+    min-height: 140px;
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .mg__card:active {
+    transform: scale(0.98);
+  }
+
+  .mg__brand {
+    order: 5;
+  }
+
+  .app-shell:has(.page-mastery-gallery) .reader__progress {
+    top: 0;
+    left: 0;
+    width: 100%;
+    transform: none;
+    border-radius: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: none;
+  }
+
+  .app-shell:has(.page-mastery-gallery) .cursor-dot {
+    width: 24px;
+    height: 24px;
+  }
+
+  .app-shell:has(.page-mastery-gallery) .reader__chrome::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(72px + env(safe-area-inset-bottom));
+    background: #fff;
+    box-shadow: 0 -1px 0 rgba(0, 40, 80, 0.06);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .app-shell:has(.page-mastery-gallery) .roll-menu__trigger,
+  .app-shell:has(.page-mastery-gallery) .roll-menu__trigger:hover,
+  .app-shell:has(.page-mastery-gallery) .roll-menu.is-open .roll-menu__trigger {
+    left: 20px;
+    right: auto;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    transform: none;
+    z-index: 2;
+  }
+
+  .app-shell:has(.page-mastery-gallery) .reader__pager {
+    right: 20px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    z-index: 2;
+  }
+}

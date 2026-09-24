@@ -1,6 +1,12 @@
 import { practiceErrorFirst } from '../data/practiceErrorFirst'
 import { PracticeCasePage } from './PracticeCase'
 
-export function PracticeErrorFirstPage() {
-  return <PracticeCasePage data={practiceErrorFirst} />
+export function PracticeErrorFirstPage({
+  onFinishSection,
+}: {
+  onFinishSection?: () => void
+}) {
+  return (
+    <PracticeCasePage data={practiceErrorFirst} onFinishSection={onFinishSection} />
+  )
 }

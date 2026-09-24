@@ -1,0 +1,8 @@
+{
+  "build": "PASS",
+  "cards6": "PASS",
+  "completeAndPersist": "PASS",
+  "mobileNoOverflow": "PASS",
+  "canvasRaycast": "PASS",
+  "browserErrors": []
+}

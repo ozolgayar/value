@@ -21,10 +21,16 @@
 }
 
 .mc3d__head {
+  position: relative;
   flex: 0 0 auto;
-  max-width: 40rem;
+  width: 100%;
   margin-bottom: 0.25rem;
   z-index: 3;
+}
+
+.mc3d__head-copy {
+  max-width: min(40rem, 72%);
+  min-width: 0;
 }
 
 .mc3d__badge {
@@ -49,6 +55,24 @@
   letter-spacing: -0.02em;
   white-space: pre-line;
   color: var(--mc3d-blue);
+}
+
+.mc3d__icon-360 {
+  position: absolute;
+  top: 0.15rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(4.5rem, 9vw, 7rem);
+  height: clamp(4.5rem, 9vw, 7rem);
+  background-color: #0050aa;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  pointer-events: none;
+  z-index: 2;
 }
 
 .mc3d__viewport {
@@ -167,7 +191,11 @@
     transform 180ms ease;
 }
 
-.mc3d__tag:hover {
+a.mc3d__tag {
+  cursor: pointer;
+}
+
+a.mc3d__tag:hover {
   background: rgba(0, 87, 184, 0.12);
   border-color: var(--mc3d-blue);
   transform: translateY(-1px);
@@ -229,6 +257,15 @@
     padding-right: 1rem;
   }
 
+  .mc3d__head-copy {
+    max-width: min(40rem, 78%);
+  }
+
+  .mc3d__icon-360 {
+    width: clamp(3.25rem, 14vw, 4.75rem);
+    height: clamp(3.25rem, 14vw, 4.75rem);
+  }
+
   .mc3d__viewport {
     perspective: 1300px;
   }
@@ -251,6 +288,211 @@
 @media (max-width: 640px) {
   .mc3d__hint {
     font-size: 0.68rem;
+  }
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+  .page-shell.page-mission-eco.mc3d {
+    --mc3d-panel-w: min(220px, 30vw);
+  }
+}
+
+@media (max-width: 768px) {
+  .reader__page:has(.mc3d) {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .page-shell.page-mission-eco.mc3d {
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+    padding: calc(var(--nav-safe) + 12px) 20px calc(96px + env(safe-area-inset-bottom));
+  }
+
+  .mc3d__head {
+    position: static;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    order: 1;
+    margin-bottom: 8px;
+  }
+
+  .mc3d__head-copy {
+    max-width: 100%;
+  }
+
+  .mc3d__title {
+    font-size: clamp(1.25rem, 5.5vw, 1.75rem);
+    margin-bottom: 0;
+  }
+
+  .mc3d__icon-360 {
+    display: none;
+  }
+
+  .mc3d__viewport {
+    order: 3;
+    flex: none;
+    height: auto;
+    min-height: 0;
+    perspective: none;
+    overflow: visible;
+    cursor: default;
+    opacity: 1;
+    touch-action: auto;
+  }
+
+  .mc3d__viewport:active {
+    cursor: default;
+  }
+
+  .mc3d__stage {
+    position: static;
+    inset: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    width: 100%;
+    transform: none;
+  }
+
+  .mc3d__panel {
+    position: static;
+    width: 100%;
+    max-height: none;
+    padding: 20px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    opacity: 1;
+    z-index: auto;
+    transform: none;
+    cursor: default;
+  }
+
+  .mc3d__acc-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .mc3d__acc-toggle .mc3d__panel-title {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  .mc3d__chevron {
+    flex: 0 0 auto;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid currentColor;
+    transform: rotate(-90deg);
+    transition: transform 300ms ease;
+  }
+
+  .mc3d__panel.is-open .mc3d__chevron {
+    transform: rotate(0deg);
+  }
+
+  .mc3d__acc-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 300ms ease;
+  }
+
+  .mc3d__panel.is-open .mc3d__acc-body {
+    grid-template-rows: 1fr;
+  }
+
+  .mc3d__acc-inner {
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  .mc3d__panel.is-open .mc3d__panel-text {
+    margin-top: 12px;
+  }
+
+  .mc3d__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .mc3d__tag {
+    flex: 1 1 auto;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+
+  .mc3d__dots {
+    display: none;
+  }
+
+  .mc3d__controls {
+    order: 2;
+    align-items: flex-start;
+    margin-top: 0;
+    margin-bottom: 16px;
+  }
+
+  .mc3d__hint {
+    max-width: none;
+    text-align: left;
+    font-size: 0.85rem;
+  }
+
+  .app-shell:has(.mc3d) .reader__chrome::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(72px + env(safe-area-inset-bottom));
+    background: #fff;
+    box-shadow: 0 -1px 0 rgba(0, 40, 80, 0.06);
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .app-shell:has(.mc3d) .roll-menu__trigger,
+  .app-shell:has(.mc3d) .roll-menu__trigger:hover,
+  .app-shell:has(.mc3d) .roll-menu.is-open .roll-menu__trigger {
+    left: 20px;
+    right: auto;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    transform: none;
+    z-index: 2;
+  }
+
+  .app-shell:has(.mc3d) .reader__pager {
+    right: 20px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    z-index: 2;
+  }
+}
+
+@media (max-width: 360px) {
+  .mc3d__tag {
+    flex: 1 1 100%;
+    width: 100%;
   }
 }
 

@@ -1,0 +1,418 @@
+[
+  {
+    "name": "Values_title",
+    "section": "foundation",
+    "text": "ЦЕННОСТИ\nГЕРОФАРМ",
+    "font": "Verdana Bold",
+    "sizeWorld": 0.145,
+    "panel": [
+      1.65,
+      0.6
+    ],
+    "vertical": false,
+    "lines": 2
+  },
+  {
+    "name": "Value_0",
+    "section": "foundation",
+    "text": "СТРАСТЬ\nМы увлечены работой",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      3.7,
+      0.55
+    ],
+    "vertical": false,
+    "lines": 2
+  },
+  {
+    "name": "Value_1",
+    "section": "foundation",
+    "text": "АМБИЦИОЗНОСТЬ\nМы устремлены в будущее",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      3.7,
+      0.55
+    ],
+    "vertical": false,
+    "lines": 2
+  },
+  {
+    "name": "Value_2",
+    "section": "foundation",
+    "text": "ОТВЕТСТВЕННОСТЬ\nМы отвечаем за результат",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      3.7,
+      0.55
+    ],
+    "vertical": false,
+    "lines": 2
+  },
+  {
+    "name": "Column_1",
+    "section": "floor1",
+    "text": "Трансформация культуры",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      0.43,
+      1.79
+    ],
+    "vertical": true,
+    "lines": 1
+  },
+  {
+    "name": "Column_2",
+    "section": "floor1",
+    "text": "Лидерство и карьера",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      0.43,
+      1.79
+    ],
+    "vertical": true,
+    "lines": 1
+  },
+  {
+    "name": "Column_3",
+    "section": "floor1",
+    "text": "Эффективность и мотивация",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      0.43,
+      1.79
+    ],
+    "vertical": true,
+    "lines": 2
+  },
+  {
+    "name": "Column_4",
+    "section": "floor1",
+    "text": "Мышление долголетия",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      0.43,
+      1.79
+    ],
+    "vertical": true,
+    "lines": 1
+  },
+  {
+    "name": "Column_5",
+    "section": "floor1",
+    "text": "Сильный бренд работодателя",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      0.43,
+      1.79
+    ],
+    "vertical": true,
+    "lines": 2
+  },
+  {
+    "name": "Employer",
+    "section": "floor1",
+    "text": "ГЕРОФАРМ — лучший работодатель фармацевтического рынка России",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      5.72,
+      0.62
+    ],
+    "vertical": false,
+    "lines": 1
+  },
+  {
+    "name": "Title_floor1",
+    "section": "floor1",
+    "text": "1 ЭТАЖ: КОМАНДА И ЛИДЕРСТВО",
+    "font": "Verdana Bold",
+    "sizeWorld": 0.145,
+    "panel": [
+      5.9,
+      0.32
+    ],
+    "vertical": false,
+    "lines": 1
+  },
+  {
+    "name": "Production_biotech",
+    "section": "floor2",
+    "text": "СИ: Развитие биотехнологического производства для увеличения годовой мощности до 2000 кг в год\n\nСИ: Модернизация производства продуктов экстрактов сухих для увеличения годовой мощности производства",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      3.1,
+      1.65
+    ],
+    "vertical": false,
+    "lines": 7
+  },
+  {
+    "name": "Tablets",
+    "section": "floor2",
+    "text": "СИ: Повышение мощности и эффективности производства ТЛФ до 1 миллиарда таблеток в год",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      4.1,
+      0.52
+    ],
+    "vertical": false,
+    "lines": 2
+  },
+  {
+    "name": "Obolensk_initiatives",
+    "section": "floor2",
+    "text": "СИ: Модернизация производства продуктов в шприц-ручках, флаконированных и картриджных форм\n\nСИ: Модернизация производства биотехнологических субстанций",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      5.1,
+      1.49
+    ],
+    "vertical": false,
+    "lines": 4
+  },
+  {
+    "name": "Pushkino",
+    "section": "floor2",
+    "text": "ПРОИЗВОДСТВЕННАЯ ПЛОЩАДКА В ПУШКИНЕ",
+    "font": "Verdana",
+    "sizeWorld": 0.13,
+    "panel": [
+      6.75,
+      0.3
+    ],
+    "vertical": false,
+    "lines": 1
+  },
+  {
+    "name": "Obolensk",
+    "section": "floor2",
+    "text": "ПРОИЗВОДСТВЕННАЯ ПЛОЩАДКА В ОБОЛЕНСКЕ",
+    "font": "Verdana",
+    "sizeWorld": 0.13,
+    "panel": [
+      6.95,
+      0.3
+    ],
+    "vertical": false,
+    "lines": 1
+  },
+  {
+    "name": "Shared_goal",
+    "section": "floor2",
+    "text": "Цель производственных площадок: Обеспечить бездефектурное производство препаратов",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      14.1,
+      0.29
+    ],
+    "vertical": false,
+    "lines": 1
+  },
+  {
+    "name": "Planning",
+    "section": "floor2",
+    "text": "Развитие интегрированного бизнес-планирования",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      5.65,
+      0.52
+    ],
+    "vertical": false,
+    "lines": 1
+  },
+  {
+    "name": "Title_floor2",
+    "section": "floor2",
+    "text": "2 ЭТАЖ: БИЗНЕС-ПРОЦЕССЫ И ПРОИЗВОДСТВО",
+    "font": "Verdana Bold",
+    "sizeWorld": 0.145,
+    "panel": [
+      6.9,
+      0.33
+    ],
+    "vertical": false,
+    "lines": 1
+  },
+  {
+    "name": "Carton_3.86_0.38",
+    "section": "floor2",
+    "text": "↑",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      0.36,
+      0.3
+    ],
+    "vertical": false,
+    "lines": 1
+  },
+  {
+    "name": "Carton_3.86_0.9",
+    "section": "floor2",
+    "text": "↑",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      0.36,
+      0.3
+    ],
+    "vertical": false,
+    "lines": 1
+  },
+  {
+    "name": "Carton_4.36_0.66",
+    "section": "floor2",
+    "text": "↑",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      0.36,
+      0.3
+    ],
+    "vertical": false,
+    "lines": 1
+  },
+  {
+    "name": "Portfolio_0",
+    "section": "floor3",
+    "text": "СИ: Инновации",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      1.125,
+      1.69
+    ],
+    "vertical": false,
+    "lines": 1
+  },
+  {
+    "name": "Portfolio_1",
+    "section": "floor3",
+    "text": "СИ: Формирование портфеля продуктами с выручкой до 1 млрд*\n\nСИ: Развитие функции обеспечения доступа на рынок",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      2.025,
+      1.69
+    ],
+    "vertical": false,
+    "lines": 6
+  },
+  {
+    "name": "Portfolio_2",
+    "section": "floor3",
+    "text": "СИ: Наполнение портфеля биоаналогами, препаратами first-in-class, best-in-class через партнерство",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      1.745,
+      1.69
+    ],
+    "vertical": false,
+    "lines": 5
+  },
+  {
+    "name": "Portfolio_3",
+    "section": "floor3",
+    "text": "СИ: Лидерство в сегменте метаболическое здоровье",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      1.2950000000000002,
+      1.69
+    ],
+    "vertical": false,
+    "lines": 4
+  },
+  {
+    "name": "Portfolio_4",
+    "section": "floor3",
+    "text": "СИ: Обеспечение эффективности продаж продуктов основного портфеля",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      1.5250000000000001,
+      1.69
+    ],
+    "vertical": false,
+    "lines": 4
+  },
+  {
+    "name": "Portfolio_5",
+    "section": "floor3",
+    "text": "СИ: Развитие экспорта",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      1.165,
+      1.69
+    ],
+    "vertical": false,
+    "lines": 2
+  },
+  {
+    "name": "Title_floor3",
+    "section": "floor3",
+    "text": "3 ЭТАЖ: ПОРТФЕЛЬ И РЫНКИ",
+    "font": "Verdana Bold",
+    "sizeWorld": 0.145,
+    "panel": [
+      6.9,
+      0.33
+    ],
+    "vertical": false,
+    "lines": 1
+  },
+  {
+    "name": "Finance",
+    "section": "floor4",
+    "text": "EBITDA ≥ 35%\nРентабельность по валовой прибыли ≥ 55%\nROA** > 15% (эффективность активов)\nROE*** > 25% (отдача на капитал)",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      4.1,
+      1.33
+    ],
+    "vertical": false,
+    "lines": 4
+  },
+  {
+    "name": "Title_floor4",
+    "section": "floor4",
+    "text": "ФИНАНСОВЫЕ ПОКАЗАТЕЛИ",
+    "font": "Verdana Bold",
+    "sizeWorld": 0.145,
+    "panel": [
+      4.3,
+      0.32
+    ],
+    "vertical": false,
+    "lines": 1
+  },
+  {
+    "name": "Mission",
+    "section": "mission",
+    "text": "МИССИЯ КОМПАНИИ: Создаем инновации для увеличения продолжительности жизни в России и мире",
+    "font": "Verdana",
+    "sizeWorld": 0.115,
+    "panel": [
+      6.74,
+      0.43
+    ],
+    "vertical": false,
+    "lines": 1
+  }
+]
