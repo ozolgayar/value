@@ -258,7 +258,16 @@
   position: relative;
   justify-content: space-between;
   padding-left: var(--nav-arrow-lane-left);
-  background: linear-gradient(160deg, #2b6db5 0%, #1e5a9c 55%, #2c1264 120%);
+  background: linear-gradient(
+    180deg,
+    #0199fe 0%,
+    #0497ff 32%,
+    #1f8afe 48%,
+    #466afe 62%,
+    #744ffe 75%,
+    #9f3feb 88%,
+    #cd3fae 100%
+  );
   color: var(--white);
   box-shadow: 4px 0 16px rgba(0, 0, 0, 0.12);
   z-index: 1;
