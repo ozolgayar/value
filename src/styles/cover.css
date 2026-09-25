@@ -201,7 +201,7 @@
   box-sizing: border-box;
   width: min(640px, 100%);
   max-width: 640px;
-  margin: 0;
+  margin: 0 0 0 50px;
   padding: 0;
   display: flex;
   flex-direction: column;
