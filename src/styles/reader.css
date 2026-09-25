@@ -257,7 +257,7 @@
 .page-split__left {
   position: relative;
   justify-content: space-between;
-  padding-left: var(--nav-arrow-lane-left);
+  padding-left: calc(var(--nav-arrow-lane-left) + 50px);
   background: linear-gradient(
     180deg,
     #0199fe 0%,
