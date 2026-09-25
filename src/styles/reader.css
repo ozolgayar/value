@@ -2407,7 +2407,7 @@
 
   .page-ceo__main-inner {
     gap: 0.7rem;
-    max-width: min(46rem, 100%);
+    max-width: 100%;
   }
 
   .page-ceo .page-badge {
