@@ -447,6 +447,7 @@ export const sections: Section[] = [
     tag: 'ИСТОРИИ ПОБЕД',
     summary: 'Легендарные победы и секреты успеха',
     accent: '#E56814',
+    nav: false,
     paragraphs: [
       {
         id: 'mastery-break',
@@ -503,7 +504,7 @@ export const sections: Section[] = [
   },
   {
     id: 'environment',
-    number: '07',
+    number: '06',
     title: 'Окружение ГЕРОФАРМ',
     tag: 'ИНФРАСТРУКТУРА КУЛЬТУРЫ',
     summary: 'Что в компании поддерживает и развивает культуру',
@@ -549,6 +550,7 @@ export const sections: Section[] = [
     tag: 'ТРЕНИРОВКА МЫШЛЕНИЯ',
     summary: 'Тренировка мышления на рабочих ситуациях',
     accent: '#5A44E1',
+    nav: false,
     paragraphs: [
       {
         id: 'practice-break',
@@ -660,23 +662,25 @@ export interface FlatPage {
 export function flattenPages(secs: Section[] = sections): FlatPage[] {
   const out: FlatPage[] = []
   secs.forEach((section, sectionIndex) => {
-    let sectionPageIndex = 0
-    const sectionPages = section.paragraphs.flatMap((p) => p.pages)
+    const sectionPages = section.paragraphs
+      .flatMap((p) => p.pages)
+      .filter((page) => section.nav !== false || page.kind === 'closing-cover')
     const sectionPageCount = sectionPages.length
-    section.paragraphs.forEach((paragraph) => {
-      paragraph.pages.forEach((page) => {
-        out.push({
-          page,
-          sectionId: section.id,
-          sectionIndex,
-          paragraphId: paragraph.id,
-          paragraphTitle: paragraph.title,
-          globalIndex: out.length,
-          sectionPageIndex,
-          sectionPageCount,
-        })
-        sectionPageIndex += 1
+    if (sectionPageCount === 0) return
+    let sectionPageIndex = 0
+    sectionPages.forEach((page) => {
+      const paragraph = section.paragraphs.find((p) => p.pages.includes(page))
+      out.push({
+        page,
+        sectionId: section.id,
+        sectionIndex,
+        paragraphId: paragraph?.id ?? section.id,
+        paragraphTitle: paragraph?.title ?? section.title,
+        globalIndex: out.length,
+        sectionPageIndex,
+        sectionPageCount,
       })
+      sectionPageIndex += 1
     })
   })
   return out

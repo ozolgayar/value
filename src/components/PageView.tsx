@@ -1,4 +1,4 @@
-import type { BookPage } from '../data/book'
+import { sections, type BookPage } from '../data/book'
 import { asset } from '../asset'
 import { fixPrepositions } from '../lib/fixPrepositions'
 import { CountUp } from './CountUp'
@@ -159,7 +159,12 @@ export function PageView({
             <h2 className="page-route__toc-title">Содержание книги</h2>
             <p className="page-route__toc-hint">Выбери раздел или листай дальше</p>
             <ul className="chapters-timeline">
-              {page.routeItems?.map((item, index) => {
+              {page.routeItems
+                ?.filter((item) => {
+                  const section = sections.find((s) => s.id === item.sectionId)
+                  return section?.nav !== false
+                })
+                .map((item, index) => {
                 const num = String(index + 1).padStart(2, '0')
                 return (
                   <li key={item.sectionId}>
