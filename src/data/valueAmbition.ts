@@ -8,7 +8,7 @@ export const valueAmbition = {
     'Я берусь за сложные задачи и проекты',
     'Я предлагаю смелые решения и прорывные идеи',
   ],
-  image: 'img/08.jpg',
+  image: 'img/19.jpg',
   accentColor: 'violet' as const,
   icon: 'img/11.png',
   story: {
