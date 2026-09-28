@@ -61,7 +61,7 @@
     calc(var(--nav-safe) + 40px)
     36px
     40px
-    var(--nav-arrow-lane-left);
+    calc(var(--nav-arrow-lane-left) + 50px);
   min-height: 100%;
   display: flex;
   flex-direction: column;
