@@ -124,7 +124,7 @@ export const sections: Section[] = [
             meta: {
               name: 'Петр Родионов',
               role: 'Генеральный директор ГЕРОФАРМ',
-              photo: 'img/03.jpg',
+              photo: 'img/021A9546-1.jpg',
             },
           },
         ],
