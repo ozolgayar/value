@@ -2,14 +2,16 @@
 .page-shell.page-mission-eco.mc3d {
   --mc3d-blue: #0057b8;
   --mission-blue: #0057b8;
-  --mc3d-panel-w: min(300px, 58vw);
+  --mc3d-panel-w: 320px;
+  --mc3d-panel-h: 360px;
+  --mc3d-title-size: 48px;
   height: 100%;
   min-height: 100%;
+  position: relative;
+  isolation: isolate;
   overflow: hidden;
   color: var(--mc3d-blue);
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 42%, rgba(0, 87, 184, 0.08), transparent 70%),
-    linear-gradient(180deg, #f4f8fd 0%, #ffffff 48%, #eef4fb 100%);
+  background: linear-gradient(180deg, #fafbfc 0%, #e8eef5 100%);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -20,16 +22,75 @@
     var(--nav-arrow-lane-left);
 }
 
+.mc3d__atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 42% 36% at 8% 16%, rgba(139, 92, 246, 0.14), transparent 70%),
+    radial-gradient(ellipse 36% 32% at 92% 12%, rgba(59, 130, 246, 0.12), transparent 68%),
+    radial-gradient(ellipse 40% 34% at 78% 88%, rgba(168, 85, 247, 0.1), transparent 72%),
+    radial-gradient(ellipse 28% 24% at 16% 84%, rgba(59, 130, 246, 0.08), transparent 70%);
+}
+
+.mc3d__blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  will-change: transform;
+  animation: mc3d-float 20s ease-in-out infinite;
+}
+
+.mc3d__blob--a {
+  width: min(42vw, 520px);
+  height: min(42vw, 520px);
+  left: -8%;
+  top: -10%;
+  background: rgba(139, 92, 246, 0.15);
+}
+
+.mc3d__blob--b {
+  width: min(36vw, 440px);
+  height: min(36vw, 440px);
+  right: -8%;
+  top: 6%;
+  background: rgba(59, 130, 246, 0.12);
+  animation-duration: 24s;
+  animation-delay: -8s;
+}
+
+.mc3d__blob--c {
+  width: min(34vw, 420px);
+  height: min(34vw, 420px);
+  left: 30%;
+  bottom: -14%;
+  background: rgba(168, 85, 247, 0.1);
+  animation-duration: 22s;
+  animation-delay: -4s;
+}
+
+@keyframes mc3d-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(28px, -32px, 0);
+  }
+}
+
 .mc3d__head {
   position: relative;
   flex: 0 0 auto;
   width: 100%;
   margin-bottom: 0.25rem;
-  z-index: 3;
+  z-index: 10;
 }
 
 .mc3d__head-copy {
-  max-width: min(40rem, 72%);
+  max-width: calc(100% - 8.5rem);
   min-width: 0;
 }
 
@@ -49,21 +110,32 @@
 
 .mc3d__title {
   margin: 0;
-  font-size: clamp(1.1rem, 2.1vw, 1.75rem);
-  font-weight: 800;
-  line-height: 1.15;
+  font-size: var(--mc3d-title-size);
+  font-weight: 700;
+  line-height: 1.2;
   letter-spacing: -0.02em;
-  white-space: pre-line;
+  white-space: pre;
   color: var(--mc3d-blue);
 }
 
-.mc3d__icon-360 {
+.mc3d__mark {
   position: absolute;
-  top: 0.15rem;
+  top: auto;
+  bottom: calc(var(--mc3d-title-size) * 1.2);
   left: 50%;
-  transform: translateX(-50%);
   width: clamp(4.5rem, 9vw, 7rem);
   height: clamp(4.5rem, 9vw, 7rem);
+  transform: translate(-50%, 50%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.mc3d__icon-360 {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
   background-color: #0050aa;
   -webkit-mask-size: contain;
   mask-size: contain;
@@ -72,11 +144,11 @@
   -webkit-mask-position: center;
   mask-position: center;
   pointer-events: none;
-  z-index: 2;
 }
 
 .mc3d__viewport {
   position: relative;
+  z-index: 10;
   flex: 1 1 auto;
   min-height: 0;
   width: 100%;
@@ -120,20 +192,26 @@
 
 .mc3d__panel {
   position: absolute;
+  display: flex;
+  flex-direction: column;
   width: var(--mc3d-panel-w);
-  max-height: min(420px, 58vh);
-  padding: 1.15rem 1.2rem 1.2rem;
+  height: var(--mc3d-panel-h);
+  min-width: var(--mc3d-panel-w);
+  min-height: var(--mc3d-panel-h);
+  max-height: var(--mc3d-panel-h);
+  padding: 32px;
   box-sizing: border-box;
   border-radius: 18px;
-  background: #ffffff;
-  border: 1.5px solid rgba(0, 87, 184, 0.16);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow:
-    0 16px 40px rgba(0, 40, 100, 0.12),
-    0 1px 0 rgba(255, 255, 255, 0.8);
+    0 1px 2px rgba(15, 40, 90, 0.06),
+    0 12px 28px rgba(30, 64, 140, 0.12),
+    0 28px 52px rgba(88, 60, 180, 0.12);
   transform-style: preserve-3d;
   backface-visibility: hidden;
-  overflow: auto;
-  scrollbar-width: thin;
+  overflow: hidden;
   cursor: pointer;
   will-change: transform, opacity;
 }
@@ -142,25 +220,40 @@
   visibility: hidden;
 }
 
+.mc3d__panel:hover,
+.mc3d__panel.is-active {
+  box-shadow:
+    0 2px 4px rgba(15, 40, 90, 0.08),
+    0 18px 36px rgba(30, 64, 140, 0.16),
+    0 36px 68px rgba(88, 60, 180, 0.18);
+}
+
+.mc3d__panel:hover {
+  translate: 0 -6px;
+}
+
 .mc3d__panel.is-active {
   border-color: rgba(0, 87, 184, 0.45);
-  box-shadow:
-    0 22px 52px rgba(0, 50, 120, 0.2),
-    0 0 0 1px rgba(0, 87, 184, 0.08);
   cursor: default;
 }
 
 .mc3d__panel-title {
-  margin: 0 0 0.55rem;
-  font-size: clamp(1rem, 1.6vw, 1.25rem);
-  font-weight: 800;
+  flex: 0 0 auto;
+  margin: 0 0 0.65rem;
+  min-height: 2.4em;
+  max-height: 2.4em;
+  overflow: hidden;
+  font-size: 24px;
+  font-weight: 700;
   line-height: 1.2;
   color: var(--mc3d-blue);
 }
 
 .mc3d__panel-text {
+  flex: 1 1 auto;
   margin: 0 0 0.85rem;
-  font-size: clamp(0.84rem, 1.15vw, 0.95rem);
+  overflow: hidden;
+  font-size: 16px;
   line-height: 1.45;
   color: rgba(24, 52, 96, 0.88);
 }
@@ -169,6 +262,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
+  margin-top: auto;
 }
 
 .mc3d__tag {
@@ -202,13 +296,14 @@ a.mc3d__tag:hover {
 }
 
 .mc3d__controls {
+  position: relative;
+  z-index: 10;
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.55rem;
   margin-top: 0.35rem;
-  z-index: 3;
 }
 
 .mc3d__dots {
@@ -250,18 +345,49 @@ a.mc3d__tag:hover {
   color: rgba(0, 87, 184, 0.72);
 }
 
+@media (max-width: 1439px) {
+  .page-shell.page-mission-eco.mc3d {
+    --mc3d-panel-w: 280px;
+    --mc3d-panel-h: 340px;
+    --mc3d-title-size: 42px;
+  }
+
+  .mc3d__panel-title {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .page-shell.page-mission-eco.mc3d {
+    --mc3d-panel-w: 240px;
+    --mc3d-panel-h: 300px;
+    --mc3d-title-size: 36px;
+  }
+
+  .mc3d__panel {
+    padding: 20px;
+  }
+
+  .mc3d__panel-title {
+    font-size: 20px;
+  }
+
+  .mc3d__panel-text {
+    font-size: 15px;
+  }
+}
+
 @media (max-width: 900px) {
   .page-shell.page-mission-eco.mc3d {
-    --mc3d-panel-w: min(280px, 76vw);
     padding-left: 1rem;
     padding-right: 1rem;
   }
 
   .mc3d__head-copy {
-    max-width: min(40rem, 78%);
+    max-width: calc(100% - 6rem);
   }
 
-  .mc3d__icon-360 {
+  .mc3d__mark {
     width: clamp(3.25rem, 14vw, 4.75rem);
     height: clamp(3.25rem, 14vw, 4.75rem);
   }
@@ -269,31 +395,11 @@ a.mc3d__tag:hover {
   .mc3d__viewport {
     perspective: 1300px;
   }
-
-  .mc3d__panel-title {
-    font-size: 16px;
-  }
-
-  .mc3d__panel-text {
-    font-size: 14px;
-  }
-
-  .mc3d__tag {
-    min-height: 44px;
-    font-size: 12px;
-    padding: 0.45rem 0.85rem;
-  }
 }
 
 @media (max-width: 640px) {
   .mc3d__hint {
     font-size: 0.68rem;
-  }
-}
-
-@media (max-width: 1024px) and (min-width: 769px) {
-  .page-shell.page-mission-eco.mc3d {
-    --mc3d-panel-w: min(220px, 30vw);
   }
 }
 
@@ -311,7 +417,7 @@ a.mc3d__tag:hover {
   }
 
   .mc3d__head {
-    position: static;
+    position: relative;
     z-index: 2;
     display: flex;
     flex-direction: column;
@@ -322,14 +428,37 @@ a.mc3d__tag:hover {
 
   .mc3d__head-copy {
     max-width: 100%;
+    padding-right: 5.6rem;
   }
 
   .mc3d__title {
-    font-size: clamp(1.25rem, 5.5vw, 1.75rem);
+    font-size: 28px;
     margin-bottom: 0;
+    white-space: pre-line;
   }
 
-  .mc3d__icon-360 {
+  .mc3d__mark {
+    top: calc(50% + 14px);
+    right: 0.85rem;
+    bottom: auto;
+    left: auto;
+    width: 4.25rem;
+    height: 4.25rem;
+    transform: translateY(-50%);
+  }
+
+  .mc3d__atmosphere {
+    background:
+      radial-gradient(ellipse 50% 40% at 10% 12%, rgba(139, 92, 246, 0.12), transparent 70%),
+      radial-gradient(ellipse 46% 38% at 90% 80%, rgba(59, 130, 246, 0.1), transparent 72%);
+  }
+
+  .mc3d__blob {
+    filter: blur(60px);
+    animation-duration: 30s;
+  }
+
+  .mc3d__blob--c {
     display: none;
   }
 
@@ -362,12 +491,19 @@ a.mc3d__tag:hover {
 
   .mc3d__panel {
     position: static;
+    display: block;
     width: 100%;
+    height: auto;
+    min-width: 0;
+    min-height: 0;
     max-height: none;
     padding: 20px;
     border-radius: 16px;
-    background: #fff;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    box-shadow:
+      0 1px 2px rgba(15, 40, 90, 0.06),
+      0 8px 18px rgba(30, 64, 140, 0.1);
     overflow: hidden;
     opacity: 1;
     z-index: auto;
@@ -392,6 +528,8 @@ a.mc3d__tag:hover {
 
   .mc3d__acc-toggle .mc3d__panel-title {
     margin: 0;
+    min-height: 0;
+    max-height: none;
     font-size: 1.05rem;
   }
 
@@ -427,6 +565,7 @@ a.mc3d__tag:hover {
 
   .mc3d__panel.is-open .mc3d__panel-text {
     margin-top: 12px;
+    overflow: visible;
   }
 
   .mc3d__tags {
@@ -503,5 +642,9 @@ a.mc3d__tag:hover {
 
   .mc3d__stage.is-anim .mc3d__panel {
     transition: none;
+  }
+
+  .mc3d__blob {
+    animation: none;
   }
 }

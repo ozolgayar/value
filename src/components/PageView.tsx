@@ -280,7 +280,16 @@ export function PageView({
               <span key={line}>{fixPrepositions(line)}</span>
             ))}
           </h2>
-          <div className="page-interstitial__rule" aria-hidden />
+          {page.id === 'p-history-break' ? (
+            <img
+              className="page-interstitial__mark"
+              src={asset('logo/trans-mark-only.png')}
+              alt=""
+              aria-hidden
+            />
+          ) : (
+            <div className="page-interstitial__rule" aria-hidden />
+          )}
           <div className="page-interstitial__body">
             {page.body?.map((p) => {
               const fixed = fixPrepositions(p)

@@ -497,7 +497,16 @@
   gap: 1rem;
   padding-right: var(--nav-arrow-lane-right);
   padding-left: clamp(1rem, 2.2vw, 1.75rem);
-  background: #2563c8;
+  background: linear-gradient(
+    180deg,
+    #0199fe 0%,
+    #0497ff 32%,
+    #1f8afe 48%,
+    #466afe 62%,
+    #744ffe 75%,
+    #9f3feb 88%,
+    #cd3fae 100%
+  );
   color: var(--white);
   overflow: auto;
 }
@@ -513,11 +522,12 @@
 .page-route__toc-title {
   margin: 0 0 0.15rem;
   padding-left: calc(16px + 16px);
-  font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+  font-size: clamp(1.18rem, 2.02vw, 1.51rem);
   font-weight: 800;
   line-height: 1.2;
   letter-spacing: -0.01em;
-  color: #fff;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   text-wrap: balance;
 }
 
@@ -527,7 +537,9 @@
   font-size: clamp(0.8rem, 1.2vw, 0.92rem);
   line-height: 1.35;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.78);
+  color: #ffffff;
+  opacity: 1;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
 
 .chapters-timeline {
@@ -621,14 +633,17 @@
 .chapter-card {
   flex: 1;
   padding: 12px 14px 14px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   margin-bottom: 6px;
   transition:
-    background 180ms ease,
-    border-color 180ms ease,
-    transform 180ms ease;
+    background 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .chapter-header {
@@ -640,34 +655,40 @@
 
 .chapter-num {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: rgba(255, 255, 255, 0.5);
+  color: #ffffff;
+  opacity: 1;
   letter-spacing: 0.05em;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
   flex-shrink: 0;
 }
 
 .chapter-title {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.95);
+  color: #ffffff;
   margin: 0;
   line-height: 1.3;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
   transition: color 180ms ease;
 }
 
 .chapter-desc {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.58);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.95);
   margin: 0;
   line-height: 1.5;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 .chapter-item:hover .chapter-card,
 .chapter-item:focus-visible .chapter-card {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.28);
-  transform: translateX(4px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .chapter-item:hover .chapter-dot,
@@ -697,6 +718,8 @@
   align-self: flex-start;
   margin-top: 0.35rem;
   flex-shrink: 0;
+  opacity: 1;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
 }
 
 /* —— Animated facts —— */
@@ -826,7 +849,7 @@
 
 .page-interstitial__inner {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   box-sizing: border-box;
   width: 100%;
   height: 100%;
@@ -1023,6 +1046,16 @@
   height: clamp(3.5rem, 10vh, 6.5rem);
   margin: clamp(1.4rem, 3.5vh, 2.4rem) auto;
   background: rgba(255, 255, 255, 0.75);
+}
+
+.page-interstitial__mark {
+  display: block;
+  width: 70px;
+  height: 70px;
+  margin: 50px auto;
+  object-fit: contain;
+  opacity: 0.9;
+  filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
 }
 
 .page-interstitial__body {
@@ -2408,10 +2441,17 @@
 
 @media (min-width: 861px) {
   .page-ceo__main {
-    padding-top: 64px;
-    padding-bottom: 120px;
+    height: 100%;
+    justify-content: safe center;
+    padding-top: 72px;
+    padding-bottom: 72px;
     overflow-x: hidden;
     overflow-y: auto;
+  }
+
+  .page-ceo__main::before,
+  .page-ceo__main::after {
+    display: none;
   }
 
   .page-ceo__main-inner {

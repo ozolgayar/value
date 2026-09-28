@@ -37,7 +37,16 @@
 
 .tlh__aside {
   box-sizing: border-box;
-  background: var(--tlh-accent);
+  background: linear-gradient(
+    180deg,
+    #0199fe 0%,
+    #0497ff 32%,
+    #1f8afe 48%,
+    #466afe 62%,
+    #744ffe 75%,
+    #9f3feb 88%,
+    #cd3fae 100%
+  );
   color: #fff;
   overflow: auto;
   height: 100%;
@@ -72,22 +81,23 @@
   max-width: 100%;
   flex: 0 0 auto;
   align-self: flex-start;
-  font-size: 9px;
-  letter-spacing: 0.12em;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.42);
   border-radius: 999px;
-  padding: 4px 11px;
-  margin-bottom: 0.85rem;
+  padding: 6px 14px;
+  margin-bottom: 1.15rem;
 }
 
 .tlh__quote {
-  font-size: clamp(1.05rem, 1.9vw, 1.55rem);
-  font-weight: 800;
-  line-height: 1.28;
+  font-size: clamp(1.85rem, 2.5vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.25;
   color: #fff;
-  margin: 0 0 0.65rem;
+  margin: 0 0 1.15rem;
   letter-spacing: -0.02em;
   white-space: normal;
   text-wrap: balance;
@@ -97,6 +107,7 @@
   padding-left: 0;
   padding-right: 0;
   width: 100%;
+  max-width: 36rem;
 }
 
 .tlh--aside-right .tlh__body {
@@ -105,10 +116,11 @@
 }
 
 .tlh__body p {
-  font-size: clamp(0.8rem, 1.05vw, 0.92rem);
-  line-height: 1.55;
-  color: rgba(255, 255, 255, 0.88);
-  margin: 0 0 0.45rem;
+  font-size: clamp(1.05rem, 1.2vw, 1.2rem);
+  line-height: 1.6;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0 0 0.65rem;
   white-space: pre-line;
   text-wrap: pretty;
 }
@@ -193,7 +205,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: safe center;
   align-items: stretch;
   flex: 1 1 auto;
   width: min(100%, 34rem);
@@ -209,7 +221,7 @@
 }
 
 .tlh__cards--top {
-  justify-content: flex-start;
+  justify-content: safe center;
 }
 
 .tlh__cards::-webkit-scrollbar {
@@ -573,7 +585,7 @@
   }
 
   .tlh__aside-content {
-    padding: calc(var(--nav-safe) + 0.75rem) 1rem 1rem;
+    padding: calc(var(--nav-safe) + 0.75rem) 1.25rem 1rem;
   }
 
   .tlh--aside-right .tlh__aside-content {
@@ -585,6 +597,20 @@
   .tlh--aside-right .tlh__body {
     padding-left: 0;
     padding-right: 0;
+  }
+
+  .tlh__eyebrow {
+    font-size: 0.875rem;
+  }
+
+  .tlh__quote {
+    font-size: clamp(1.65rem, 4vw, 2.05rem);
+    line-height: 1.25;
+  }
+
+  .tlh__body p {
+    font-size: clamp(1rem, 2.1vw, 1.125rem);
+    line-height: 1.55;
   }
 
   .tlh__stage {
@@ -732,15 +758,20 @@
     padding: 24px 20px;
   }
 
+  .tlh__eyebrow {
+    font-size: 0.875rem;
+    margin-bottom: 0.85rem;
+  }
+
   .tlh__quote {
-    font-size: clamp(1.5rem, 6vw, 2rem);
+    font-size: 1.75rem;
     line-height: 1.25;
     white-space: normal;
   }
 
   .tlh__body p {
-    font-size: 0.9rem;
-    line-height: 1.7;
+    font-size: 1.0625rem;
+    line-height: 1.55;
   }
 
   .year-piano {

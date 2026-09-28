@@ -128,6 +128,7 @@ function panelPose(
   rotation: number,
   orbitX: number,
   orbitZ: number,
+  perspective: number,
 ) {
   let angle = ((panelIndex * STEP + rotation) % 360 + 360) % 360
   if (angle > 180) angle -= 360
@@ -139,7 +140,7 @@ function panelPose(
   const faceY = Math.sign(angle || 1) * Math.min(30, abs * 0.42)
   const t = Math.min(1, abs / 160)
   const opacity = abs > 150 ? 0 : 1 - t * 0.22
-  const scale = 1 - t * 0.05
+  const scale = (perspective - z) / perspective
   const visible = abs < 155
 
   return {
@@ -157,7 +158,7 @@ export function MissionCircle3DSlide() {
   const [rotation, setRotation] = useState(0)
   const [animating, setAnimating] = useState(false)
   const [ready, setReady] = useState(false)
-  const [orbit, setOrbit] = useState({ x: 460, z: 300 })
+  const [orbit, setOrbit] = useState({ x: 540, z: 280, perspective: 1800 })
   const viewportRef = useRef<HTMLDivElement>(null)
   const rotationRef = useRef(0)
   const dragRef = useRef<{
@@ -172,9 +173,9 @@ export function MissionCircle3DSlide() {
   useEffect(() => {
     const syncOrbit = () => {
       const w = window.innerWidth
-      if (w < 640) setOrbit({ x: 250, z: 180 })
-      else if (w < 1100) setOrbit({ x: 360, z: 240 })
-      else setOrbit({ x: 480, z: 320 })
+      if (w < 1024) setOrbit({ x: 340, z: 180, perspective: 1300 })
+      else if (w < 1440) setOrbit({ x: 460, z: 240, perspective: 1800 })
+      else setOrbit({ x: 540, z: 280, perspective: 1800 })
     }
     syncOrbit()
     window.addEventListener('resize', syncOrbit)
@@ -269,22 +270,29 @@ export function MissionCircle3DSlide() {
     <article
       className={`page-shell page-bleed page-mission-eco mc3d${ready ? ' is-ready' : ''}`}
     >
+      <div className="mc3d__atmosphere" aria-hidden>
+        <span className="mc3d__blob mc3d__blob--a" />
+        <span className="mc3d__blob mc3d__blob--b" />
+        <span className="mc3d__blob mc3d__blob--c" />
+      </div>
       <header className="mc3d__head">
         <div className="mc3d__head-copy">
           <span className="mc3d__badge">МИССИЯ ГЕРОФАРМ</span>
           <h1 className="mc3d__title">
-            {fixPrepositions('ГЕРОФАРМ в экосистеме\nздорового долголетия 360°')}
+            {fixPrepositions('ГЕРОФАРМ в экосистеме\nздорового долголетия')}
           </h1>
         </div>
-        <span
-          className="mc3d__icon-360"
-          role="img"
-          aria-label="360 градусов"
-          style={{
-            WebkitMaskImage: `url(${asset('icons/free-icon-360-degrees-974556.png')})`,
-            maskImage: `url(${asset('icons/free-icon-360-degrees-974556.png')})`,
-          }}
-        />
+        <span className="mc3d__mark">
+          <span
+            className="mc3d__icon-360"
+            role="img"
+            aria-label="360 градусов"
+            style={{
+              WebkitMaskImage: `url(${asset('icons/free-icon-360-degrees-974556.png')})`,
+              maskImage: `url(${asset('icons/free-icon-360-degrees-974556.png')})`,
+            }}
+          />
+        </span>
       </header>
 
       <div
@@ -303,7 +311,7 @@ export function MissionCircle3DSlide() {
       >
         <div className={`mc3d__stage${animating ? ' is-anim' : ''}`}>
           {PANELS.map((panel, i) => {
-            const pose = panelPose(i, rotation, orbit.x, orbit.z)
+            const pose = panelPose(i, rotation, orbit.x, orbit.z, orbit.perspective)
             const isActive = i === active
             const open = openId === panel.id
             if (phone) {
@@ -386,7 +394,7 @@ export function MissionCircle3DSlide() {
         <p className="mc3d__hint">
           {phone || coarse
             ? 'Нажми на карточку, чтобы раскрыть'
-            : 'Зажми карточку мышью и перемести влево или вправо, чтобы крутить. Нажми на название проекта — откроется подробная информация.'}
+            : 'Зажми карточку мышью и перемести влево или вправо, чтобы крутить. Нажми на название проекта на карточке, чтобы узнать о нём подробнее.'}
         </p>
       </nav>
     </article>
