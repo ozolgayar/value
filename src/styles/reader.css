@@ -1728,22 +1728,25 @@
   opacity: 0.55;
 }
 
-/* Align with drop button center: bottom 22px + half of 58px ≈ 51px */
 .reader__pager {
   position: absolute;
   right: max(1rem, env(safe-area-inset-right));
-  /* Align vertically with .roll-menu__trigger (same bottom + ~48px height) */
-  bottom: max(1.35rem, calc(env(safe-area-inset-bottom) + 1.1rem));
-  font-size: 0.85rem;
+  bottom: max(1.1rem, calc(env(safe-area-inset-bottom) + 0.85rem));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 48px;
+  font-size: 0.95rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', Consolas, monospace;
+  font-family: var(--btn-font);
   color: var(--purple);
-  background: rgba(255, 255, 255, 0.92);
-  padding: 0.4rem 0.9rem;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 0.55rem 1.15rem;
   border-radius: 999px;
-  box-shadow: 0 8px 20px rgba(44, 18, 100, 0.1);
-  line-height: 1.2;
+  box-shadow: 0 10px 28px rgba(44, 18, 100, 0.18);
+  line-height: 1;
 }
 
 .reader__hint {
