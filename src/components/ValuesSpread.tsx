@@ -1,5 +1,6 @@
 import { asset } from '../asset'
 import { valuesSpread } from '../data/valuesSpread'
+import { fixPrepositions } from '../lib/fixPrepositions'
 import '../styles/values-spread.css'
 
 export function ValuesSpreadPage() {
@@ -12,7 +13,7 @@ export function ValuesSpreadPage() {
           <header className="values-spread__hero values-spread__hero--mission">
             <div className="values-spread__inset">
               <span className="values-spread__badge">{left.badge}</span>
-              <h1 className="values-spread__hero-title">{left.title}</h1>
+              <h1 className="values-spread__hero-title">{fixPrepositions(left.title)}</h1>
             </div>
           </header>
           <div className="values-spread__body">
@@ -24,9 +25,9 @@ export function ValuesSpreadPage() {
                       className="values-spread__bar-head"
                       style={{ ['--bar' as string]: item.bar }}
                     >
-                      <h2>{item.title}</h2>
+                      <h2>{fixPrepositions(item.title)}</h2>
                     </div>
-                    <p>{item.text}</p>
+                    <p>{fixPrepositions(item.text)}</p>
                     {'icons' in item && item.icons ? (
                       <div className="values-spread__icons" aria-hidden>
                         {item.icons.map((src) => (
@@ -58,12 +59,12 @@ export function ValuesSpreadPage() {
           <header className="values-spread__hero values-spread__hero--chain" aria-hidden />
           <div className="values-spread__body">
             <div className="values-spread__inset">
-              <h2 className="values-spread__section-title">{right.title}</h2>
+              <h2 className="values-spread__section-title">{fixPrepositions(right.title)}</h2>
               <ul className="values-spread__links">
                 {right.items.map((item) => (
                   <li key={item.name}>
                     <p>
-                      <strong>{item.name}</strong> {item.text}
+                      <strong>{item.name}</strong> {fixPrepositions(item.text)}
                     </p>
                     <p
                       className={`values-spread__slogan${
@@ -71,7 +72,7 @@ export function ValuesSpreadPage() {
                       }`}
                       style={item.motto === 'passion' ? undefined : { color: item.color }}
                     >
-                      {item.slogan}
+                      {fixPrepositions(item.slogan)}
                     </p>
                   </li>
                 ))}

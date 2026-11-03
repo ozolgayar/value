@@ -1,50 +1,16 @@
-/** Short Russian words that should not end a line alone. */
-const SHORT_WORDS = [
-  'в',
-  'и',
-  'с',
-  'к',
-  'на',
-  'по',
-  'от',
-  'до',
-  'за',
-  'для',
-  'при',
-  'из',
-  'о',
-  'об',
-  'не',
-  'но',
-  'а',
-  'же',
-  'ли',
-  'бы',
-  'во',
-  'со',
-  'ко',
-  'мы',
-  'у',
-  'или',
-  'да',
-  'ни',
-  'под',
-  'без',
-  'про',
-]
-
+/** Short words (1–3 letters) that should not end a line alone. */
 const SHORT_RE = new RegExp(
-  `(?<![\\p{L}\\p{N}])(${SHORT_WORDS.join('|')})\\s+(?=[\\p{L}\\p{N}])`,
-  'giu',
+  `(?<![\\p{L}\\p{N}])([\\p{L}]{1,3})([^\\S\\n]+)(?=[\\p{L}\\p{N}])`,
+  'gu',
 )
 
 /**
- * Replace the space after short prepositions/conjunctions with a non-breaking space
+ * Replace the space after 1–3 letter words with a non-breaking space
  * so they stay attached to the following word. Preserves intentional \\n.
  */
 export function fixPrepositions(text: string): string {
   if (!text) return text
-  return text.replace(SHORT_RE, (_, word: string) => `${word}\u00A0`)
+  return text.replace(SHORT_RE, '$1\u00A0')
 }
 
 function escapeRegExp(value: string) {

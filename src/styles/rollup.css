@@ -189,6 +189,8 @@
 .roll-menu__link[data-tooltip]:hover::after,
 .roll-menu__link[data-tooltip]:focus-visible::after,
 .roll-menu__home[data-tooltip]:hover::after,
+.roll-menu__tagline[data-tooltip]:hover::after,
+.roll-menu__tagline[data-tooltip]:focus-visible::after,
 .roll-menu__home[data-tooltip]:focus-visible::after {
   opacity: 1;
 }
@@ -202,12 +204,28 @@
 }
 
 .roll-menu__tagline {
+  position: relative;
   margin: 0;
+  padding: 0;
   max-width: 11.5rem;
-  font-size: 0.82rem;
-  font-weight: 600;
+  max-width: 12.5rem;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
   line-height: 1.35;
+  text-align: left;
   color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s ease, opacity 0.15s ease;
+}
+
+.roll-menu__tagline:hover,
+.roll-menu__tagline:focus-visible {
+  color: rgba(44, 18, 100, 0.72);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
 }
 
 .roll-menu__home {

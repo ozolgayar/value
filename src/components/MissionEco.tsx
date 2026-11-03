@@ -95,10 +95,8 @@ export function MissionUniquenessPage() {
       </div>
       <div className="muniq__photo">
         <img src={asset(data.photo)} alt="" />
-        <span className="muniq__guide">Культурный путеводитель</span>
         <div className="muniq__we">
-          <img src={asset('logo/gph-mark.png')} alt="" />
-          <span>Мы</span>
+          <img src={asset('img/logo_my.png')} alt="Мы" />
         </div>
       </div>
     </article>

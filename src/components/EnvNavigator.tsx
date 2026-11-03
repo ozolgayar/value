@@ -1,5 +1,6 @@
 import { asset } from '../asset'
 import { envNavigator, type EnvNavCard, type EnvNavItem } from '../data/envNavigator'
+import { fixPrepositions } from '../lib/fixPrepositions'
 import '../styles/env-navigator.css'
 
 function NavItem({ item }: { item: EnvNavItem }) {
@@ -12,12 +13,12 @@ function NavItem({ item }: { item: EnvNavItem }) {
           target="_blank"
           rel="noopener noreferrer"
         >
-          {item.label}
+          {fixPrepositions(item.label)}
         </a>
       ) : (
-        <span className="en__label">{item.label}</span>
+        <span className="en__label">{fixPrepositions(item.label)}</span>
       )}
-      {item.desc ? <span className="en__desc">{item.desc}</span> : null}
+      {item.desc ? <span className="en__desc">{fixPrepositions(item.desc)}</span> : null}
     </li>
   )
 }
@@ -25,7 +26,7 @@ function NavItem({ item }: { item: EnvNavItem }) {
 function NavCard({ card }: { card: EnvNavCard }) {
   return (
     <div className="en__card">
-      <h2 className="en__card-title">{card.title}</h2>
+      <h2 className="en__card-title">{fixPrepositions(card.title)}</h2>
       <ul className="en__list">
         {card.items.map((item) => (
           <NavItem key={item.label} item={item} />
@@ -76,10 +77,10 @@ export function EnvNavigatorPage() {
           <div className="en__closing">
             <p className="en__quote">
               {quote.map((line) => (
-                <span key={line}>{line}</span>
+                <span key={line}>{fixPrepositions(line)}</span>
               ))}
             </p>
-            <p className="en__footnote">*{footnote}</p>
+            <p className="en__footnote">*{fixPrepositions(footnote)}</p>
           </div>
           <Brand tone="light" />
         </div>

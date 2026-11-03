@@ -32,6 +32,7 @@ interface ReaderProps {
   initialIndex?: number
   onExitToHome: () => void
   onBackToWelcome?: () => void
+  onPageIndexChange?: (pageIndex: number) => void
 }
 
 function labelFor(index: number) {
@@ -72,32 +73,45 @@ function shortPageLabel(pageIndex: number) {
   return raw.length > 44 ? `${raw.slice(0, 42)}…` : raw
 }
 
-export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: ReaderProps) {
+const NAV_COACH_DONE_KEY = 'gph-value-book-nav-coach-done'
+
+function readNavCoachDone() {
+  try {
+    return localStorage.getItem(NAV_COACH_DONE_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+function writeNavCoachDone() {
+  try {
+    localStorage.setItem(NAV_COACH_DONE_KEY, '1')
+  } catch {
+    /* private mode / blocked storage */
+  }
+}
+
+export function Reader({
+  initialIndex = 0,
+  onExitToHome,
+  onBackToWelcome,
+  onPageIndexChange,
+}: ReaderProps) {
   const isMobile = useMediaQuery('(max-width: 860px)')
-  const isCoachTouch = useMediaQuery('(max-width: 1024px)')
   const [index, setIndex] = useState(initialIndex)
   const [rollOpen, setRollOpen] = useState(false)
   const [tocOpen, setTocOpen] = useState(false)
   const [quotesOpen, setQuotesOpen] = useState(false)
-  const [hintVisible, setHintVisible] = useState(() => initialIndex === 0)
+  const [hintVisible, setHintVisible] = useState(
+    () => initialIndex === 0 && !readNavCoachDone(),
+  )
   const [coachStep, setCoachStep] = useState(0)
   const [toast, setToast] = useState<string | null>(null)
   const [selectionUi, setSelectionUi] = useState<{ text: string; x: number; y: number } | null>(
     null,
   )
   const [zoomPhase, setZoomPhase] = useState<'idle' | 'out' | 'in'>('idle')
-  const [historyCurtain, setHistoryCurtain] = useState<null | {
-    phase: 'start' | 'cover' | 'exit'
-    dir: 'next' | 'prev'
-    color: string
-    years: string[]
-    from: number
-    to: number
-  }>(null)
-  const [missionSlide, setMissionSlide] = useState<null | {
-    phase: 'start' | 'cover' | 'exit'
-    dir: 'next' | 'prev'
-  }>(null)
+  const [suppressTrackTransition, setSuppressTrackTransition] = useState(false)
   const [historyRevealed, setHistoryRevealed] = useState<Record<string, number[]>>({})
   const [historyHint, setHistoryHint] = useState(true)
   const [historyJumpYear, setHistoryJumpYear] = useState<string | null>(null)
@@ -113,8 +127,6 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
   const swipeLock = useRef(false)
   const swipeLockTimer = useRef(0)
   const zoomTimers = useRef<number[]>([])
-  const curtainTimers = useRef<number[]>([])
-  const slideTimers = useRef<number[]>([])
   const readerRef = useRef<HTMLElement | null>(null)
   const { quotes, add: addQuote, remove: removeQuote } = useQuotes()
 
@@ -136,9 +148,7 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
   const chromeHidden =
     isInterstitial ||
     isClosingCover ||
-    zoomPhase !== 'idle' ||
-    !!historyCurtain ||
-    !!missionSlide
+    zoomPhase !== 'idle'
 
   const prevTooltip = useMemo(() => {
     if (isPracticeStory) return 'К практикам'
@@ -161,34 +171,6 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
     hasNextMasteryStory,
     index,
   ])
-  const historyAccent = (accent: 'purple' | 'blue') =>
-    accent === 'blue' ? '#1e3a8a' : '#7c3aed'
-
-  const isMissionKind = (kind: string) =>
-    kind === 'mission-statement' ||
-    kind === 'mission-ecosystem' ||
-    kind === 'mission-longevity' ||
-    kind === 'mission-strategy-spread' ||
-    kind === 'mission-strategy-house' ||
-    kind === 'mission-uniqueness' ||
-    kind === 'values-spread' ||
-    kind === 'value-ambition' ||
-    kind === 'value-passion' ||
-    kind === 'value-responsibility' ||
-    kind === 'mastery-semavic' ||
-    kind === 'mastery-venezuela' ||
-    kind === 'mastery-third-line' ||
-    kind === 'mastery-putin' ||
-    kind === 'practice-equipment' ||
-    kind === 'practice-weeks' ||
-    kind === 'practice-error-first' ||
-    kind === 'practice-market' ||
-    kind === 'practice-modernization' ||
-    kind === 'practice-ai' ||
-    kind === 'practice-long-term' ||
-    kind === 'practice-methodology' ||
-    kind === 'practice-bureaucracy' ||
-    kind === 'practice-habits'
   const currentHistoryPage = useMemo(() => {
     if (!isHistoryEra) return null
     return getHistoryPage(Number(current.page.meta?.historyPage ?? 0))
@@ -240,23 +222,11 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
     zoomTimers.current = []
   }, [])
 
-  const clearCurtainTimers = useCallback(() => {
-    curtainTimers.current.forEach((id) => window.clearTimeout(id))
-    curtainTimers.current = []
-  }, [])
-
-  const clearSlideTimers = useCallback(() => {
-    slideTimers.current.forEach((id) => window.clearTimeout(id))
-    slideTimers.current = []
-  }, [])
-
   useEffect(
     () => () => {
       clearZoomTimers()
-      clearCurtainTimers()
-      clearSlideTimers()
     },
-    [clearZoomTimers, clearCurtainTimers, clearSlideTimers],
+    [clearZoomTimers],
   )
 
   useEffect(() => {
@@ -264,79 +234,65 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
   }, [initialIndex])
 
   useEffect(() => {
-    if (index === 0) {
-      setHintVisible(true)
-      setCoachStep(0)
-    } else {
+    onPageIndexChange?.(index)
+  }, [index, onPageIndexChange])
+
+  useEffect(() => {
+    if (index !== 0) {
       setHintVisible(false)
+      return
     }
+    if (readNavCoachDone()) {
+      setHintVisible(false)
+      return
+    }
+    setHintVisible(true)
+    setCoachStep(0)
   }, [index])
 
   const dismissHint = useCallback(() => {
+    writeNavCoachDone()
     setHintVisible(false)
     setCoachStep(0)
   }, [])
 
-  const coachSteps = useMemo(() => {
-    const swipeHint =
-      'Листай страницы свайпом вверх, чтобы идти вперёд, или свайпом вниз, чтобы вернуться назад'
-    if (isMobile) {
-      return [
-        {
-          id: 'swipe',
-          placement: 'center' as const,
-          title: 'Как пользоваться книгой',
-          text: swipeHint,
-        },
-        {
-          id: 'progress',
-          placement: 'progress' as const,
-          title: 'Разделы',
-          text: 'Здесь ты можешь перемещаться между разделами книги. Нажми на цифру, чтобы открыть нужный раздел.',
-        },
-        {
-          id: 'menu',
-          placement: 'menu' as const,
-          title: 'Меню',
-          text: 'Это Меню. Здесь содержание книги и твои заметки. Из Меню можно выйти в начало книги или на главную страницу.',
-        },
-        {
-          id: 'notes',
-          placement: 'center' as const,
-          title: 'Заметки',
-          text: 'Выдели текст на странице. Появится кнопка с блокнотом — нажми её, чтобы сохранить фрагмент в заметки.',
-        },
-      ]
-    }
-    return [
+  const coachSteps = useMemo(
+    () => [
       {
-        id: 'arrows',
+        id: 'nav',
         placement: 'center' as const,
-        title: 'Как пользоваться книгой',
-        text: isCoachTouch
-          ? swipeHint
-          : 'Листай стрелками ← → по краям экрана или клавишами влево / вправо или колесом мыши. Наведи на кнопку, чтобы узнать, куда она ведёт.',
-      },
-      {
-        id: 'progress',
-        placement: 'progress' as const,
-        title: 'Разделы',
-        text: 'Здесь ты можешь перемещаться между разделами книги. Наведи на цифру, чтобы узнать, как называется раздел.',
+        title: 'Навигация по книге',
+        paragraphs: [
+          {
+            text: 'Для продолжения чтения – листайте свайпом вверх/вниз или используйте стрелки вперёд/назад.',
+          },
+          {
+            text: 'Для открытия нужного раздела — используйте нумерацию наверху.',
+          },
+          { text: 'Нажми кнопку «Далее»', accent: true },
+        ],
+        showNotesPreview: false,
+        ctaHint: null as string | null,
       },
       {
         id: 'menu',
         placement: 'menu' as const,
         title: 'Меню',
-        text: 'Это раздел Меню. Здесь ты найдешь содержание книги и свои заметки. Из Меню можно выйти в начало книги или на главную страницу.',
+        paragraphs: [
+          {
+            text: 'Здесь содержание книги и твои заметки. Отсюда можно попасть в начало книги или на главную страницу.',
+          },
+          { text: 'Как сделать заметку:', bold: true },
+          {
+            text: 'выдели текст на странице – появится кнопка\nс блокнотом – нажми её, чтобы сохранить фрагмент в заметки.',
+          },
+        ],
+        showNotesPreview: true,
+        ctaHint: 'Нажми кнопку «Понятно»',
       },
-      {
-        id: 'notes',
-        placement: 'center' as const,
-        title: 'Заметки',
-        text: 'Выдели текст на странице. Появится кнопка с блокнотом — нажми её, чтобы сохранить фрагмент в заметки.',
-      },
-    ]
-  }, [isMobile, isCoachTouch])
+    ],
+    [],
+  )
 
   const coachCurrent = coachSteps[Math.min(coachStep, coachSteps.length - 1)]
   const coachIsLast = coachStep >= coachSteps.length - 1
@@ -402,7 +358,7 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
   const go = useCallback(
     (next: number, opts?: { force?: boolean }) => {
       const clamped = Math.min(Math.max(next, 0), totalPages - 1)
-      if (zoomPhase !== 'idle' || historyCurtain || missionSlide) return
+      if (zoomPhase !== 'idle') return
       if (clamped === index) return
 
       // History: reveal year cards before advancing, except on the phone
@@ -434,57 +390,14 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
 
       const historyToHistory =
         currentKind === 'history-era' && targetKind === 'history-era'
-      const missionFlow = isMissionKind(currentKind) && isMissionKind(targetKind)
-      const reduceMotion =
-        typeof window !== 'undefined' &&
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-      if (historyToHistory && !reduceMotion) {
-        clearCurtainTimers()
-        const dir = clamped > index ? 'next' : 'prev'
-        const fromPage = getHistoryPage(Number(flatPages[index].page.meta?.historyPage ?? 0))
-        const toPage = getHistoryPage(Number(flatPages[clamped].page.meta?.historyPage ?? 0))
-        const color = historyAccent(toPage.accent)
-        const years = (dir === 'next' ? toPage : fromPage).years.map((y) => y.year)
-
-        setHistoryCurtain({
-          phase: 'start',
-          dir,
-          color,
-          years,
-          from: index,
-          to: clamped,
+      // History pages: hard cut, no horizontal slide
+      if (historyToHistory) {
+        setSuppressTrackTransition(true)
+        setIndex(clamped)
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => setSuppressTrackTransition(false))
         })
-
-        const tArm = window.setTimeout(() => {
-          setHistoryCurtain((prev) => (prev ? { ...prev, phase: 'cover' } : null))
-        }, 20)
-
-        const t1 = window.setTimeout(() => {
-          setIndex(clamped)
-          setHistoryCurtain((prev) => (prev ? { ...prev, phase: 'exit' } : null))
-          const t2 = window.setTimeout(() => setHistoryCurtain(null), 560)
-          curtainTimers.current.push(t2)
-        }, 720)
-        curtainTimers.current.push(tArm, t1)
-        return
-      }
-
-      // Mission pages: horizontal slide to the right (like the video, but sideways)
-      if (missionFlow && !reduceMotion) {
-        clearSlideTimers()
-        const dir = clamped > index ? 'next' : 'prev'
-        setMissionSlide({ phase: 'start', dir })
-        const tArm = window.setTimeout(() => {
-          setMissionSlide((prev) => (prev ? { ...prev, phase: 'cover' } : null))
-        }, 20)
-        const t1 = window.setTimeout(() => {
-          setIndex(clamped)
-          setMissionSlide((prev) => (prev ? { ...prev, phase: 'exit' } : null))
-          const t2 = window.setTimeout(() => setMissionSlide(null), 520)
-          slideTimers.current.push(t2)
-        }, 640)
-        slideTimers.current.push(tArm, t1)
         return
       }
 
@@ -506,12 +419,8 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
     [
       index,
       zoomPhase,
-      historyCurtain,
-      missionSlide,
       isMobile,
       clearZoomTimers,
-      clearCurtainTimers,
-      clearSlideTimers,
       isHistoryEra,
       currentHistoryPage,
       revealedSet,
@@ -665,7 +574,7 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (anyOverlay || zoomPhase !== 'idle' || historyCurtain || missionSlide) return
+      if (anyOverlay || zoomPhase !== 'idle') return
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         e.preventDefault()
         navigateNext()
@@ -677,14 +586,7 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [
-    navigateNext,
-    navigatePrev,
-    anyOverlay,
-    zoomPhase,
-    historyCurtain,
-    missionSlide,
-  ])
+  }, [navigateNext, navigatePrev, anyOverlay, zoomPhase])
 
   useEffect(() => {
     if (isMobile) return
@@ -704,7 +606,7 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
     }
 
     const onWheel = (e: WheelEvent) => {
-      if (anyOverlay || zoomPhase !== 'idle' || historyCurtain || missionSlide) return
+      if (anyOverlay || zoomPhase !== 'idle') return
       if (Math.abs(e.deltaY) < 8 && Math.abs(e.deltaX) < 8) return
 
       let node = e.target as HTMLElement | null
@@ -741,8 +643,6 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
     navigatePrev,
     anyOverlay,
     zoomPhase,
-    historyCurtain,
-    missionSlide,
     isMobile,
     flatPages,
     index,
@@ -786,9 +686,7 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
       swipeLock.current ||
       anyOverlay ||
       suppressSwipe.current ||
-      zoomPhase !== 'idle' ||
-      historyCurtain ||
-      missionSlide
+      zoomPhase !== 'idle'
     ) {
       suppressSwipe.current = false
       touchStart.current = null
@@ -851,9 +749,9 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
     return {
       transform,
       transition:
-        zoomPhase !== 'idle' || historyCurtain || missionSlide ? 'none' : undefined,
+        zoomPhase !== 'idle' || suppressTrackTransition ? 'none' : undefined,
     }
-  }, [index, isMobile, zoomPhase, historyCurtain, missionSlide])
+  }, [index, isMobile, zoomPhase, suppressTrackTransition])
 
   const handleAddQuote = () => {
     if (!selectionUi) return
@@ -862,8 +760,6 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
     setSelectionUi(null)
     window.getSelection()?.removeAllRanges()
   }
-
-  const transitionBusy = !!historyCurtain || !!missionSlide
 
   return (
     <section
@@ -920,33 +816,6 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
         ))}
       </div>
 
-      {historyCurtain && (
-        <div
-          className={`history-curtain is-${historyCurtain.phase} is-${historyCurtain.dir}`}
-          style={{ background: historyCurtain.color }}
-          aria-hidden
-        >
-          <div className="history-curtain__rail">
-            <span className="history-curtain__rail-line" />
-            <span className="history-curtain__rail-dot" />
-          </div>
-          <div className="history-curtain__years">
-            {historyCurtain.years.map((year) => (
-              <span key={year} className="history-curtain__year">
-                {year}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {missionSlide && (
-        <div
-          className={`mission-slide is-${missionSlide.phase} is-${missionSlide.dir}`}
-          aria-hidden
-        />
-      )}
-
       {showNavCoach && (
         <>
           <div className="reader__nav-coach-backdrop" aria-hidden />
@@ -959,14 +828,26 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
             <p className="reader__nav-coach-title" id="reader-nav-coach-title">
               {coachCurrent.title}
             </p>
-            <p className="reader__nav-coach-text">{coachCurrent.text}</p>
-            {coachCurrent.id === 'notes' && (
+            {coachCurrent.paragraphs.map((paragraph) => (
+              <p
+                key={paragraph.text}
+                className={`reader__nav-coach-text${paragraph.bold ? ' is-bold' : ''}${
+                  paragraph.accent ? ' is-accent' : ''
+                }`}
+              >
+                {paragraph.text}
+              </p>
+            ))}
+            {coachCurrent.showNotesPreview && (
               <p className="reader__nav-coach-preview">
                 <span className="quote-pop quote-pop--static" aria-hidden>
                   <img src={notebookIcon} alt="" width={22} height={22} />
                 </span>
                 Добавить в заметки
               </p>
+            )}
+            {coachCurrent.ctaHint && (
+              <p className="reader__nav-coach-text is-accent">{coachCurrent.ctaHint}</p>
             )}
             <div className="reader__nav-coach-actions">
               <span className="reader__nav-coach-step" aria-hidden>
@@ -1011,7 +892,7 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
                   aria-current={active ? 'step' : undefined}
                   title={section.title}
                   data-tooltip={section.title}
-                  disabled={navLocked || zoomPhase !== 'idle' || transitionBusy}
+                  disabled={navLocked || zoomPhase !== 'idle'}
                   onClick={() => {
                     if (showNavCoach) return
                     goToSection(i)
@@ -1033,8 +914,7 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
           disabled={
             (!isMasteryStory && !isPracticeStory && index === 0 && !onBackToWelcome) ||
             navLocked ||
-            zoomPhase !== 'idle' ||
-            transitionBusy
+            zoomPhase !== 'idle'
           }
           onClick={navigatePrev}
         >
@@ -1047,7 +927,7 @@ export function Reader({ initialIndex = 0, onExitToHome, onBackToWelcome }: Read
           title={nextTooltip}
           data-tooltip={nextTooltip}
           disabled={
-            index >= totalPages - 1 || navLocked || zoomPhase !== 'idle' || transitionBusy
+            index >= totalPages - 1 || navLocked || zoomPhase !== 'idle'
           }
           onClick={navigateNext}
         >

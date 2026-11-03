@@ -1,13 +1,19 @@
 :root {
+  --brand-blue: #0872d4;
+  --brand-navy: #15284a;
+  --brand-purple: #33206f;
+  --brand-orange: #f47a20;
+  --brand-paper: #f7f8fb;
+  --brand-white: #ffffff;
   --sky: #b8d0e1;
   --teal: #3bb9b8;
-  --orange: #e56814;
-  --purple: #2c1264;
-  --ink: #1a1630;
+  --orange: var(--brand-orange);
+  --purple: var(--brand-purple);
+  --ink: #17213a;
   --muted: #5c6478;
-  --paper: #f7fbfd;
-  --white: #ffffff;
-  --shadow: 0 18px 50px rgba(44, 18, 100, 0.12);
+  --paper: var(--brand-paper);
+  --white: var(--brand-white);
+  --shadow: 0 18px 50px rgba(25, 52, 84, 0.12);
   --radius: 18px;
   --nav-safe: 88px;
   /* Reserve space for ← / → buttons: offset + 52px circle + gap */
@@ -225,15 +231,15 @@ img {
   align-items: center;
   justify-content: center;
   gap: 0.55rem;
-  min-height: 52px;
-  padding: 0.85rem 1.6rem;
+  min-height: 54px;
+  padding: 0 30px;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--orange), #f08a3a);
+  background: linear-gradient(135deg, #ff8a24, #f06f1a);
   color: var(--white);
-  font-weight: 700;
-  font-size: 1rem;
+  font-weight: 800;
+  font-size: 17px;
   letter-spacing: 0.01em;
-  box-shadow: 0 12px 28px rgba(229, 104, 20, 0.35);
+  box-shadow: 0 16px 36px rgba(244, 122, 32, 0.32);
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease;
@@ -241,7 +247,7 @@ img {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 34px rgba(229, 104, 20, 0.42);
+  box-shadow: 0 18px 40px rgba(244, 122, 32, 0.38);
 }
 
 .btn-primary:active {

@@ -69,7 +69,7 @@ export function PageView({
           <img
             className="page-ceo__photo"
             src={asset(page.meta?.photo ?? 'img/03.jpg')}
-            alt="Петр Родионов и коллега"
+            alt="Пётр Родионов и коллега"
           />
         </div>
         <div className="page-ceo__main">
@@ -102,9 +102,23 @@ export function PageView({
               <h2 className="page-split__title">{fixPrepositions(page.title)}</h2>
             )}
             <div className="page-split__body">
-              {page.body?.map((p) => (
-                <p key={p.slice(0, 24)}>{fixPrepositions(p)}</p>
+              {page.body?.map((p, i) => (
+                <p
+                  key={p.slice(0, 24)}
+                  className={
+                    page.meta?.qrPlaceholder && i === (page.body?.length ?? 0) - 1
+                      ? 'page-split__invite'
+                      : undefined
+                  }
+                >
+                  {fixPrepositions(p)}
+                </p>
               ))}
+              {page.meta?.qrPlaceholder && (
+                <div className="page-split__qr" aria-hidden>
+                  <span>QR</span>
+                </div>
+              )}
             </div>
           </div>
           {page.meta?.logo && (
@@ -117,11 +131,13 @@ export function PageView({
         </div>
         <div className="page-split__right">
           <div className="page-split__right-inner">
-            {page.sideTitle && <h3 className="page-split__side-title">{page.sideTitle}</h3>}
+            {page.sideTitle && (
+              <h3 className="page-split__side-title">{fixPrepositions(page.sideTitle)}</h3>
+            )}
             {page.sideItems && (
               <ul className="page-split__list">
                 {page.sideItems.map((item) => (
-                  <li key={item}>{item}</li>
+                  <li key={item}>{fixPrepositions(item)}</li>
                 ))}
               </ul>
             )}
@@ -129,7 +145,7 @@ export function PageView({
               <>
                 <div className="page-split__divider" aria-hidden />
                 <p className="page-split__slogan">
-                  {page.footerSlogan.replace(/\n/g, ' ')}
+                  {fixPrepositions(page.footerSlogan.replace(/\n/g, ' '))}
                 </p>
               </>
             )}
@@ -153,10 +169,19 @@ export function PageView({
               ))}
             </div>
           </div>
+          {page.meta?.image && (
+            <div className="page-route__visual" aria-hidden>
+              <img
+                className="page-route__visual-img"
+                src={`${asset(page.meta.image)}?v=6`}
+                alt=""
+              />
+            </div>
+          )}
         </div>
         <div className="page-route__right">
           <div className="page-route__toc">
-            <h2 className="page-route__toc-title">Содержание книги</h2>
+            <h2 className="page-route__toc-title">Оглавление книги</h2>
             <p className="page-route__toc-hint">Выбери раздел или листай дальше</p>
             <ul className="chapters-timeline">
               {page.routeItems
@@ -175,16 +200,15 @@ export function PageView({
                         item.pageId ? onGoToPage?.(item.pageId) : onGoToSection?.(item.sectionId)
                       }
                     >
-                      <div className="chapter-spine" aria-hidden>
-                        <div className="chapter-dot" />
-                        <div className="chapter-connector" />
-                      </div>
                       <div className="chapter-card">
-                        <div className="chapter-header">
-                          <span className="chapter-num">{num}</span>
-                          <h3 className="chapter-title">{item.title}</h3>
+                        <span className="chapter-num">{num}</span>
+                        <div className="chapter-copy">
+                          <h3 className="chapter-title">{fixPrepositions(item.title)}</h3>
+                          <p className="chapter-desc">{fixPrepositions(item.desc)}</p>
                         </div>
-                        <p className="chapter-desc">{item.desc}</p>
+                        <span className="chapter-arrow" aria-hidden="true">
+                          →
+                        </span>
                       </div>
                     </button>
                   </li>
@@ -192,13 +216,6 @@ export function PageView({
               })}
             </ul>
           </div>
-          {page.meta?.logo && (
-            <img
-              className="page-route__logo"
-              src={asset(page.meta.logo)}
-              alt="ГЕРОФАРМ Трансформация"
-            />
-          )}
         </div>
       </article>
     )

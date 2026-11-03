@@ -17,7 +17,7 @@ export function BentoMenu({ open, current, onClose, onBack, onGoPageId }: BentoM
       className="menu-overlay"
       role="dialog"
       aria-modal="true"
-      aria-label="Содержание"
+      aria-label="Оглавление"
       onClick={onClose}
     >
       <div

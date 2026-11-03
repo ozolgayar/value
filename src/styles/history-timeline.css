@@ -262,7 +262,6 @@
   align-items: start;
   flex: 0 0 auto;
   margin-bottom: 0.4rem;
-  animation: tlh-settle 720ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .tlh__item:last-child {
@@ -278,7 +277,6 @@
   font-weight: 600;
   letter-spacing: 0.02em;
   color: color-mix(in srgb, var(--tlh-accent) 72%, #1a1630);
-  animation: tlh-settle 640ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .tlh__track {
@@ -328,20 +326,6 @@
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.1),
     0 0 0 1px color-mix(in srgb, var(--tlh-accent) 28%, rgba(0, 0, 0, 0.06));
-}
-
-@keyframes tlh-settle {
-  0% {
-    opacity: 0;
-    transform: translateY(28px) scale(0.96);
-  }
-  60% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
 }
 
 .tlh__card-pill {

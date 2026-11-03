@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { AkonyGate, requestAkonyClose } from './components/AkonyGate'
 import { Cover } from './components/Cover'
 import { House3DLab } from './components/House3DLab'
@@ -7,12 +7,30 @@ import { Preloader } from './components/Preloader'
 import { Cursor } from './components/Cursor'
 import { Reader } from './components/Reader'
 import { Welcome } from './components/Welcome'
+import { readBookLocation, writeBookLocation, type BookView } from './lib/bookLocation'
 import './styles/global.css'
 import './styles/typography.css'
 
-type View = 'cover' | 'welcome' | 'reader'
+type View = BookView
 
 const VIEW_TRANSITION_MS = 650
+const PRELOADER_DONE_KEY = 'gph-value-book-preloader-done'
+
+function readPreloaderDone() {
+  try {
+    return localStorage.getItem(PRELOADER_DONE_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+function writePreloaderDone() {
+  try {
+    localStorage.setItem(PRELOADER_DONE_KEY, '1')
+  } catch {
+    /* private mode / blocked storage */
+  }
+}
 
 function isHouse3dLab() {
   return new URLSearchParams(window.location.search).has('house3d')
@@ -22,11 +40,18 @@ function isStrategyHousePreview() {
   return new URLSearchParams(window.location.search).has('strategyHouse')
 }
 
+function forcePreloaderPreview() {
+  return new URLSearchParams(window.location.search).has('preloader')
+}
+
 function BookApp() {
-  const [booting, setBooting] = useState(true)
-  const [view, setView] = useState<View>('cover')
+  const preloaderPreview = forcePreloaderPreview()
+  const [booting, setBooting] = useState(
+    () => preloaderPreview || !readPreloaderDone(),
+  )
+  const [view, setView] = useState<View>(() => readBookLocation().view)
   const [prevView, setPrevView] = useState<View | null>(null)
-  const [readerIndex, setReaderIndex] = useState(0)
+  const [readerIndex, setReaderIndex] = useState(() => readBookLocation().pageIndex)
 
   const go = useCallback(
     (next: View, index = 0) => {
@@ -38,6 +63,14 @@ function BookApp() {
     },
     [view],
   )
+
+  const handlePageIndex = useCallback((pageIndex: number) => {
+    setReaderIndex(pageIndex)
+  }, [])
+
+  useEffect(() => {
+    writeBookLocation(view, readerIndex)
+  }, [view, readerIndex])
 
   const gateOpen = view === 'welcome'
   const akonyActive = view === 'cover' || gateOpen
@@ -65,7 +98,16 @@ function BookApp() {
       <div className="app-shell__wash" aria-hidden />
       <Cursor />
 
-      {booting && <Preloader onDone={() => setBooting(false)} />}
+      {booting && (
+        <Preloader
+          loop={preloaderPreview}
+          onDone={() => {
+            if (preloaderPreview) return
+            writePreloaderDone()
+            setBooting(false)
+          }}
+        />
+      )}
 
       {showAkony && (
         <div
@@ -101,6 +143,7 @@ function BookApp() {
         >
           <Reader
             initialIndex={readerIndex}
+            onPageIndexChange={handlePageIndex}
             onExitToHome={() => go('cover')}
             onBackToWelcome={() => go('welcome')}
           />

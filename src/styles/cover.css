@@ -28,6 +28,7 @@
 .cover__media {
   position: absolute;
   inset: 0;
+  z-index: 0;
   background: var(--asset-cover) center top / cover no-repeat;
   transform: scale(1.04);
   animation: cover-ken 18s ease-in-out infinite alternate;
@@ -118,6 +119,56 @@
   z-index: 1;
 }
 
+.cover__bg-tags {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.cover__bg-tag {
+  position: absolute;
+  white-space: nowrap;
+  font-size: clamp(56px, 4.6vw, 86px);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.018em;
+  color: rgba(255, 255, 255, 0.085);
+  filter: blur(0.2px);
+  text-shadow: none;
+  transform: translateY(-50%);
+}
+
+.cover__bg-tag--history {
+  top: 22vh;
+  right: 7vw;
+}
+
+.cover__bg-tag--mission {
+  top: 36vh;
+  right: 18vw;
+  color: rgba(255, 255, 255, 0.07);
+}
+
+.cover__bg-tag--values {
+  top: 50vh;
+  right: 7vw;
+}
+
+.cover__bg-tag--mastery {
+  top: 64vh;
+  right: 5vw;
+  color: rgba(255, 255, 255, 0.065);
+}
+
+.cover__bg-tag--env {
+  top: 78vh;
+  right: 5vw;
+  color: rgba(255, 255, 255, 0.075);
+}
+
 .cover__particles span {
   position: absolute;
   border-radius: 50%;
@@ -135,7 +186,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  z-index: 2;
+  z-index: 3;
 }
 
 .logo-25 {
@@ -197,7 +248,7 @@
 
 .cover__content {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   box-sizing: border-box;
   width: min(640px, 100%);
   max-width: 640px;
@@ -256,6 +307,12 @@
 }
 
 .btn-open {
+  min-height: 54px;
+  padding: 0 30px;
+  font-size: 17px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ff8a24, #f06f1a);
+  box-shadow: 0 16px 36px rgba(244, 122, 32, 0.32);
   transition:
     transform 200ms ease,
     box-shadow 200ms ease;
@@ -288,15 +345,15 @@
   overflow: hidden;
   background: linear-gradient(
     90deg,
-    rgba(44, 30, 78, 0.55) 0%,
-    rgba(40, 72, 112, 0.48) 50%,
-    rgba(28, 52, 88, 0.55) 100%
+    rgba(44, 30, 78, 0.42) 0%,
+    rgba(40, 72, 112, 0.36) 50%,
+    rgba(28, 52, 88, 0.42) 100%
   );
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 0.85rem 0;
-  color: rgba(255, 255, 255, 0.78);
+  padding: 0.72rem 0;
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .cover-ticker__track {
@@ -490,7 +547,7 @@
   }
 }
 
-@media (max-width: 1024px) and (min-width: 769px) {
+@media (max-width: 1024px) and (min-width: 768px) {
   .cover-hero {
     padding-left: 32px;
     padding-right: 32px;
@@ -498,6 +555,31 @@
 
   .cover__title {
     font-size: clamp(2rem, 4.5vw, 3.2rem);
+  }
+
+  .cover__bg-tag {
+    opacity: 0.78;
+    font-size: clamp(46px, 4.2vw, 72px);
+  }
+
+  .cover__bg-tag--history,
+  .cover__bg-tag--values {
+    right: 5vw;
+  }
+
+  .cover__bg-tag--mission {
+    right: 16vw;
+  }
+
+  .cover__bg-tag--mastery,
+  .cover__bg-tag--env {
+    right: 4vw;
+  }
+}
+
+@media (max-width: 767px) {
+  .cover__bg-tags {
+    display: none;
   }
 }
 
@@ -648,9 +730,9 @@
     right: 0;
     width: 100%;
     box-sizing: border-box;
-    padding: 16px 0;
+    padding: 14px 0;
     overflow: hidden;
-    background: rgba(20, 20, 40, 0.9);
+    background: rgba(20, 20, 40, 0.82);
     color: #fff;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;

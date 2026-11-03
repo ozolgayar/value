@@ -73,27 +73,14 @@ export function RollUpMenu({
             type="button"
             className="roll-menu__link"
             tabIndex={open ? 0 : -1}
-            title="Открыть содержание разделов"
-            data-tooltip="Открыть содержание разделов"
+            title="Открыть оглавление"
+            data-tooltip="Открыть оглавление"
             onClick={() => {
               onClose()
               onContents()
             }}
           >
-            Содержание
-          </button>
-          <button
-            type="button"
-            className="roll-menu__link"
-            tabIndex={open ? 0 : -1}
-            title="К первой странице книги"
-            data-tooltip="К первой странице книги"
-            onClick={() => {
-              onClose()
-              onBookStart()
-            }}
-          >
-            Начало книги
+            Оглавление
           </button>
           <button
             type="button"
@@ -111,7 +98,19 @@ export function RollUpMenu({
         </nav>
 
         <div className="roll-menu__footer">
-          <p className="roll-menu__tagline">История. Культура. Будущее</p>
+          <button
+            type="button"
+            className="roll-menu__tagline"
+            tabIndex={open ? 0 : -1}
+            title="К первой странице книги"
+            data-tooltip="К первой странице книги"
+            onClick={() => {
+              onClose()
+              onBookStart()
+            }}
+          >
+            В начало книги
+          </button>
           <button
             type="button"
             className="roll-menu__home"

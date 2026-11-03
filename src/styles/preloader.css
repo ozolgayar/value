@@ -47,6 +47,79 @@
   z-index: 0;
 }
 
+/* —— Paint splashes fill the screen —— */
+.preloader__splashes {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.preloader__splash {
+  position: absolute;
+  width: min(78vw, 620px);
+  height: min(78vw, 620px);
+  border-radius: 42% 58% 63% 37% / 40% 45% 55% 60%;
+  transform: translate(-50%, -50%) scale(var(--splash-scale, 0));
+  filter: blur(22px) saturate(1.35);
+  mix-blend-mode: hard-light;
+  will-change: transform, opacity;
+  transition: opacity 80ms linear;
+}
+
+.preloader__splash--1 {
+  border-radius: 58% 42% 38% 62% / 48% 55% 45% 52%;
+  animation: preloader-splash-wobble 4.6s ease-in-out infinite;
+}
+
+.preloader__splash--2 {
+  width: min(92vw, 740px);
+  height: min(92vw, 740px);
+  border-radius: 36% 64% 55% 45% / 58% 40% 60% 42%;
+  animation: preloader-splash-wobble 5.2s ease-in-out infinite reverse;
+}
+
+.preloader__splash--3 {
+  width: min(110vw, 880px);
+  height: min(110vw, 880px);
+  border-radius: 48% 52% 42% 58% / 44% 58% 42% 56%;
+  filter: blur(28px) saturate(1.2);
+  animation: preloader-splash-wobble 5.8s ease-in-out infinite;
+}
+
+.preloader__splash--4 {
+  width: min(70vw, 540px);
+  height: min(70vw, 540px);
+  border-radius: 62% 38% 48% 52% / 40% 62% 38% 60%;
+  animation: preloader-splash-wobble 4.2s ease-in-out infinite reverse;
+}
+
+.preloader__splash-veil {
+  position: absolute;
+  inset: -10%;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(255, 161, 0, 0.45), transparent 42%),
+    radial-gradient(circle at 80% 20%, rgba(224, 64, 160, 0.4), transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(26, 160, 255, 0.35), transparent 48%),
+    radial-gradient(circle at 88% 70%, rgba(123, 61, 255, 0.38), transparent 38%);
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+@keyframes preloader-splash-wobble {
+  0%,
+  100% {
+    border-radius: 42% 58% 63% 37% / 40% 45% 55% 60%;
+  }
+  33% {
+    border-radius: 58% 42% 40% 60% / 55% 40% 60% 45%;
+  }
+  66% {
+    border-radius: 40% 60% 55% 45% / 48% 58% 42% 52%;
+  }
+}
+
 .preloader__center {
   position: absolute;
   inset: 0;
@@ -195,7 +268,8 @@
   .preloader-brand,
   .preloader-brand__word,
   .preloader__count,
-  .preloader-symbol__fill {
+  .preloader-symbol__fill,
+  .preloader__splash {
     animation: none !important;
     transition: none !important;
   }

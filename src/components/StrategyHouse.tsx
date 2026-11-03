@@ -107,6 +107,16 @@ const HOTSPOTS: Hotspot[] = [
   },
 ]
 
+/** Short labels for the mobile floor switcher (bottom → top of the house). */
+const MOBILE_FLOOR_NAV: { id: HouseZoneId; num: string; label: string }[] = [
+  { id: 'foundation', num: 'Фундамент', label: 'Ценности' },
+  { id: '1', num: '1', label: 'Персонал' },
+  { id: '2', num: '2', label: 'Бизнес' },
+  { id: '3', num: '3', label: 'Портфель' },
+  { id: '4', num: '4', label: 'Финансы' },
+  { id: 'mission', num: 'Миссия', label: 'Компании' },
+]
+
 /** Lucide-style house paths (from icons/house.svg). */
 const HOUSE_PATH_ROOF =
   'M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'
@@ -190,11 +200,13 @@ export function MissionStrategyHousePage() {
   const data = missionStrategyHouse
   const baseId = useId().replace(/:/g, '')
   const panelRef = useRef<HTMLDivElement>(null)
+  const mobileNavRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState<HouseZoneId>('foundation')
   const [visited, setVisited] = useState<Set<HouseZoneId>>(
     () => new Set(['foundation']),
   )
   const [pulse, setPulse] = useState(true)
+  const [isMobileLayout, setIsMobileLayout] = useState(false)
 
   const level: PanelLevel =
     active === 'mission'
@@ -225,6 +237,14 @@ export function MissionStrategyHousePage() {
     return () => window.clearTimeout(id)
   }, [])
 
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)')
+    const sync = () => setIsMobileLayout(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
+
   const selectLevel = (id: HouseZoneId, opts?: { scroll?: boolean }) => {
     setActive(id)
     setVisited((prev) => {
@@ -233,6 +253,19 @@ export function MissionStrategyHousePage() {
       next.add(id)
       return next
     })
+    const isMobile = window.matchMedia('(max-width: 768px)').matches
+    if (isMobile) {
+      window.requestAnimationFrame(() => {
+        const btn = mobileNavRef.current?.querySelector<HTMLButtonElement>(
+          `[data-floor="${id}"]`,
+        )
+        btn?.scrollIntoView({
+          behavior: 'smooth',
+          inline: 'center',
+          block: 'nearest',
+        })
+      })
+    }
     if (opts?.scroll && window.matchMedia('(max-width: 900px)').matches) {
       window.requestAnimationFrame(() => {
         panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -243,8 +276,9 @@ export function MissionStrategyHousePage() {
   const onTabKeyDown = (
     e: KeyboardEvent<HTMLButtonElement>,
     id: HouseZoneId,
+    navOrder: HouseZoneId[],
+    idPrefix: string,
   ) => {
-    const navOrder = HOTSPOTS.map((h) => h.id)
     const idx = navOrder.indexOf(id)
     if (idx < 0) return
 
@@ -266,9 +300,12 @@ export function MissionStrategyHousePage() {
     selectLevel(nextId)
     const btn = e.currentTarget
       .closest('[role="tablist"]')
-      ?.querySelector<HTMLButtonElement>(`#${baseId}-tab-${nextId}`)
+      ?.querySelector<HTMLButtonElement>(`#${idPrefix}${nextId}`)
     btn?.focus()
   }
+
+  const hotspotNavOrder = HOTSPOTS.map((h) => h.id)
+  const mobileNavOrder = MOBILE_FLOOR_NAV.map((f) => f.id)
 
   return (
     <article className="page-shell page-bleed page-strategy-house">
@@ -321,9 +358,10 @@ export function MissionStrategyHousePage() {
 
                 <div
                   className="shouse__tablist"
-                  role="tablist"
-                  aria-label="Уровни стратегии"
-                  aria-orientation="vertical"
+                  role={isMobileLayout ? undefined : 'tablist'}
+                  aria-label={isMobileLayout ? undefined : 'Уровни стратегии'}
+                  aria-orientation={isMobileLayout ? undefined : 'vertical'}
+                  aria-hidden={isMobileLayout || undefined}
                 >
                   {HOTSPOTS.map((spot) => {
                     const selected = active === spot.id
@@ -332,16 +370,28 @@ export function MissionStrategyHousePage() {
                         key={spot.id}
                         id={`${baseId}-tab-${spot.id}`}
                         type="button"
-                        role="tab"
+                        role={isMobileLayout ? undefined : 'tab'}
                         className={`shouse__hotspot shouse__hotspot--${spot.id}${
                           selected ? ' is-active' : ''
                         }`}
-                        aria-selected={selected}
-                        aria-controls={tabpanelId}
-                        tabIndex={selected ? 0 : -1}
+                        aria-selected={isMobileLayout ? undefined : selected}
+                        aria-controls={isMobileLayout ? undefined : tabpanelId}
+                        tabIndex={isMobileLayout ? -1 : selected ? 0 : -1}
                         title={spot.tooltip}
-                        onClick={() => selectLevel(spot.id, { scroll: true })}
-                        onKeyDown={(e) => onTabKeyDown(e, spot.id)}
+                        disabled={isMobileLayout}
+                        onClick={() => {
+                          if (isMobileLayout) return
+                          selectLevel(spot.id, { scroll: true })
+                        }}
+                        onKeyDown={(e) => {
+                          if (isMobileLayout) return
+                          onTabKeyDown(
+                            e,
+                            spot.id,
+                            hotspotNavOrder,
+                            `${baseId}-tab-`,
+                          )
+                        }}
                       >
                         <span className="shouse__hotspot-num">
                           <HouseProgressIcon
@@ -361,15 +411,71 @@ export function MissionStrategyHousePage() {
           </div>
         </div>
 
+        <div className="shouse__mobile-floors">
+          <p className="shouse__mobile-floors-label" id={`${baseId}-mobile-floors`}>
+            Этажи стратегии
+          </p>
+          <p className="shouse__mobile-floors-hint">
+            Нажимай на домики, чтобы посмотреть каждый этаж стратегии
+          </p>
+          <div
+            ref={mobileNavRef}
+            className="shouse__mobile-floor-nav"
+            role="tablist"
+            aria-labelledby={`${baseId}-mobile-floors`}
+            aria-orientation="horizontal"
+          >
+            {MOBILE_FLOOR_NAV.map((floor) => {
+              const selected = active === floor.id
+              const completed = visited.has(floor.id) && !selected
+              return (
+                <button
+                  key={floor.id}
+                  id={`${baseId}-mobile-tab-${floor.id}`}
+                  type="button"
+                  role="tab"
+                  data-floor={floor.id}
+                  className={`shouse__mobile-floor-btn${
+                    selected ? ' is-active' : ''
+                  }${completed ? ' is-completed' : ''}`}
+                  aria-selected={selected}
+                  aria-controls={tabpanelId}
+                  tabIndex={selected ? 0 : -1}
+                  onClick={() => selectLevel(floor.id)}
+                  onKeyDown={(e) =>
+                    onTabKeyDown(
+                      e,
+                      floor.id,
+                      mobileNavOrder,
+                      `${baseId}-mobile-tab-`,
+                    )
+                  }
+                >
+                  <span className="shouse__mobile-floor-house" aria-hidden>
+                    <HouseProgressIcon
+                      fill={visited.has(floor.id) ? 1 : 0}
+                      clipId={`${baseId}-mobile-house-clip-${floor.id}`}
+                    />
+                  </span>
+                  <span className="shouse__mobile-floor-text">
+                    <small>{floor.num}</small>
+                    <b>{floor.label}</b>
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
         <aside
           ref={panelRef}
           className="shouse__panel"
           id={tabpanelId}
           role="tabpanel"
           tabIndex={-1}
-          aria-labelledby={`${baseId}-tab-${active}`}
+          aria-labelledby={`${baseId}-tab-${active} ${baseId}-mobile-tab-${active}`}
         >
-          <span className="shouse__badge">{data.badge}</span>
+          <p className="shouse__title">{fixPrepositions(data.title)}</p>
           <p className="shouse__intro">{fixPrepositions(data.intro)}</p>
           <p className="shouse__guide">
             Посмотри все этажи дома, чтобы узнать о стратегии подробнее

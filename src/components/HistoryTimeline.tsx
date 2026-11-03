@@ -452,14 +452,11 @@ export function HistoryTimeline({
               />
             </div>
 
-            {openYears.map(({ entry, i }, visualIndex) => (
+            {openYears.map(({ entry, i }) => (
               <div
                 key={entry.year}
                 className="tlh__item"
                 data-year={entry.year}
-                style={
-                  reduced ? undefined : { animationDelay: `${visualIndex * 70}ms` }
-                }
               >
                 <div className="tlh__track" aria-hidden>
                   <span

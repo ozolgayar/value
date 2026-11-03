@@ -32,7 +32,7 @@ export const missionStatement = {
 
 export const missionUniqueness = {
   badge: 'МЫ ГЕРОФАРМ',
-  title: 'УНИКАЛЬНОСТЬ,\nКОТОРАЯ НАС\nОБЪЕДИНЯЕТ',
+  title: 'Уникальность,\nкоторая нас объединяет',
   points: [
     {
       title: 'Мы смело мыслим на долгие годы вперед',
@@ -166,10 +166,10 @@ export type StrategyHouseLevel = {
 
 /** Interactive strategy house: left img/15.png + right detail panel */
 export const missionStrategyHouse = {
-  badge: 'СТРАТЕГИЯ ГЕРОФАРМ 2030',
+  title: 'Стратегия ГЕРОФАРМ 2030: проектируем будущее',
   houseImage: 'img/15.png',
   intro:
-    'У дома есть фундамент, несущие этажи и крыша.\nКаждый уровень опирается на предыдущий:\nбез прочного фундамента не удержать стены,\nбез стен не поставить крышу.',
+    'У дома есть фундамент, несущие этажи и крыша. Каждый уровень опирается на предыдущий: без прочного фундамента не удержать стены, без стен не поставить крышу.',
   levels: [
     {
       id: 'foundation',

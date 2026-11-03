@@ -3,6 +3,15 @@
   cursor: none !important;
 }
 
+html.has-custom-cursor:has(.akony.is-open),
+html.has-custom-cursor:has(.akony.is-open) * {
+  cursor: auto !important;
+}
+
+.app-shell:has(.akony.is-open) .cursor-dot {
+  display: none;
+}
+
 /* Readable on both light and dark surfaces */
 .cursor-dot {
   position: fixed;

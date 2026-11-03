@@ -118,6 +118,14 @@ export function Cover({ onOpen, inert = false }: CoverProps) {
           ))}
         </div>
 
+        <div className="cover__bg-tags" aria-hidden>
+          <span className="cover__bg-tag cover__bg-tag--history">История</span>
+          <span className="cover__bg-tag cover__bg-tag--mission">Миссия</span>
+          <span className="cover__bg-tag cover__bg-tag--values">Ценности</span>
+          <span className="cover__bg-tag cover__bg-tag--mastery">Мастерство</span>
+          <span className="cover__bg-tag cover__bg-tag--env">Окружение</span>
+        </div>
+
         <div className="cover__top cover-fade cover-fade--top">
           <Logo25 />
 
