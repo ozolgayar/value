@@ -257,40 +257,53 @@ export function Reader({
   }, [])
 
   const coachSteps = useMemo(
-    () => [
-      {
-        id: 'nav',
-        placement: 'center' as const,
-        title: 'Навигация по книге',
-        paragraphs: [
-          {
-            text: 'Для продолжения чтения – листайте свайпом вверх/вниз или используйте стрелки вперёд/назад.',
-          },
-          {
-            text: 'Для открытия нужного раздела — используйте нумерацию наверху.',
-          },
-          { text: 'Нажми кнопку «Далее»', accent: true },
-        ],
-        showNotesPreview: false,
-        ctaHint: null as string | null,
-      },
-      {
-        id: 'menu',
-        placement: 'menu' as const,
-        title: 'Меню',
-        paragraphs: [
-          {
-            text: 'Здесь содержание книги и твои заметки. Отсюда можно попасть в начало книги или на главную страницу.',
-          },
-          { text: 'Как сделать заметку:', bold: true },
-          {
-            text: 'выдели текст на странице – появится кнопка\nс блокнотом – нажми её, чтобы сохранить фрагмент в заметки.',
-          },
-        ],
-        showNotesPreview: true,
-        ctaHint: 'Нажми кнопку «Понятно»',
-      },
-    ],
+    () => {
+      type CoachParagraph = { text: string; bold?: boolean; accent?: boolean }
+      type CoachStep = {
+        id: string
+        placement: 'center' | 'menu'
+        title: string
+        paragraphs: CoachParagraph[]
+        showNotesPreview: boolean
+        ctaHint: string | null
+      }
+
+      const steps: CoachStep[] = [
+        {
+          id: 'nav',
+          placement: 'center',
+          title: 'Навигация по книге',
+          paragraphs: [
+            {
+              text: 'Для продолжения чтения – листайте свайпом вверх/вниз или используйте стрелки вперёд/назад.',
+            },
+            {
+              text: 'Для открытия нужного раздела — используйте нумерацию наверху.',
+            },
+            { text: 'Нажми кнопку «Далее»', accent: true },
+          ],
+          showNotesPreview: false,
+          ctaHint: null,
+        },
+        {
+          id: 'menu',
+          placement: 'menu',
+          title: 'Меню',
+          paragraphs: [
+            {
+              text: 'Здесь содержание книги и твои заметки. Отсюда можно попасть в начало книги или на главную страницу.',
+            },
+            { text: 'Как сделать заметку:', bold: true },
+            {
+              text: 'выдели текст на странице – появится кнопка\nс блокнотом – нажми её, чтобы сохранить фрагмент в заметки.',
+            },
+          ],
+          showNotesPreview: true,
+          ctaHint: 'Нажми кнопку «Понятно»',
+        },
+      ]
+      return steps
+    },
     [],
   )
 
