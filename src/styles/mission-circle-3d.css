@@ -599,31 +599,11 @@ a.mc3d__tag:hover {
   }
 
   .app-shell:has(.mc3d) .reader__chrome::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: calc(72px + env(safe-area-inset-bottom));
-    background: #fff;
-    box-shadow: 0 -1px 0 rgba(0, 40, 80, 0.06);
-    z-index: 1;
-    pointer-events: none;
-  }
-
-  .app-shell:has(.mc3d) .roll-menu__trigger,
-  .app-shell:has(.mc3d) .roll-menu__trigger:hover,
-  .app-shell:has(.mc3d) .roll-menu.is-open .roll-menu__trigger {
-    left: 20px;
-    right: auto;
-    bottom: max(12px, env(safe-area-inset-bottom));
-    transform: none;
-    z-index: 2;
+    content: none;
+    display: none;
   }
 
   .app-shell:has(.mc3d) .reader__pager {
-    right: 20px;
-    bottom: max(12px, env(safe-area-inset-bottom));
     z-index: 2;
   }
 }

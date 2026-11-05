@@ -184,10 +184,7 @@ function HouseProgressIcon({
 const MISSION_LEVEL = {
   id: 'mission' as const,
   title: 'Миссия компании',
-  lead: '',
-  items: [
-    'Создаем инновации для увеличения продолжительности жизни в России и мире',
-  ],
+  lead: 'Создаем инновации для увеличения продолжительности жизни в России и мире',
 }
 
 type PanelLevel = {
@@ -199,14 +196,56 @@ type PanelLevel = {
 export function MissionStrategyHousePage() {
   const data = missionStrategyHouse
   const baseId = useId().replace(/:/g, '')
-  const panelRef = useRef<HTMLDivElement>(null)
+  const panelRef = useRef<HTMLElement>(null)
+  const detailRef = useRef<HTMLDivElement>(null)
+  const mobileFloorsRef = useRef<HTMLDivElement>(null)
   const mobileNavRef = useRef<HTMLDivElement>(null)
+  const stageRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState<HouseZoneId>('foundation')
   const [visited, setVisited] = useState<Set<HouseZoneId>>(
     () => new Set(['foundation']),
   )
   const [pulse, setPulse] = useState(true)
   const [isMobileLayout, setIsMobileLayout] = useState(false)
+
+  const getPageScroller = (from: HTMLElement | null) =>
+    from?.closest('.reader__page') as HTMLElement | null
+
+  const getTopbarOffset = () => {
+    const topbar = document.querySelector('.reader__topbar') as HTMLElement | null
+    if (!topbar) return 64
+    const style = window.getComputedStyle(topbar)
+    if (style.display === 'none' || style.visibility === 'hidden') return 12
+    const opacity = Number.parseFloat(style.opacity || '1')
+    if (opacity < 0.05) return 12
+    return Math.ceil(topbar.getBoundingClientRect().height) + 8
+  }
+
+  const scrollPageTo = (target: HTMLElement, behavior: ScrollBehavior = 'smooth') => {
+    const page = getPageScroller(target)
+    if (!page) {
+      target.scrollIntoView({ behavior, block: 'start' })
+      return
+    }
+    const offset = getTopbarOffset()
+    const pageRect = page.getBoundingClientRect()
+    const targetTop = target.getBoundingClientRect().top
+    const nextTop = page.scrollTop + (targetTop - pageRect.top) - offset
+    page.scrollTo({ top: Math.max(0, nextTop), behavior })
+  }
+
+  const scrollToFloorDetail = () => {
+    const target =
+      mobileNavRef.current ?? mobileFloorsRef.current ?? detailRef.current
+    if (!target) return
+    scrollPageTo(target)
+  }
+
+  const scrollBackToScheme = () => {
+    const target = stageRef.current ?? mobileFloorsRef.current
+    if (!target) return
+    scrollPageTo(target)
+  }
 
   const level: PanelLevel =
     active === 'mission'
@@ -264,11 +303,14 @@ export function MissionStrategyHousePage() {
           inline: 'center',
           block: 'nearest',
         })
+        if (opts?.scroll) scrollToFloorDetail()
       })
+      return
     }
     if (opts?.scroll && window.matchMedia('(max-width: 900px)').matches) {
       window.requestAnimationFrame(() => {
-        panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        const target = detailRef.current ?? panelRef.current
+        if (target) scrollPageTo(target)
       })
     }
   }
@@ -297,7 +339,10 @@ export function MissionStrategyHousePage() {
 
     e.preventDefault()
     const nextId = navOrder[next]
-    selectLevel(nextId)
+    const scrollMobile =
+      idPrefix.includes('mobile-tab') &&
+      window.matchMedia('(max-width: 768px)').matches
+    selectLevel(nextId, { scroll: scrollMobile })
     const btn = e.currentTarget
       .closest('[role="tablist"]')
       ?.querySelector<HTMLButtonElement>(`#${idPrefix}${nextId}`)
@@ -319,7 +364,7 @@ export function MissionStrategyHousePage() {
         }
       >
         <div className="shouse__main">
-          <div className="shouse__stage">
+          <div className="shouse__stage" ref={stageRef}>
             <div className="shouse__figure">
               <div className="shouse__map">
                 <img
@@ -411,7 +456,7 @@ export function MissionStrategyHousePage() {
           </div>
         </div>
 
-        <div className="shouse__mobile-floors">
+        <div className="shouse__mobile-floors" ref={mobileFloorsRef}>
           <p className="shouse__mobile-floors-label" id={`${baseId}-mobile-floors`}>
             Этажи стратегии
           </p>
@@ -441,7 +486,7 @@ export function MissionStrategyHousePage() {
                   aria-selected={selected}
                   aria-controls={tabpanelId}
                   tabIndex={selected ? 0 : -1}
-                  onClick={() => selectLevel(floor.id)}
+                  onClick={() => selectLevel(floor.id, { scroll: true })}
                   onKeyDown={(e) =>
                     onTabKeyDown(
                       e,
@@ -475,33 +520,48 @@ export function MissionStrategyHousePage() {
           tabIndex={-1}
           aria-labelledby={`${baseId}-tab-${active} ${baseId}-mobile-tab-${active}`}
         >
-          <p className="shouse__title">{fixPrepositions(data.title)}</p>
-          <p className="shouse__intro">{fixPrepositions(data.intro)}</p>
-          <p className="shouse__guide">
-            Посмотри все этажи дома, чтобы узнать о стратегии подробнее
-          </p>
+          <div className="shouse__panel-head">
+            <p className="shouse__title">{fixPrepositions(data.title)}</p>
+            <p className="shouse__intro">{fixPrepositions(data.intro)}</p>
+            <p className="shouse__guide">
+              Посмотри все этажи дома, чтобы узнать о стратегии подробнее
+            </p>
+          </div>
 
-          <div key={active} className="shouse__panel-body">
-            <h2 className="shouse__panel-title">
-              {fixPrepositions(level.title)}
-            </h2>
-            {level.lead ? (
-              <p className="shouse__panel-lead">{fixPrepositions(level.lead)}</p>
-            ) : null}
-            {level.items && level.items.length > 0 ? (
-              <ul className="shouse__list">
-                {level.items.map((item) => (
-                  <li key={item}>{fixPrepositions(item)}</li>
-                ))}
-              </ul>
-            ) : null}
-            {showFootnotes ? (
-              <div className="shouse__footnotes">
-                {data.footnotes.map((note) => (
-                  <p key={note.slice(0, 24)}>{note}</p>
-                ))}
-              </div>
-            ) : null}
+          <div
+            ref={detailRef}
+            className="shouse__panel-body"
+            id={`${baseId}-floor-detail`}
+          >
+            <div key={active} className="shouse__panel-body-inner">
+              <h2 className="shouse__panel-title">
+                {fixPrepositions(level.title)}
+              </h2>
+              {level.lead ? (
+                <p className="shouse__panel-lead">{fixPrepositions(level.lead)}</p>
+              ) : null}
+              {level.items && level.items.length > 0 ? (
+                <ul className="shouse__list">
+                  {level.items.map((item) => (
+                    <li key={item}>{fixPrepositions(item)}</li>
+                  ))}
+                </ul>
+              ) : null}
+              {showFootnotes ? (
+                <div className="shouse__footnotes">
+                  {data.footnotes.map((note) => (
+                    <p key={note.slice(0, 24)}>{note}</p>
+                  ))}
+                </div>
+              ) : null}
+              <button
+                type="button"
+                className="shouse__back-to-scheme"
+                onClick={scrollBackToScheme}
+              >
+                Назад к схеме
+              </button>
+            </div>
           </div>
         </aside>
       </div>

@@ -302,27 +302,21 @@
   }
 
   .app-shell:has(.reader__page:not([aria-hidden='true']) .page-practice-gallery)
-    .reader__progress {
+    .reader__topbar {
     top: 0;
     left: 0;
     width: 100%;
     transform: none;
     border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
     z-index: 1000;
     padding: 8px 12px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     box-shadow: none;
-  }
-
-  .app-shell:has(.reader__page:not([aria-hidden='true']) .page-practice-gallery)
-    .reader__progress-node {
-    width: 28px;
-    height: 28px;
-    flex: 0 0 28px;
   }
 
   .app-shell:has(.reader__page:not([aria-hidden='true']) .page-practice-gallery)
@@ -355,8 +349,6 @@
   }
 
   .app-shell:has(.reader__page:not([aria-hidden='true']) .page-practice-gallery) .reader__pager {
-    right: 20px;
-    bottom: max(12px, env(safe-area-inset-bottom));
     z-index: 201;
   }
 }

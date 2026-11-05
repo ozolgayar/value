@@ -335,6 +335,7 @@
   .muniq__title {
     margin-bottom: 1.5rem;
     max-width: 100%;
+    line-height: 1.18;
   }
 
   .muniq__points {
@@ -344,6 +345,7 @@
 
   .muniq__point-title {
     font-size: clamp(1.05rem, 3.4vw, 1.25rem);
+    line-height: 1.35;
   }
 
   .muniq__point-text {
@@ -368,6 +370,14 @@
     height: 70vh;
     min-height: 320px;
     flex: 0 0 auto;
+  }
+
+  .muniq__we {
+    padding: 0.42rem 0.72rem;
+  }
+
+  .muniq__we img {
+    height: 2.175rem;
   }
 }
 
@@ -1275,6 +1285,12 @@
   color: rgba(255, 255, 255, 0.88);
 }
 
+.shouse__panel-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
 .shouse__panel-body {
   display: flex;
   flex-direction: column;
@@ -1282,7 +1298,18 @@
   margin-top: 0.15rem;
   padding-top: 0.65rem;
   border-top: 1px solid rgba(255, 255, 255, 0.18);
+  scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 72px);
+}
+
+.shouse__panel-body-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
   animation: shouse-panel-in 220ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.shouse__back-to-scheme {
+  display: none;
 }
 
 .shouse__panel-title {
@@ -1398,8 +1425,12 @@
 
   .page-shell.page-strategy-house,
   .page-shell.page-strategy-house.page-bleed {
+    width: 100%;
+    max-width: none;
     height: auto;
     min-height: 100svh;
+    margin: 0;
+    padding: 0;
     overflow: visible;
     background: #ffffff;
   }
@@ -1407,27 +1438,48 @@
   .shouse {
     display: flex;
     flex-direction: column;
+    width: 100%;
     height: auto;
     min-height: 0;
-    padding-top: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Mobile order: strategy intro → house → floor nav → floor detail */
+  .shouse__panel {
+    display: contents;
+  }
+
+  .shouse__panel-head {
+    order: 1;
+    gap: 0.55rem;
+    padding:
+      calc(env(safe-area-inset-top, 0px) + 64px)
+      20px
+      20px;
+    background: linear-gradient(180deg, #0b63c7 0%, #0057b8 55%, #004899 100%);
+    color: #fff;
   }
 
   .shouse__main {
+    order: 2;
     flex: none;
+    width: 100%;
     height: auto;
     min-height: 0;
+    margin: 0;
   }
 
   .shouse__stage {
     flex: none;
     position: relative;
     width: 100%;
-    height: clamp(220px, 38svh, 310px);
+    height: clamp(260px, 48svh, 420px);
     aspect-ratio: auto;
     min-height: 0;
     max-height: none;
     overflow: hidden;
-    background: #eef4f8;
+    background: #d9e5f2;
   }
 
   .shouse__figure {
@@ -1438,15 +1490,28 @@
     container-type: normal;
   }
 
+  /* Full-bleed dim over the cropped house (SVG veil letterboxes with meet). */
+  .shouse__figure::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: rgb(10, 26, 47);
+    opacity: calc(0.42 - var(--sh-progress, 0) * 0.36);
+    transition: opacity 0.45s ease;
+  }
+
   .shouse__map {
     top: 0;
-    left: 50%;
-    width: auto;
+    left: 0;
+    width: 100%;
     height: 100%;
     max-width: none;
     max-height: none;
-    aspect-ratio: 6000 / 4200;
-    transform: translateX(-50%);
+    aspect-ratio: auto;
+    transform: scale(1.18);
+    transform-origin: 52% 22%;
   }
 
   .shouse__img {
@@ -1454,7 +1519,16 @@
     height: 100%;
     max-width: none;
     object-fit: cover;
-    object-position: center top;
+    object-position: 52% 16%;
+    transform: none;
+  }
+
+  .shouse__svg {
+    overflow: hidden;
+  }
+
+  .shouse .veil {
+    opacity: 0;
   }
 
   /* Building pins: only the active marker stays as a decorative cue. */
@@ -1491,12 +1565,13 @@
   }
 
   .shouse__mobile-floors {
+    order: 3;
     display: block;
     flex: none;
-    padding: 14px 0 16px;
+    padding: 14px 0 0;
     background: #ffffff;
     border-top: 1px solid rgba(25, 52, 84, 0.08);
-    border-bottom: 1px solid rgba(25, 52, 84, 0.08);
+    scroll-margin-top: calc(env(safe-area-inset-top, 0px) + var(--reader-topbar-h, 56px) + 8px);
   }
 
   .shouse__mobile-floors-label {
@@ -1520,13 +1595,25 @@
   }
 
   .shouse__mobile-floor-nav {
+    position: sticky;
+    top: calc(env(safe-area-inset-top, 0px) + var(--reader-topbar-h, 56px));
+    z-index: 4;
     display: flex;
     gap: 10px;
     overflow-x: auto;
     overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
-    padding: 0 18px 2px;
+    margin: 0;
+    padding: 10px 18px 14px;
+    background: #ffffff;
+    border-bottom: 1px solid rgba(25, 52, 84, 0.08);
     scrollbar-width: none;
+    scroll-margin-top: calc(env(safe-area-inset-top, 0px) + var(--reader-topbar-h, 56px) + 8px);
+  }
+
+  .reader.is-chrome-away .shouse__mobile-floor-nav {
+    top: env(safe-area-inset-top, 0px);
+    scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 8px);
   }
 
   .shouse__guide {
@@ -1659,15 +1746,31 @@
     outline-offset: 2px;
   }
 
-  .shouse__panel {
+  .shouse__panel-body {
+    order: 4;
+    display: flex;
     width: 100%;
-    height: auto;
-    max-height: none;
-    min-height: 0;
-    overflow: visible;
-    box-shadow: none;
-    padding: 22px 20px 108px;
-    gap: 0.55rem;
+    margin-top: 0;
+    /* Fill the rest of the screen under sticky floor pills so the next page cannot peek. */
+    min-height: calc(
+      100svh
+      - env(safe-area-inset-top, 0px)
+      - var(--reader-topbar-h, 56px)
+      - 76px
+    );
+    padding: 22px 20px calc(env(safe-area-inset-bottom, 0px) + 96px);
+    border-top: none;
+    background: linear-gradient(180deg, #0b63c7 0%, #0057b8 55%, #004899 100%);
+    color: #fff;
+    box-sizing: border-box;
+  }
+
+  .shouse__panel-body-inner {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100%;
   }
 
   .shouse__title {
@@ -1707,32 +1810,35 @@
     margin-bottom: 0.55rem;
   }
 
-  .app-shell:has(.page-strategy-house) .reader__chrome::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: calc(72px + env(safe-area-inset-bottom));
-    background: #fff;
-    box-shadow: 0 -1px 0 rgba(0, 40, 80, 0.06);
-    z-index: 1;
-    pointer-events: none;
+  .shouse__back-to-scheme {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    margin-top: auto;
+    min-height: 44px;
+    padding: 0.55rem 0.95rem;
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font: inherit;
+    font-size: 0.92rem;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .app-shell:has(.page-strategy-house) .roll-menu__trigger,
-  .app-shell:has(.page-strategy-house) .roll-menu__trigger:hover,
-  .app-shell:has(.page-strategy-house) .roll-menu.is-open .roll-menu__trigger {
-    left: 20px;
-    right: auto;
-    bottom: max(12px, env(safe-area-inset-bottom));
-    transform: none;
-    z-index: 2;
+  .shouse__back-to-scheme:active {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .app-shell:has(.page-strategy-house) .reader__chrome::before {
+    content: none;
+    display: none;
   }
 
   .app-shell:has(.page-strategy-house) .reader__pager {
-    right: 20px;
-    bottom: max(12px, env(safe-area-inset-bottom));
     z-index: 2;
   }
 }
@@ -2318,18 +2424,21 @@
 
   .mlong__collage .mlong__shot,
   .mlong__stack:hover .mlong__shot,
-  .mlong__stack:focus-within .mlong__shot {
-    position: relative;
-    left: auto;
-    top: auto;
-    width: auto;
-    height: auto;
+  .mlong__stack:focus-within .mlong__shot,
+  .mlong__stack:hover .mlong__shot:nth-child(n),
+  .mlong__stack:focus-within .mlong__shot:nth-child(n) {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    width: auto !important;
+    height: auto !important;
     aspect-ratio: 4 / 3;
     border-width: 4px;
     border-radius: 14px;
     background-position: top center;
-    transform: none;
-    transition: none;
+    transform: none !important;
+    transition: none !important;
+    transition-delay: 0ms !important;
   }
 
   .mlong__stack .mlong__shot:nth-child(1),
@@ -2339,6 +2448,10 @@
 
   .mlong__stack .mlong__shot:nth-child(n + 3) {
     grid-column: span 2;
+  }
+
+  .mlong__stack {
+    pointer-events: none;
   }
 
   .mlong__hint {
@@ -2486,8 +2599,6 @@
   }
 
   .app-shell:has(.page-strategy-spread) .reader__pager {
-    right: 20px;
-    bottom: max(12px, env(safe-area-inset-bottom));
     z-index: 2;
   }
 }

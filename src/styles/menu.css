@@ -38,7 +38,11 @@
   font-weight: 800;
 }
 
-.menu-back,
+.menu-panel__spacer {
+  width: 40px;
+  height: 40px;
+}
+
 .menu-close {
   width: 40px;
   height: 40px;
@@ -51,7 +55,6 @@
   transition: background 0.2s ease;
 }
 
-.menu-back:hover,
 .menu-close:hover {
   background: rgba(44, 18, 100, 0.14);
 }
@@ -91,9 +94,11 @@
   box-shadow: 0 14px 32px rgba(44, 18, 100, 0.28);
 }
 
-.bento__item.is-active:first-child,
-.bento__item:first-child:not(.is-active) {
-  /* first card spans full width only when it's also a featured layout */
+.bento__item.is-done:not(.is-active) {
+  border-color: rgba(44, 18, 100, 0.16);
+  background:
+    linear-gradient(135deg, rgba(59, 185, 184, 0.12), transparent 55%),
+    rgba(255, 255, 255, 0.94);
 }
 
 .bento__item:first-child {
@@ -105,11 +110,48 @@
   color: var(--purple);
 }
 
+.bento__item.is-done:first-child:not(.is-active) {
+  background:
+    linear-gradient(135deg, rgba(59, 185, 184, 0.12), transparent 55%),
+    rgba(255, 255, 255, 0.94);
+}
+
+.bento__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
 .bento__num {
   font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   opacity: 0.75;
+}
+
+.bento__status {
+  flex: 0 0 auto;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  color: rgba(44, 18, 100, 0.45);
+  background: rgba(44, 18, 100, 0.08);
+}
+
+.bento__status.is-done {
+  color: #fff;
+  background: rgba(44, 18, 100, 0.82);
+}
+
+.bento__item.is-active .bento__status {
+  color: #2c1264;
+  background: rgba(255, 255, 255, 0.92);
 }
 
 .bento__title {

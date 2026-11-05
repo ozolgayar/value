@@ -571,8 +571,6 @@
   }
 
   .app-shell:has(.page-values-spread) .reader__pager {
-    right: 20px;
-    bottom: max(12px, env(safe-area-inset-bottom));
     z-index: 2;
   }
 }

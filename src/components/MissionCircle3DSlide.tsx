@@ -324,7 +324,9 @@ export function MissionCircle3DSlide() {
                     type="button"
                     className="mc3d__acc-toggle"
                     aria-expanded={open}
-                    onClick={() => setOpenId(panel.id)}
+                    onClick={() =>
+                      setOpenId((current) => (current === panel.id ? '' : panel.id))
+                    }
                   >
                     <h2 className="mc3d__panel-title">
                       {fixPrepositions(panel.title)}

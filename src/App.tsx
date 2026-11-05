@@ -16,6 +16,24 @@ type View = BookView
 const VIEW_TRANSITION_MS = 650
 const PRELOADER_DONE_KEY = 'gph-value-book-preloader-done'
 
+/** Open `/?reset=1` to clear saved progress / coach / bookmarks for this origin. */
+function consumeResetFlag() {
+  const url = new URL(window.location.href)
+  if (!url.searchParams.has('reset')) return
+  try {
+    Object.keys(localStorage)
+      .filter((key) => key.startsWith('gph-value-book') || key.startsWith('geropharm'))
+      .forEach((key) => localStorage.removeItem(key))
+  } catch {
+    /* private mode / blocked storage */
+  }
+  url.searchParams.delete('reset')
+  const next = `${url.pathname}${url.search}${url.hash}`
+  window.history.replaceState({}, '', next || '/')
+}
+
+consumeResetFlag()
+
 function readPreloaderDone() {
   try {
     return localStorage.getItem(PRELOADER_DONE_KEY) === '1'

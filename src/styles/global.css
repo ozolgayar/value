@@ -16,6 +16,9 @@
   --shadow: 0 18px 50px rgba(25, 52, 84, 0.12);
   --radius: 18px;
   --nav-safe: 88px;
+  --reader-topbar-h: 68px;
+  --reader-bottombar-h: 0px;
+  --reader-bottom-safe: 0px;
   /* Reserve space for ← / → buttons: offset + 52px circle + gap */
   --nav-arrow-size: 52px;
   --nav-arrow-gap: 16px;
@@ -298,8 +301,8 @@ img {
   .btn-ghost,
   .btn-open,
   .nav-arrow,
-  .roll-menu__trigger,
-  .reader__pager,
+  .reader__topbar-home,
+  .reader__topbar-menu,
   .reader__nav-coach-ok,
   .quote-pop {
     min-height: 48px;

@@ -7,7 +7,13 @@ import {
   useState,
   type TouchEvent,
 } from 'react'
-import { flatPages, navIndexForSectionId, navSections, totalPages } from '../data/book'
+import {
+  flatPages,
+  navIndexForSectionId,
+  navSections,
+  totalPages,
+  type PageKind,
+} from '../data/book'
 import { masteryGalleryPageId, masteryStoryPageIds } from '../data/masteryGallery'
 import {
   practiceGalleryPageId,
@@ -19,14 +25,11 @@ import {
   getYearIndexOnPage,
   historyBookPageId,
 } from '../data/history'
-import { useMediaQuery, useQuotes } from '../hooks'
+import { useMediaQuery } from '../hooks'
+import { asset } from '../asset'
 import { BentoMenu } from './BentoMenu'
 import { PageView } from './PageView'
-import { QuotesPanel } from './QuotesPanel'
-import { RollUpMenu } from './RollUpMenu'
-import notebookIcon from '../../icons/notebook-text.svg'
 import '../styles/reader.css'
-import '../styles/quotes.css'
 
 interface ReaderProps {
   initialIndex?: number
@@ -73,6 +76,58 @@ function shortPageLabel(pageIndex: number) {
   return raw.length > 44 ? `${raw.slice(0, 42)}…` : raw
 }
 
+/** White page counter when it sits on a colored / dark page surface. */
+function pagerNeedsWhite(kind: PageKind): boolean {
+  switch (kind) {
+    case 'ceo':
+    case 'text':
+    case 'split':
+    case 'route':
+    case 'section-open':
+    case 'facts':
+    case 'quote':
+    case 'timeline':
+    case 'values':
+    case 'values-spread':
+    case 'value-ambition':
+    case 'value-passion':
+    case 'value-responsibility':
+    case 'mission-ecosystem':
+    case 'mission-eco':
+    case 'mission-longevity':
+    case 'mastery-gallery':
+    case 'mastery-semavic':
+    case 'mastery-venezuela':
+    case 'mastery-third-line':
+    case 'mastery-putin':
+    case 'practice-gallery':
+    case 'practice-equipment':
+    case 'practice-weeks':
+    case 'practice-error-first':
+    case 'practice-market':
+    case 'practice-modernization':
+    case 'practice-ai':
+    case 'practice-long-term':
+    case 'practice-methodology':
+    case 'practice-bureaucracy':
+    case 'practice-habits':
+    case 'history-era':
+      return false
+    case 'interstitial':
+    case 'mission-statement':
+    case 'mission-strategy-spread':
+    case 'mission-strategy-house':
+    case 'mission-uniqueness':
+    case 'env-navigator':
+    case 'closing-cover':
+      return true
+    default: {
+      const _exhaustive: never = kind
+      return _exhaustive
+    }
+  }
+}
+
 const NAV_COACH_DONE_KEY = 'gph-value-book-nav-coach-done'
 
 function readNavCoachDone() {
@@ -99,17 +154,13 @@ export function Reader({
 }: ReaderProps) {
   const isMobile = useMediaQuery('(max-width: 860px)')
   const [index, setIndex] = useState(initialIndex)
-  const [rollOpen, setRollOpen] = useState(false)
   const [tocOpen, setTocOpen] = useState(false)
-  const [quotesOpen, setQuotesOpen] = useState(false)
   const [hintVisible, setHintVisible] = useState(
     () => initialIndex === 0 && !readNavCoachDone(),
   )
   const [coachStep, setCoachStep] = useState(0)
   const [toast, setToast] = useState<string | null>(null)
-  const [selectionUi, setSelectionUi] = useState<{ text: string; x: number; y: number } | null>(
-    null,
-  )
+  const [chromeAway, setChromeAway] = useState(false)
   const [zoomPhase, setZoomPhase] = useState<'idle' | 'out' | 'in'>('idle')
   const [suppressTrackTransition, setSuppressTrackTransition] = useState(false)
   const [historyRevealed, setHistoryRevealed] = useState<Record<string, number[]>>({})
@@ -121,14 +172,14 @@ export function Reader({
     atBottom: boolean
     atTop: boolean
     scrollTop: number
+    target: EventTarget | null
   } | null>(null)
-  const suppressSwipe = useRef(false)
   const wheelLock = useRef(false)
   const swipeLock = useRef(false)
   const swipeLockTimer = useRef(0)
+  const sectionEndToastAt = useRef(0)
   const zoomTimers = useRef<number[]>([])
   const readerRef = useRef<HTMLElement | null>(null)
-  const { quotes, add: addQuote, remove: removeQuote } = useQuotes()
 
   const current = flatPages[index]
   const isInterstitial = current.page.kind === 'interstitial'
@@ -143,12 +194,13 @@ export function Reader({
   const hasNextPracticeStory =
     practiceStoryIndex >= 0 && practiceStoryIndex < practiceStoryPageIds.length - 1
   const showNavCoach = hintVisible && index === 0 && !isInterstitial && !isHistoryEra
-  const anyOverlay = rollOpen || tocOpen || quotesOpen || showNavCoach
-  const navLocked = rollOpen || tocOpen || quotesOpen
+  const anyOverlay = tocOpen || showNavCoach
+  const navLocked = tocOpen
   const chromeHidden =
     isInterstitial ||
     isClosingCover ||
     zoomPhase !== 'idle'
+  const chromeImmersive = isMobile && chromeAway && !chromeHidden && !anyOverlay
 
   const prevTooltip = useMemo(() => {
     if (isPracticeStory) return 'К практикам'
@@ -209,13 +261,23 @@ export function Reader({
 
   const sectionCount = navSections.length
   const navSectionIndex = navIndexForSectionId(current.sectionId)
-  const sectionProgress = useMemo(() => {
-    if (navSectionIndex < 0) return 0
-    const count = Math.max(1, current.sectionPageCount)
-    const local = (current.sectionPageIndex + 1) / count
-    if (sectionCount <= 1) return local
-    return Math.min(1, (navSectionIndex + local) / (sectionCount - 1))
-  }, [navSectionIndex, current.sectionPageIndex, current.sectionPageCount, sectionCount])
+  const currentNavSection =
+    navSectionIndex >= 0 ? navSections[navSectionIndex] : null
+  const sectionTitleLabel = useMemo(() => {
+    if (!currentNavSection) return current.paragraphTitle || 'Раздел'
+    const num = Number(currentNavSection.number) || navSectionIndex + 1
+    return `Раздел ${num} · ${currentNavSection.title}`
+  }, [currentNavSection, current.paragraphTitle, navSectionIndex])
+  const goHome = useCallback(() => {
+    if (onBackToWelcome) onBackToWelcome()
+    else onExitToHome()
+  }, [onBackToWelcome, onExitToHome])
+  const hintSectionEnd = useCallback(() => {
+    const now = Date.now()
+    if (now - sectionEndToastAt.current < 1800) return
+    sectionEndToastAt.current = now
+    setToast('Конец раздела — свайпните вбок')
+  }, [])
 
   const clearZoomTimers = useCallback(() => {
     zoomTimers.current.forEach((id) => window.clearTimeout(id))
@@ -258,53 +320,88 @@ export function Reader({
 
   const coachSteps = useMemo(
     () => {
-      type CoachParagraph = { text: string; bold?: boolean; accent?: boolean }
+      type CoachParagraph = {
+        text: string
+        boldLead?: string
+        bold?: boolean
+        accent?: boolean
+        label?: string
+      }
       type CoachStep = {
         id: string
-        placement: 'center' | 'menu'
+        placement: 'center' | 'topbar'
         title: string
         paragraphs: CoachParagraph[]
-        showNotesPreview: boolean
         ctaHint: string | null
       }
 
-      const steps: CoachStep[] = [
-        {
-          id: 'nav',
-          placement: 'center',
-          title: 'Навигация по книге',
-          paragraphs: [
-            {
-              text: 'Для продолжения чтения – листайте свайпом вверх/вниз или используйте стрелки вперёд/назад.',
-            },
-            {
-              text: 'Для открытия нужного раздела — используйте нумерацию наверху.',
-            },
-            { text: 'Нажми кнопку «Далее»', accent: true },
-          ],
-          showNotesPreview: false,
-          ctaHint: null,
-        },
-        {
-          id: 'menu',
-          placement: 'menu',
-          title: 'Меню',
-          paragraphs: [
-            {
-              text: 'Здесь содержание книги и твои заметки. Отсюда можно попасть в начало книги или на главную страницу.',
-            },
-            { text: 'Как сделать заметку:', bold: true },
-            {
-              text: 'выдели текст на странице – появится кнопка\nс блокнотом – нажми её, чтобы сохранить фрагмент в заметки.',
-            },
-          ],
-          showNotesPreview: true,
-          ctaHint: 'Нажми кнопку «Понятно»',
-        },
-      ]
-      return steps
+      const navStep: CoachStep = isMobile
+        ? {
+            id: 'nav',
+            placement: 'center',
+            title: 'Навигация по книге',
+            paragraphs: [
+              {
+                text: 'Внутри раздела листайте свайпом вверх/вниз. К следующему разделу — свайпом вбок.',
+              },
+              {
+                text: 'На телефоне коснитесь экрана, чтобы скрыть или показать панель навигации.',
+              },
+            ],
+            ctaHint: 'Нажми кнопку «Далее»',
+          }
+        : {
+            id: 'nav',
+            placement: 'center',
+            title: 'Навигация по книге',
+            paragraphs: [
+              {
+                text: 'Для продолжения чтения листайте стрелками вперёд/назад.',
+              },
+              { text: 'Нажми кнопку «Далее»', accent: true },
+            ],
+            ctaHint: null,
+          }
+
+      const chromeStep: CoachStep = {
+        id: 'chrome',
+        placement: 'topbar',
+        title: 'Панель навигации',
+        paragraphs: isMobile
+          ? [
+              {
+                label: 'Домой',
+                text: 'Возврат на экран «Добро пожаловать».',
+              },
+              {
+                label: 'Раздел 1 · О книге',
+                text: 'Название текущего раздела.',
+              },
+              {
+                label: 'Оглавление',
+                text: 'Здесь ты можешь перейти в любой раздел книги и посмотреть, какие разделы уже пройдены.',
+              },
+            ]
+          : [
+              {
+                label: 'Домой',
+                text: '— возврат на экран «Добро пожаловать».',
+              },
+              {
+                boldLead: 'Раздел 1 · О книге',
+                text: ' — название текущего раздела.',
+              },
+              {
+                label: 'Оглавление',
+                text: '— здесь ты можешь перейти в любой раздел книги и посмотреть, какие разделы уже пройдены.',
+              },
+            ],
+        ctaHint: 'Нажми кнопку «Понятно»',
+      }
+
+      return [navStep, chromeStep]
     },
-    [],
+    [isMobile],
   )
 
   const coachCurrent = coachSteps[Math.min(coachStep, coachSteps.length - 1)]
@@ -331,42 +428,8 @@ export function Reader({
   }, [toast])
 
   useEffect(() => {
-    const onSelectionChange = () => {
-      if (anyOverlay) {
-        setSelectionUi(null)
-        return
-      }
-      const sel = window.getSelection()
-      if (!sel || sel.isCollapsed || !sel.rangeCount) {
-        setSelectionUi(null)
-        return
-      }
-      const text = sel.toString().replace(/\s+/g, ' ').trim()
-      if (text.length < 2) {
-        setSelectionUi(null)
-        return
-      }
-      const range = sel.getRangeAt(0)
-      const readerRoot = document.querySelector('.reader')
-      if (!readerRoot || !readerRoot.contains(range.commonAncestorContainer)) {
-        setSelectionUi(null)
-        return
-      }
-      const rect = range.getBoundingClientRect()
-      if (rect.width === 0 && rect.height === 0) {
-        setSelectionUi(null)
-        return
-      }
-      setSelectionUi({
-        text,
-        x: rect.left + rect.width / 2,
-        y: Math.max(rect.top, 48),
-      })
-    }
-
-    document.addEventListener('selectionchange', onSelectionChange)
-    return () => document.removeEventListener('selectionchange', onSelectionChange)
-  }, [anyOverlay])
+    if (!isMobile) setChromeAway(false)
+  }, [isMobile])
 
   const go = useCallback(
     (next: number, opts?: { force?: boolean }) => {
@@ -585,6 +648,39 @@ export function Reader({
     [go],
   )
 
+  const goNextSection = useCallback(() => {
+    if (navSectionIndex < 0) {
+      const next = flatPages[index + 1]
+      if (next) go(index + 1)
+      return
+    }
+    if (navSectionIndex < sectionCount - 1) {
+      goToSection(navSectionIndex + 1)
+      return
+    }
+    // Last nav section: still allow reaching trailing pages (e.g. closing cover).
+    if (index < totalPages - 1) go(index + 1)
+  }, [navSectionIndex, sectionCount, goToSection, index, go])
+
+  const goPrevSection = useCallback(() => {
+    if (navSectionIndex > 0) {
+      goToSection(navSectionIndex - 1)
+      return
+    }
+    if (navSectionIndex === 0 || index === 0) {
+      onBackToWelcome?.()
+      return
+    }
+    const prev = flatPages[index - 1]
+    if (prev) go(index - 1)
+  }, [navSectionIndex, goToSection, index, onBackToWelcome, go])
+
+  const pageStaysInSection = useCallback((targetIndex: number) => {
+    const target = flatPages[targetIndex]
+    if (!target) return false
+    return target.sectionId === flatPages[index]?.sectionId
+  }, [index])
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (anyOverlay || zoomPhase !== 'idle') return
@@ -673,7 +769,7 @@ export function Reader({
     const target = e.target
     if (
       target instanceof Element &&
-      target.closest('.menu-overlay, .quotes-overlay, .roll-menu')
+      target.closest('.menu-overlay, .reader__topbar, .reader__nav-coach, .nav-arrow')
     ) {
       touchStart.current = null
       return
@@ -690,6 +786,7 @@ export function Reader({
       atBottom: edges.atBottom,
       atTop: edges.atTop,
       scrollTop: edges.scrollTop,
+      target: e.target,
     }
   }
 
@@ -698,16 +795,15 @@ export function Reader({
       !touchStart.current ||
       swipeLock.current ||
       anyOverlay ||
-      suppressSwipe.current ||
       zoomPhase !== 'idle'
     ) {
-      suppressSwipe.current = false
       touchStart.current = null
       return
     }
     const t = e.changedTouches[0]
     const startedAtBottom = touchStart.current.atBottom
     const startedAtTop = touchStart.current.atTop
+    const startTarget = touchStart.current.target
     const dx = t.clientX - touchStart.current.x
     const dy = t.clientY - touchStart.current.y
     touchStart.current = null
@@ -718,10 +814,51 @@ export function Reader({
     }
     if (isMobile) {
       const threshold = 56
-      const fingerUp = dy < -threshold && Math.abs(dy) > Math.abs(dx)
-      const fingerDown = dy > threshold && Math.abs(dy) > Math.abs(dx)
-      if (fingerUp && startedAtBottom) turn('next')
-      else if (fingerDown && startedAtTop) turn('prev')
+      const tapSlop = 12
+      const absDx = Math.abs(dx)
+      const absDy = Math.abs(dy)
+      const fingerUp = dy < -threshold && absDy > absDx
+      const fingerDown = dy > threshold && absDy > absDx
+      const fingerLeft = dx < -threshold && absDx > absDy
+      const fingerRight = dx > threshold && absDx > absDy
+      const isTap = absDx < tapSlop && absDy < tapSlop
+
+      if (fingerLeft) {
+        armSwipeLock()
+        goNextSection()
+        return
+      }
+      if (fingerRight) {
+        armSwipeLock()
+        goPrevSection()
+        return
+      }
+      if (fingerUp && startedAtBottom) {
+        if (pageStaysInSection(index + 1)) {
+          turn('next')
+        } else if (navSectionIndex >= sectionCount - 1 && index < totalPages - 1) {
+          // Last section: allow leaving into closing pages.
+          turn('next')
+        } else {
+          hintSectionEnd()
+        }
+        return
+      }
+      if (fingerDown && startedAtTop) {
+        if (pageStaysInSection(index - 1)) turn('prev')
+        return
+      }
+      if (isTap) {
+        const el = startTarget instanceof Element ? startTarget : null
+        if (
+          el?.closest(
+            'button, a, input, textarea, select, label, .menu-overlay, .reader__topbar, .reader__nav-coach, .nav-arrow, [role="button"]',
+          )
+        ) {
+          return
+        }
+        setChromeAway((v) => !v)
+      }
     } else if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 48) {
       if (dx < 0) turn('next')
       else turn('prev')
@@ -736,7 +873,7 @@ export function Reader({
       const target = e.target
       if (
         target instanceof Element &&
-        target.closest('.menu-overlay, .quotes-overlay, .roll-menu')
+        target.closest('.menu-overlay, .reader__topbar, .reader__nav-coach')
       ) {
         return
       }
@@ -746,8 +883,18 @@ export function Reader({
       if (!t) return
       const dy = t.clientY - start.y
       const dx = t.clientX - start.x
-      if (Math.abs(dy) < 10 || Math.abs(dy) <= Math.abs(dx)) return
-      if ((dy < 0 && start.atBottom) || (dy > 0 && start.atTop)) {
+      const absDx = Math.abs(dx)
+      const absDy = Math.abs(dy)
+      if (absDx > 10 && absDx > absDy) {
+        e.preventDefault()
+        return
+      }
+      if (absDy < 10 || absDy <= absDx) return
+      if (dy < 0 && start.atBottom) {
+        e.preventDefault()
+        return
+      }
+      if (dy > 0 && start.atTop) {
         e.preventDefault()
       }
     }
@@ -766,14 +913,6 @@ export function Reader({
     }
   }, [index, isMobile, zoomPhase, suppressTrackTransition])
 
-  const handleAddQuote = () => {
-    if (!selectionUi) return
-    const ok = addQuote(selectionUi.text, current.page.id, labelFor(index))
-    setToast(ok ? 'Добавлено в заметки' : 'Эта заметка уже сохранена')
-    setSelectionUi(null)
-    window.getSelection()?.removeAllRanges()
-  }
-
   return (
     <section
       ref={readerRef}
@@ -781,6 +920,8 @@ export function Reader({
         zoomPhase === 'out' ? ' is-zoom-out' : ''
       }${zoomPhase === 'in' ? ' is-zoom-in' : ''}${isInterstitial ? ' is-interstitial' : ''}${
         isHistoryEra ? ' is-history' : ''
+      }${chromeImmersive ? ' is-chrome-away' : ''}${
+        pagerNeedsWhite(current.page.kind) ? ' is-pager-on-color' : ''
       }${showNavCoach ? ` is-coaching is-coaching-step-${coachCurrent.placement}` : ''}`}
       aria-label="Чтение книги"
       onTouchStart={onTouchStart}
@@ -843,22 +984,24 @@ export function Reader({
             </p>
             {coachCurrent.paragraphs.map((paragraph) => (
               <p
-                key={paragraph.text}
-                className={`reader__nav-coach-text${paragraph.bold ? ' is-bold' : ''}${
+                key={`${paragraph.label ?? paragraph.boldLead ?? 'text'}-${paragraph.text}`}
+                className={`reader__nav-coach-text${
+                  paragraph.label ? (isMobile ? ' is-stack' : ' has-label') : ''
+                }${paragraph.bold ? ' is-bold' : ''}${
                   paragraph.accent ? ' is-accent' : ''
                 }`}
               >
-                {paragraph.text}
+                {paragraph.label ? (
+                  <span className="reader__nav-coach-label">{paragraph.label}</span>
+                ) : null}
+                <span className="reader__nav-coach-desc">
+                  {paragraph.boldLead ? (
+                    <strong className="reader__nav-coach-label">{paragraph.boldLead}</strong>
+                  ) : null}
+                  {paragraph.text}
+                </span>
               </p>
             ))}
-            {coachCurrent.showNotesPreview && (
-              <p className="reader__nav-coach-preview">
-                <span className="quote-pop quote-pop--static" aria-hidden>
-                  <img src={notebookIcon} alt="" width={22} height={22} />
-                </span>
-                Добавить в заметки
-              </p>
-            )}
             {coachCurrent.ctaHint && (
               <p className="reader__nav-coach-text is-accent">{coachCurrent.ctaHint}</p>
             )}
@@ -880,42 +1023,52 @@ export function Reader({
 
       <div className={`reader__chrome${chromeHidden ? ' is-dimmed' : ''}`}>
         <div
-          className={`reader__progress${isInterstitial ? ' is-hidden' : ''}`}
+          className={`reader__topbar${isInterstitial ? ' is-hidden' : ''}`}
           role="navigation"
-          aria-label="Прогресс по разделам"
+          aria-label="Навигация по книге"
         >
-          <div className="reader__progress-track" aria-hidden>
-            <div
-              className="reader__progress-fill"
-              style={{ width: `${sectionProgress * 100}%` }}
+          <button
+            type="button"
+            className="reader__topbar-home"
+            aria-label="На экран «Добро пожаловать»"
+            title="Добро пожаловать"
+            disabled={navLocked || zoomPhase !== 'idle'}
+            onClick={() => {
+              if (showNavCoach) return
+              goHome()
+            }}
+          >
+            <img
+              src={asset('icons/house.svg')}
+              alt=""
+              width={22}
+              height={22}
+              aria-hidden
             />
-          </div>
-          <div className="reader__progress-nodes">
-            {navSections.map((section, i) => {
-              const done = navSectionIndex >= 0 && i < navSectionIndex
-              const active = i === navSectionIndex
-              return (
-                <button
-                  key={section.id}
-                  type="button"
-                  className={`reader__progress-node${done ? ' is-done' : ''}${
-                    active ? ' is-active' : ''
-                  }`}
-                  aria-label={`Раздел ${section.number}: ${section.title}`}
-                  aria-current={active ? 'step' : undefined}
-                  title={section.title}
-                  data-tooltip={section.title}
-                  disabled={navLocked || zoomPhase !== 'idle'}
-                  onClick={() => {
-                    if (showNavCoach) return
-                    goToSection(i)
-                  }}
-                >
-                  {Number(section.number) || i + 1}
-                </button>
-              )
-            })}
-          </div>
+          </button>
+
+          <p className="reader__topbar-title" aria-live="polite">
+            {sectionTitleLabel}
+          </p>
+
+          <button
+            type="button"
+            className="reader__topbar-menu"
+            aria-label="Открыть оглавление"
+            aria-expanded={tocOpen}
+            title="Оглавление"
+            disabled={navLocked || zoomPhase !== 'idle'}
+            onClick={() => {
+              if (showNavCoach) return
+              setTocOpen(true)
+            }}
+          >
+            <span className="reader__topbar-burger" aria-hidden>
+              <span />
+              <span />
+              <span />
+            </span>
+          </button>
         </div>
 
         <button
@@ -948,9 +1101,7 @@ export function Reader({
         </button>
 
         <div
-          className={`reader__pager${
-            isInterstitial || isHistoryEra ? ' is-hidden' : ''
-          }`}
+          className={`reader__pager${isInterstitial ? ' is-hidden' : ''}`}
           aria-live="polite"
         >
           {`${index + 1} / ${totalPages}`}
@@ -963,55 +1114,10 @@ export function Reader({
         )}
       </div>
 
-      {selectionUi && (
-        <button
-          type="button"
-          className="quote-pop"
-          style={{ left: selectionUi.x, top: selectionUi.y }}
-          aria-label="Добавить в заметки"
-          title="Добавить в заметки"
-          onMouseDown={(e) => e.preventDefault()}
-          onTouchStart={() => {
-            suppressSwipe.current = true
-          }}
-          onClick={handleAddQuote}
-        >
-          <img src={notebookIcon} alt="" width={22} height={22} />
-        </button>
-      )}
-
-      {!isInterstitial && (
-        <RollUpMenu
-          open={rollOpen}
-          onToggle={() => setRollOpen((v) => !v)}
-          onClose={() => setRollOpen(false)}
-          onContents={() => setTocOpen(true)}
-          onBookStart={() => go(0)}
-          onCover={onExitToHome}
-          onQuotes={() => setQuotesOpen(true)}
-        />
-      )}
-
       <BentoMenu
         open={tocOpen}
         current={current}
         onClose={() => setTocOpen(false)}
-        onBack={() => {
-          setTocOpen(false)
-          setRollOpen(true)
-        }}
-        onGoPageId={goById}
-      />
-
-      <QuotesPanel
-        open={quotesOpen}
-        quotes={quotes}
-        onClose={() => setQuotesOpen(false)}
-        onBack={() => {
-          setQuotesOpen(false)
-          setRollOpen(true)
-        }}
-        onRemove={removeQuote}
         onGoPageId={goById}
       />
     </section>

@@ -1,16 +1,17 @@
-import { navSections, type FlatPage } from '../data/book'
+import { navIndexForSectionId, navSections, type FlatPage } from '../data/book'
 import '../styles/menu.css'
 
 interface BentoMenuProps {
   open: boolean
   current: FlatPage
   onClose: () => void
-  onBack: () => void
   onGoPageId: (pageId: string) => void
 }
 
-export function BentoMenu({ open, current, onClose, onBack, onGoPageId }: BentoMenuProps) {
+export function BentoMenu({ open, current, onClose, onGoPageId }: BentoMenuProps) {
   if (!open) return null
+
+  const currentNavIndex = navIndexForSectionId(current.sectionId)
 
   return (
     <div
@@ -27,35 +28,38 @@ export function BentoMenu({ open, current, onClose, onBack, onGoPageId }: BentoM
         onTouchMove={(e) => e.stopPropagation()}
       >
         <div className="menu-panel__head">
-          <button
-            type="button"
-            className="menu-back"
-            onClick={onBack}
-            aria-label="Назад в меню"
-          >
-            <span aria-hidden>←</span>
-          </button>
-          <h2>Содержание</h2>
+          <span className="menu-panel__spacer" aria-hidden />
+          <h2>Оглавление</h2>
           <button type="button" className="menu-close" onClick={onClose} aria-label="Закрыть">
             ×
           </button>
         </div>
 
         <div className="bento">
-          {navSections.map((section) => {
+          {navSections.map((section, i) => {
             const firstPage = section.paragraphs[0]?.pages[0]
             const active = section.id === current.sectionId
+            const done = currentNavIndex >= 0 && i < currentNavIndex
+            const statusLabel = active ? 'сейчас' : done ? 'пройден' : 'не пройден'
             return (
               <button
                 key={section.id}
                 type="button"
-                className={`bento__item${active ? ' is-active' : ''}`}
+                className={`bento__item${active ? ' is-active' : ''}${done ? ' is-done' : ''}`}
                 onClick={() => {
                   if (firstPage) onGoPageId(firstPage.id)
                   onClose()
                 }}
               >
-                <span className="bento__num">{section.number}</span>
+                <span className="bento__row">
+                  <span className="bento__num">{section.number}</span>
+                  <span
+                    className={`bento__status${done ? ' is-done' : ''}${active ? ' is-active' : ''}`}
+                    aria-label={statusLabel}
+                  >
+                    {done ? '✓' : active ? '●' : '○'}
+                  </span>
+                </span>
                 <span className="bento__title">{section.title}</span>
                 <span className="bento__tag">{section.tag}</span>
               </button>
