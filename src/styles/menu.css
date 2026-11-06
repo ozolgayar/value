@@ -10,9 +10,11 @@
 }
 
 .menu-panel {
+  display: flex;
+  flex-direction: column;
   width: min(720px, 100%);
   max-height: min(88dvh, 820px);
-  overflow: auto;
+  overflow: hidden;
   background:
     radial-gradient(circle at 0% 0%, rgba(59, 185, 184, 0.16), transparent 42%),
     linear-gradient(180deg, #f8fcfe, #e7f1f7);
@@ -63,6 +65,60 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.85rem;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding-bottom: 0.35rem;
+}
+
+.menu-panel__footer {
+  flex: 0 0 auto;
+  margin-top: 1rem;
+  padding-top: 0.95rem;
+  border-top: 1px solid rgba(44, 18, 100, 0.14);
+}
+
+.menu-notes {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  width: 100%;
+  min-height: 48px;
+  margin: 0;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--purple);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+.menu-notes:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transform: translateY(-1px);
+}
+
+.menu-notes__icon {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  background: currentColor;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
 }
 
 .bento__item {
@@ -196,27 +252,22 @@
   }
 
   .menu-panel {
-    display: flex;
-    flex-direction: column;
     width: min(100%, 720px);
     max-height: min(90dvh, 100%);
-    overflow: hidden;
   }
 
   .menu-panel__head {
     flex: 0 0 auto;
   }
 
+  .menu-panel__footer {
+    flex: 0 0 auto;
+  }
+
   .bento {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
     touch-action: pan-y;
     grid-template-columns: 1fr;
     gap: 0.75rem;
-    padding-bottom: 0.35rem;
   }
 
   .bento__item:first-child {

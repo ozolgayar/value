@@ -15,6 +15,7 @@ import { ValuesSpreadPage } from './ValuesSpread'
 import { ValueAmbitionPage } from './ValueAmbition'
 import { ValuePassionPage } from './ValuePassion'
 import { ValueResponsibilityPage } from './ValueResponsibility'
+import { CultureBingoPage } from './CultureBingo'
 import { EnvNavigatorPage } from './EnvNavigator'
 import { MasteryGalleryPage } from './MasteryGallery'
 import { MasteryPutinPage } from './MasteryPutin'
@@ -408,6 +409,10 @@ export function PageView({
 
   if (page.kind === 'env-navigator') {
     return <EnvNavigatorPage />
+  }
+
+  if (page.kind === 'culture-bingo') {
+    return <CultureBingoPage />
   }
 
   if (page.kind === 'practice-gallery') {

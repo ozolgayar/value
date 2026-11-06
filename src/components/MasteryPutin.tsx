@@ -6,13 +6,21 @@ import '../styles/mastery-semavic.css'
 export function MasteryPutinPage() {
   const { left, right } = masteryPutin
 
+  const title = left.titleLines.join(' ')
+
   return (
     <article className="page-shell page-bleed page-mastery-semavic page-mastery-putin">
-      <section className="ms__half ms__half--left" aria-label={left.title}>
+      <section className="ms__half ms__half--left" aria-label={title}>
         <div className="ms__edge ms__edge--left" aria-hidden />
         <div className="ms__left-inner">
           <span className="ms__badge">{left.badge}</span>
-          <h1 className="ms__title">{fixPrepositions(left.title)}</h1>
+          <h1 className="ms__title">
+            {left.titleLines.map((line) => (
+              <span key={line} className="ms__title-line">
+                {fixPrepositions(line)}
+              </span>
+            ))}
+          </h1>
           <div className="ms__story">
             {left.paragraphs.map((p) => (
               <p key={p.slice(0, 36)}>{fixPrepositions(p)}</p>

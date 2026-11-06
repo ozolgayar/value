@@ -1,3 +1,5 @@
+import { historyPageCount } from './history'
+
 export type PageKind =
   | 'ceo'
   | 'text'
@@ -23,6 +25,7 @@ export type PageKind =
   | 'mastery-third-line'
   | 'mastery-putin'
   | 'env-navigator'
+  | 'culture-bingo'
   | 'practice-gallery'
   | 'practice-equipment'
   | 'practice-weeks'
@@ -240,7 +243,7 @@ export const sections: Section[] = [
             kind: 'interstitial',
             title: 'ИСТОРИЯ\nГЕРОФАРМ',
             body: [
-              'Эта глава показывает, как формировался наш подход к работе. Она поможет увидеть, какой путь прошла компания и какой опыт важно учитывать в будущем.',
+              'Ключевые вехи становления ГЕРОФАРМ: переломные решения, преодоленные вызовы и смелые идеи, сформировавшие корпоративный характер',
             ],
             meta: {
               logo: 'logo/trans-mark-only.png',
@@ -251,38 +254,12 @@ export const sections: Section[] = [
       {
         id: 'history-eras',
         title: 'Исторический маршрут',
-        pages: [
-          {
-            id: 'p-history-0',
-            kind: 'history-era',
-            title: 'История ГЕРОФАРМ',
-            meta: { historyPage: '0' },
-          },
-          {
-            id: 'p-history-1',
-            kind: 'history-era',
-            title: 'История ГЕРОФАРМ',
-            meta: { historyPage: '1' },
-          },
-          {
-            id: 'p-history-2',
-            kind: 'history-era',
-            title: 'История ГЕРОФАРМ',
-            meta: { historyPage: '2' },
-          },
-          {
-            id: 'p-history-3',
-            kind: 'history-era',
-            title: 'История ГЕРОФАРМ',
-            meta: { historyPage: '3' },
-          },
-          {
-            id: 'p-history-4',
-            kind: 'history-era',
-            title: 'История ГЕРОФАРМ',
-            meta: { historyPage: '4' },
-          },
-        ],
+        pages: Array.from({ length: historyPageCount }, (_, index) => ({
+          id: `p-history-${index}`,
+          kind: 'history-era' as const,
+          title: 'История ГЕРОФАРМ',
+          meta: { historyPage: String(index) },
+        })),
       },
     ],
   },
@@ -475,22 +452,22 @@ export const sections: Section[] = [
           {
             id: 'p-mastery-semavic',
             kind: 'mastery-semavic',
-            title: 'Запуск Семавика: бизнес-контекст',
+            title: 'Запуск Семавика: понимать бизнес и управлять результатом',
           },
           {
             id: 'p-mastery-venezuela',
             kind: 'mastery-venezuela',
-            title: 'Поставки в Венесуэлу',
+            title: 'Поставки в Венесуэлу: кросс-функциональная синергия',
           },
           {
             id: 'p-mastery-third-line',
             kind: 'mastery-third-line',
-            title: 'Запуск третьей линии',
+            title: 'Запуск третьей линии: профессиональное упорство',
           },
           {
             id: 'p-mastery-putin',
             kind: 'mastery-putin',
-            title: 'Визит Президента',
+            title: 'Визит президента В.В. Путина: командная победа',
           },
         ],
       },
@@ -532,6 +509,11 @@ export const sections: Section[] = [
             id: 'p-env-navigator',
             kind: 'env-navigator',
             title: 'Навигатор по культурному окружению',
+          },
+          {
+            id: 'p-culture-bingo',
+            kind: 'culture-bingo',
+            title: 'Сыграем в культурное БИНГО?',
           },
         ],
       },

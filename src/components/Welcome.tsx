@@ -1,3 +1,4 @@
+import { asset } from '../asset'
 import { fixPrepositions } from '../lib/fixPrepositions'
 import '../styles/welcome.css'
 
@@ -32,6 +33,30 @@ export function Welcome({ onContinue, onBack }: WelcomeProps) {
       <div className="welcome__grid" aria-hidden />
       <div className="welcome__frame" aria-hidden />
       <div className="welcome__shine" aria-hidden />
+
+      <div className="welcome__emblems" aria-hidden>
+        <img
+          className="welcome__emblem welcome__emblem--heart"
+          src={asset('img/20.png')}
+          alt=""
+          width={300}
+          height={300}
+        />
+        <img
+          className="welcome__emblem welcome__emblem--hand"
+          src={asset('img/19.png')}
+          alt=""
+          width={250}
+          height={250}
+        />
+        <img
+          className="welcome__emblem welcome__emblem--brain"
+          src={asset('img/21.png')}
+          alt=""
+          width={230}
+          height={230}
+        />
+      </div>
 
       <p className="welcome__bg-hashtag" aria-hidden>
         #КОМПАНИЮ

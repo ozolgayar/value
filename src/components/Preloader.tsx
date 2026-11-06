@@ -46,6 +46,7 @@ export function Preloader({ onDone, loop = false }: PreloaderProps) {
   const [progress, setProgress] = useState(0)
   const [leaving, setLeaving] = useState(false)
   const [cycle, setCycle] = useState(0)
+  const displayProgress = Math.max(0, Math.min(100, progress))
 
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -66,9 +67,10 @@ export function Preloader({ onDone, loop = false }: PreloaderProps) {
     let leaveTimer = 0
 
     const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / duration)
+      const t = Math.min(1, Math.max(0, (now - start) / duration))
       const eased = 1 - (1 - t) ** 3
-      setProgress(Math.round(eased * 100))
+      const next = Math.max(0, Math.min(100, Math.round(eased * 100)))
+      setProgress(next)
       if (t < 1) {
         raf = requestAnimationFrame(tick)
       } else if (loop) {
@@ -97,7 +99,7 @@ export function Preloader({ onDone, loop = false }: PreloaderProps) {
       className={`preloader${leaving ? ' is-leaving' : ''}`}
       role="status"
       aria-live="polite"
-      aria-label={`Загрузка ${progress}%`}
+      aria-label={`Загрузка ${displayProgress}%`}
     >
       <Velaris
         className="preloader__velaris"
@@ -110,7 +112,7 @@ export function Preloader({ onDone, loop = false }: PreloaderProps) {
 
       <div className="preloader__splashes" aria-hidden>
         {SPLASHES.map((splash, i) => {
-          const scale = splashScale(progress, splash.delay, splash.max)
+          const scale = splashScale(displayProgress, splash.delay, splash.max)
           return (
             <span
               key={`${splash.color}-${i}`}
@@ -127,7 +129,7 @@ export function Preloader({ onDone, loop = false }: PreloaderProps) {
         })}
         <span
           className="preloader__splash-veil"
-          style={{ opacity: Math.min(0.55, (progress / 100) * 0.55) }}
+          style={{ opacity: Math.min(0.55, (displayProgress / 100) * 0.55) }}
         />
       </div>
 
@@ -136,14 +138,14 @@ export function Preloader({ onDone, loop = false }: PreloaderProps) {
           <span className="preloader-brand__word preloader-brand__word--left">
             ГЕРОФАРМ
           </span>
-          <TransSymbol progress={progress} />
+          <TransSymbol progress={displayProgress} />
           <span className="preloader-brand__word preloader-brand__word--right">
             ТРАНСФОРМАЦИЯ
           </span>
         </div>
 
         <div className="preloader__count">
-          <span className="preloader__count-num">{progress}</span>
+          <span className="preloader__count-num">{displayProgress}</span>
           <span className="preloader__count-pct">%</span>
         </div>
       </div>

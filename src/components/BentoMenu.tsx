@@ -1,4 +1,5 @@
 import { navIndexForSectionId, navSections, type FlatPage } from '../data/book'
+import { asset } from '../asset'
 import '../styles/menu.css'
 
 interface BentoMenuProps {
@@ -6,9 +7,16 @@ interface BentoMenuProps {
   current: FlatPage
   onClose: () => void
   onGoPageId: (pageId: string) => void
+  onQuotes: () => void
 }
 
-export function BentoMenu({ open, current, onClose, onGoPageId }: BentoMenuProps) {
+export function BentoMenu({
+  open,
+  current,
+  onClose,
+  onGoPageId,
+  onQuotes,
+}: BentoMenuProps) {
   if (!open) return null
 
   const currentNavIndex = navIndexForSectionId(current.sectionId)
@@ -65,6 +73,27 @@ export function BentoMenu({ open, current, onClose, onGoPageId }: BentoMenuProps
               </button>
             )
           })}
+        </div>
+
+        <div className="menu-panel__footer">
+          <button
+            type="button"
+            className="menu-notes"
+            onClick={() => {
+              onClose()
+              onQuotes()
+            }}
+          >
+            <span
+              className="menu-notes__icon"
+              style={{
+                WebkitMaskImage: `url(${asset('icons/notebook-text.svg')})`,
+                maskImage: `url(${asset('icons/notebook-text.svg')})`,
+              }}
+              aria-hidden
+            />
+            <span>Мои заметки</span>
+          </button>
         </div>
       </div>
     </div>

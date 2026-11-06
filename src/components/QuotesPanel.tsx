@@ -24,10 +24,10 @@ export function QuotesPanel({
     <div className="quotes-overlay" role="dialog" aria-modal aria-label="Заметки" onClick={onClose}>
       <div className="quotes-panel" onClick={(e) => e.stopPropagation()}>
         <div className="quotes-panel__head">
-          <button type="button" className="quotes-back" onClick={onBack} aria-label="Назад в меню">
+          <button type="button" className="quotes-back" onClick={onBack} aria-label="Назад в оглавление">
             <span aria-hidden>←</span>
           </button>
-          <h2>Заметки</h2>
+          <h2>Мои заметки</h2>
           <button type="button" className="quotes-close" onClick={onClose} aria-label="Закрыть">
             ×
           </button>
@@ -35,7 +35,7 @@ export function QuotesPanel({
 
         {quotes.length === 0 ? (
           <p className="quotes-panel__empty">
-            Пока пусто. Выдели текст на странице и нажми кнопку с блокнотом.
+            Пока пусто. Выдели текст на странице и нажми «Добавить в заметки».
           </p>
         ) : (
           <ul className="quotes-panel__list">

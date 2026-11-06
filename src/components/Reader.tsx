@@ -25,11 +25,13 @@ import {
   getYearIndexOnPage,
   historyBookPageId,
 } from '../data/history'
-import { useMediaQuery } from '../hooks'
+import { useMediaQuery, useQuotes } from '../hooks'
 import { asset } from '../asset'
 import { BentoMenu } from './BentoMenu'
 import { PageView } from './PageView'
+import { QuotesPanel } from './QuotesPanel'
 import '../styles/reader.css'
+import '../styles/quotes.css'
 
 interface ReaderProps {
   initialIndex?: number
@@ -119,6 +121,7 @@ function pagerNeedsWhite(kind: PageKind): boolean {
     case 'mission-strategy-house':
     case 'mission-uniqueness':
     case 'env-navigator':
+    case 'culture-bingo':
     case 'closing-cover':
       return true
     default: {
@@ -128,7 +131,7 @@ function pagerNeedsWhite(kind: PageKind): boolean {
   }
 }
 
-const NAV_COACH_DONE_KEY = 'gph-value-book-nav-coach-done'
+const NAV_COACH_DONE_KEY = 'gph-value-book-nav-coach-done-v2'
 
 function readNavCoachDone() {
   try {
@@ -155,11 +158,17 @@ export function Reader({
   const isMobile = useMediaQuery('(max-width: 860px)')
   const [index, setIndex] = useState(initialIndex)
   const [tocOpen, setTocOpen] = useState(false)
+  const [quotesOpen, setQuotesOpen] = useState(false)
   const [hintVisible, setHintVisible] = useState(
     () => initialIndex === 0 && !readNavCoachDone(),
   )
   const [coachStep, setCoachStep] = useState(0)
   const [toast, setToast] = useState<string | null>(null)
+  const [selectionUi, setSelectionUi] = useState<{
+    text: string
+    x: number
+    y: number
+  } | null>(null)
   const [chromeAway, setChromeAway] = useState(false)
   const [zoomPhase, setZoomPhase] = useState<'idle' | 'out' | 'in'>('idle')
   const [suppressTrackTransition, setSuppressTrackTransition] = useState(false)
@@ -180,6 +189,8 @@ export function Reader({
   const sectionEndToastAt = useRef(0)
   const zoomTimers = useRef<number[]>([])
   const readerRef = useRef<HTMLElement | null>(null)
+  const pendingSelection = useRef<{ text: string; x: number; y: number } | null>(null)
+  const { quotes, add: addQuote, remove: removeQuote } = useQuotes()
 
   const current = flatPages[index]
   const isInterstitial = current.page.kind === 'interstitial'
@@ -194,8 +205,9 @@ export function Reader({
   const hasNextPracticeStory =
     practiceStoryIndex >= 0 && practiceStoryIndex < practiceStoryPageIds.length - 1
   const showNavCoach = hintVisible && index === 0 && !isInterstitial && !isHistoryEra
-  const anyOverlay = tocOpen || showNavCoach
-  const navLocked = tocOpen
+  const anyOverlay = tocOpen || quotesOpen || showNavCoach
+  const navLocked = tocOpen || quotesOpen
+  const notebookIconUrl = asset('icons/notebook-text.svg')
   const chromeHidden =
     isInterstitial ||
     isClosingCover ||
@@ -264,10 +276,11 @@ export function Reader({
   const currentNavSection =
     navSectionIndex >= 0 ? navSections[navSectionIndex] : null
   const sectionTitleLabel = useMemo(() => {
+    if (current.page.kind === 'culture-bingo') return 'Игра · Культурное бинго'
     if (!currentNavSection) return current.paragraphTitle || 'Раздел'
     const num = Number(currentNavSection.number) || navSectionIndex + 1
     return `Раздел ${num} · ${currentNavSection.title}`
-  }, [currentNavSection, current.paragraphTitle, navSectionIndex])
+  }, [current.page.kind, currentNavSection, current.paragraphTitle, navSectionIndex])
   const goHome = useCallback(() => {
     if (onBackToWelcome) onBackToWelcome()
     else onExitToHome()
@@ -323,6 +336,7 @@ export function Reader({
       type CoachParagraph = {
         text: string
         boldLead?: string
+        boldLeadTone?: 'notes'
         bold?: boolean
         accent?: boolean
         label?: string
@@ -367,35 +381,25 @@ export function Reader({
         id: 'chrome',
         placement: 'topbar',
         title: 'Панель навигации',
-        paragraphs: isMobile
-          ? [
-              {
-                label: 'Домой',
-                text: 'Возврат на экран «Добро пожаловать».',
-              },
-              {
-                label: 'Раздел 1 · О книге',
-                text: 'Название текущего раздела.',
-              },
-              {
-                label: 'Оглавление',
-                text: 'Здесь ты можешь перейти в любой раздел книги и посмотреть, какие разделы уже пройдены.',
-              },
-            ]
-          : [
-              {
-                label: 'Домой',
-                text: '— возврат на экран «Добро пожаловать».',
-              },
-              {
-                boldLead: 'Раздел 1 · О книге',
-                text: ' — название текущего раздела.',
-              },
-              {
-                label: 'Оглавление',
-                text: '— здесь ты можешь перейти в любой раздел книги и посмотреть, какие разделы уже пройдены.',
-              },
-            ],
+        paragraphs: [
+          {
+            label: 'Домой',
+            text: '— возврат на экран «Добро пожаловать».',
+          },
+          {
+            label: 'Раздел 1 · О книге',
+            text: '— название текущего раздела.',
+          },
+          {
+            label: 'Меню',
+            text: '— здесь оглавление книги и твои заметки.',
+          },
+          {
+            boldLead: 'Как сделать заметку',
+            boldLeadTone: 'notes',
+            text: ': выдели текст на странице – появится кнопка с блокнотом – нажми её, чтобы сохранить фрагмент в заметки.',
+          },
+        ],
         ctaHint: 'Нажми кнопку «Понятно»',
       }
 
@@ -511,9 +515,11 @@ export function Reader({
       if (pageIndex < 0 || yearOnPage < 0) return
 
       const pageId = historyBookPageId(pageIndex)
+      const pageYears =
+        getHistoryPage(pageIndex)?.years.length ?? yearOnPage + 1
       setHistoryRevealed((prev) => {
         const cur = new Set(prev[pageId] ?? [])
-        for (let i = 0; i <= yearOnPage; i++) cur.add(i)
+        for (let i = 0; i < pageYears; i++) cur.add(i)
         return { ...prev, [pageId]: [...cur].sort((a, b) => a - b) }
       })
       setHistoryHint(false)
@@ -679,6 +685,94 @@ export function Reader({
     const target = flatPages[targetIndex]
     if (!target) return false
     return target.sectionId === flatPages[index]?.sectionId
+  }, [index])
+
+  useEffect(() => {
+    const readSelection = () => {
+      if (anyOverlay) {
+        pendingSelection.current = null
+        setSelectionUi(null)
+        return null
+      }
+      const sel = window.getSelection()
+      if (!sel || sel.isCollapsed || !sel.rangeCount) {
+        pendingSelection.current = null
+        setSelectionUi(null)
+        return null
+      }
+      const text = sel.toString().replace(/\s+/g, ' ').trim()
+      if (text.length < 2) {
+        pendingSelection.current = null
+        setSelectionUi(null)
+        return null
+      }
+      const range = sel.getRangeAt(0)
+      const readerRoot = readerRef.current
+      if (!readerRoot || !readerRoot.contains(range.commonAncestorContainer)) {
+        pendingSelection.current = null
+        setSelectionUi(null)
+        return null
+      }
+      const rect = range.getBoundingClientRect()
+      if (rect.width === 0 && rect.height === 0) {
+        pendingSelection.current = null
+        setSelectionUi(null)
+        return null
+      }
+      const next = {
+        text,
+        x: rect.left + rect.width / 2,
+        y: Math.max(rect.top, 48),
+      }
+      pendingSelection.current = next
+      return next
+    }
+
+    const publishDesktop = () => {
+      if (isMobile) return
+      const next = readSelection()
+      if (next) setSelectionUi(next)
+    }
+
+    const publishMobile = () => {
+      if (!isMobile) return
+      const next = pendingSelection.current ?? readSelection()
+      if (next) setSelectionUi(next)
+    }
+
+    const onSelectionChange = () => {
+      const next = readSelection()
+      // Desktop: show near selection immediately.
+      // Mobile: keep pending until finger lifts, so we don't fight the system menu mid-drag.
+      if (!isMobile && next) setSelectionUi(next)
+    }
+
+    document.addEventListener('selectionchange', onSelectionChange)
+    document.addEventListener('mouseup', publishDesktop)
+    document.addEventListener('keyup', publishDesktop)
+    document.addEventListener('touchend', publishMobile)
+    document.addEventListener('touchcancel', publishMobile)
+    return () => {
+      document.removeEventListener('selectionchange', onSelectionChange)
+      document.removeEventListener('mouseup', publishDesktop)
+      document.removeEventListener('keyup', publishDesktop)
+      document.removeEventListener('touchend', publishMobile)
+      document.removeEventListener('touchcancel', publishMobile)
+    }
+  }, [anyOverlay, isMobile])
+
+  const handleAddQuote = useCallback(() => {
+    if (!selectionUi) return
+    const ok = addQuote(selectionUi.text, current.page.id, labelFor(index))
+    setToast(ok ? 'Добавлено в заметки' : 'Эта заметка уже сохранена')
+    setSelectionUi(null)
+    pendingSelection.current = null
+    window.getSelection()?.removeAllRanges()
+  }, [selectionUi, addQuote, current.page.id, index])
+
+  useEffect(() => {
+    setSelectionUi(null)
+    pendingSelection.current = null
   }, [index])
 
   useEffect(() => {
@@ -996,7 +1090,15 @@ export function Reader({
                 ) : null}
                 <span className="reader__nav-coach-desc">
                   {paragraph.boldLead ? (
-                    <strong className="reader__nav-coach-label">{paragraph.boldLead}</strong>
+                    <strong
+                      className={`reader__nav-coach-label${
+                        paragraph.boldLeadTone === 'notes'
+                          ? ' reader__nav-coach-label--notes'
+                          : ''
+                      }`}
+                    >
+                      {paragraph.boldLead}
+                    </strong>
                   ) : null}
                   {paragraph.text}
                 </span>
@@ -1114,10 +1216,68 @@ export function Reader({
         )}
       </div>
 
+      {selectionUi && !isMobile && (
+        <button
+          type="button"
+          className="quote-pop"
+          style={{ left: selectionUi.x, top: selectionUi.y }}
+          aria-label="Добавить в заметки"
+          title="Добавить в заметки"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={handleAddQuote}
+        >
+          <span
+            className="quote-pop__icon"
+            style={{
+              WebkitMaskImage: `url(${notebookIconUrl})`,
+              maskImage: `url(${notebookIconUrl})`,
+            }}
+            aria-hidden
+          />
+        </button>
+      )}
+
+      {selectionUi && isMobile && (
+        <button
+          type="button"
+          className="quote-dock"
+          aria-label="Добавить в заметки"
+          onMouseDown={(e) => e.preventDefault()}
+          onTouchStart={(e) => e.stopPropagation()}
+          onClick={handleAddQuote}
+        >
+          <span
+            className="quote-dock__icon"
+            style={{
+              WebkitMaskImage: `url(${notebookIconUrl})`,
+              maskImage: `url(${notebookIconUrl})`,
+            }}
+            aria-hidden
+          />
+          <span>Добавить в заметки</span>
+        </button>
+      )}
+
       <BentoMenu
         open={tocOpen}
         current={current}
         onClose={() => setTocOpen(false)}
+        onGoPageId={goById}
+        onQuotes={() => {
+          setTocOpen(false)
+          setQuotesOpen(true)
+        }}
+      />
+
+      <QuotesPanel
+        open={quotesOpen}
+        quotes={quotes}
+        onClose={() => setQuotesOpen(false)}
+        onBack={() => {
+          setQuotesOpen(false)
+          setTocOpen(true)
+        }}
+        onRemove={removeQuote}
         onGoPageId={goById}
       />
     </section>

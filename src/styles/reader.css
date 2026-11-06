@@ -1982,6 +1982,10 @@
   color: #33206f;
 }
 
+.reader__nav-coach-label--notes {
+  color: #3e2c76;
+}
+
 .reader__nav-coach-desc {
   min-width: 0;
   text-align: left;

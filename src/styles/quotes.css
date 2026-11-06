@@ -128,13 +128,74 @@
   color: #fff;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
   animation: quote-pop-in 0.2s ease both;
+  cursor: pointer;
 }
 
-.quote-pop img {
+.quote-pop__icon {
+  display: block;
   width: 22px;
   height: 22px;
-  display: block;
+  background: currentColor;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
   pointer-events: none;
+}
+
+/* Mobile: dock below the system selection menu, full-width CTA */
+.quote-dock {
+  position: fixed;
+  left: 50%;
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  z-index: 1200;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  width: min(calc(100% - 2rem), 420px);
+  min-height: 52px;
+  margin: 0;
+  padding: 0.85rem 1.2rem;
+  border: none;
+  border-radius: 999px;
+  background: #1a1c22;
+  color: #fff;
+  font-family: var(--btn-font, inherit);
+  font-size: 1rem;
+  font-weight: 800;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  animation: quote-dock-in 0.22s ease both;
+  cursor: pointer;
+}
+
+.quote-dock__icon {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  background: currentColor;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  pointer-events: none;
+}
+
+@keyframes quote-dock-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 .quote-pop--static {

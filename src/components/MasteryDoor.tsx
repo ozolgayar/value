@@ -1,7 +1,12 @@
 import { useState } from 'react'
+import { useMediaQuery } from '../hooks'
 
 export function MasteryDoor() {
+  const isMobile = useMediaQuery('(max-width: 768px)')
   const [open, setOpen] = useState(false)
+
+  // Mobile: stories stay open — no tap-to-reveal door
+  if (isMobile) return null
 
   return (
     <div className={`ms__door${open ? ' is-open' : ''}`} aria-hidden={open}>
