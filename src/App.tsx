@@ -34,6 +34,27 @@ function consumeResetFlag() {
 
 consumeResetFlag()
 
+/** Restore deep-link path saved by public/404.html on GitHub Pages. */
+function consumeSpaRedirect() {
+  try {
+    const saved = sessionStorage.getItem('gph-spa-redirect')
+    if (!saved) return
+    sessionStorage.removeItem('gph-spa-redirect')
+    const url = new URL(saved, window.location.origin)
+    if (url.pathname.startsWith('/value')) {
+      window.history.replaceState(
+        {},
+        '',
+        `${url.pathname}${url.search}${url.hash}`,
+      )
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
+consumeSpaRedirect()
+
 function readPreloaderDone() {
   try {
     return localStorage.getItem(PRELOADER_DONE_KEY) === '1'
@@ -86,6 +107,12 @@ function BookApp() {
     setReaderIndex(pageIndex)
   }, [])
 
+  const finishPreloader = useCallback(() => {
+    if (preloaderPreview) return
+    writePreloaderDone()
+    setBooting(false)
+  }, [preloaderPreview])
+
   useEffect(() => {
     writeBookLocation(view, readerIndex)
   }, [view, readerIndex])
@@ -117,14 +144,7 @@ function BookApp() {
       <Cursor />
 
       {booting && (
-        <Preloader
-          loop={preloaderPreview}
-          onDone={() => {
-            if (preloaderPreview) return
-            writePreloaderDone()
-            setBooting(false)
-          }}
-        />
+        <Preloader loop={preloaderPreview} onDone={finishPreloader} />
       )}
 
       {showAkony && (

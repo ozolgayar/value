@@ -1023,45 +1023,56 @@ export function Reader({
       onTouchCancel={onTouchEnd}
     >
       <div className="reader__track" style={trackStyle} key={`track-${totalPages}`}>
-        {flatPages.map((fp) => (
-          <div
-            className="reader__page"
-            key={fp.page.id}
-            aria-hidden={fp.globalIndex !== index}
-          >
-            <PageView
-              page={fp.page}
-              onGoToSection={goToSectionId}
-              onGoToPage={goById}
-              historyRevealed={
-                fp.page.id === current.page.id
-                  ? revealedSet
-                  : new Set(historyRevealed[fp.page.id] ?? [])
-              }
-              onHistoryReveal={
-                fp.page.id === current.page.id ? revealHistoryYear : undefined
-              }
-              onHistoryAdvance={
-                fp.page.id === current.page.id
-                  ? () => go(index + 1)
-                  : undefined
-              }
-              onHistoryRetreat={
-                fp.page.id === current.page.id ? navigatePrev : undefined
-              }
-              onHistoryJumpYear={
-                fp.page.id === current.page.id ? jumpToHistoryYear : undefined
-              }
-              historyJumpYear={
-                fp.page.id === current.page.id ? historyJumpYear : null
-              }
-              onHistoryJumpYearHandled={
-                fp.page.id === current.page.id ? clearHistoryJumpYear : undefined
-              }
-              historyHint={historyHint && fp.page.id === current.page.id && isHistoryEra}
-            />
-          </div>
-        ))}
+        {flatPages.map((fp) => {
+          // Mount only nearby pages — full book mount crashes mobile/GitHub Pages tabs
+          // after history grew to many heavy chapter screens.
+          const nearby = Math.abs(fp.globalIndex - index) <= 1
+          return (
+            <div
+              className="reader__page"
+              key={fp.page.id}
+              aria-hidden={fp.globalIndex !== index}
+            >
+              {nearby ? (
+                <PageView
+                  page={fp.page}
+                  onGoToSection={goToSectionId}
+                  onGoToPage={goById}
+                  historyRevealed={
+                    fp.page.id === current.page.id
+                      ? revealedSet
+                      : new Set(historyRevealed[fp.page.id] ?? [])
+                  }
+                  onHistoryReveal={
+                    fp.page.id === current.page.id ? revealHistoryYear : undefined
+                  }
+                  onHistoryAdvance={
+                    fp.page.id === current.page.id
+                      ? () => go(index + 1)
+                      : undefined
+                  }
+                  onHistoryRetreat={
+                    fp.page.id === current.page.id ? navigatePrev : undefined
+                  }
+                  onHistoryJumpYear={
+                    fp.page.id === current.page.id ? jumpToHistoryYear : undefined
+                  }
+                  historyJumpYear={
+                    fp.page.id === current.page.id ? historyJumpYear : null
+                  }
+                  onHistoryJumpYearHandled={
+                    fp.page.id === current.page.id
+                      ? clearHistoryJumpYear
+                      : undefined
+                  }
+                  historyHint={
+                    historyHint && fp.page.id === current.page.id && isHistoryEra
+                  }
+                />
+              ) : null}
+            </div>
+          )
+        })}
       </div>
 
       {showNavCoach && (
