@@ -1341,7 +1341,10 @@
     height: auto;
     min-height: 100%;
     overflow: visible;
-    padding-bottom: 100px;
+    padding-bottom: max(
+      100px,
+      calc(var(--reader-bottom-safe, 100px) + 24px)
+    );
   }
 
   .page-shell.page-mastery-semavic .ms__half,

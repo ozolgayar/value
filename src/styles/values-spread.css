@@ -453,7 +453,10 @@
   }
 
   .values-spread__half--right .values-spread__body {
-    padding-bottom: 100px;
+    padding-bottom: max(
+      100px,
+      calc(var(--reader-bottom-safe, 100px) + 24px)
+    );
   }
 
   .values-spread__bars {

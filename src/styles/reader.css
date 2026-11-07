@@ -1747,9 +1747,10 @@
 
 @media (max-width: 860px) {
   :root {
-    --reader-bottombar-h: 48px;
+    /* Full-width bottom counter bar + orange/content breathing room above it */
+    --reader-bottombar-h: 52px;
     --reader-bottom-safe: calc(
-      env(safe-area-inset-bottom, 0px) + var(--reader-bottombar-h) + 8px
+      env(safe-area-inset-bottom, 0px) + var(--reader-bottombar-h) + 40px
     );
   }
 
@@ -1805,9 +1806,13 @@
 
   .reader__page {
     scroll-padding-bottom: var(--reader-bottom-safe);
+    scroll-padding-top: calc(48px + env(safe-area-inset-top, 0px) + 8px);
   }
 
+  /* Let the page itself grow and scroll under chrome; avoid height:100% traps */
   .reader__page > .page-shell:not(.page-interstitial) {
+    height: auto;
+    min-height: 100%;
     padding-bottom: var(--reader-bottom-safe);
   }
 
@@ -2378,7 +2383,7 @@
 
   .page-split__right {
     padding-top: 40px;
-    padding-bottom: 88px;
+    padding-bottom: max(88px, var(--reader-bottom-safe));
   }
 
   .page-split__left-inner,
@@ -2440,12 +2445,16 @@
     min-height: 100svh;
     min-height: 100dvh;
     padding-top: 88px;
-    padding-bottom: max(88px, calc(env(safe-area-inset-bottom) + 72px));
+    padding-bottom: max(
+      88px,
+      calc(env(safe-area-inset-bottom) + 72px),
+      var(--reader-bottom-safe)
+    );
   }
 
   .page-route__right {
     padding-top: 1.5rem;
-    padding-bottom: 88px;
+    padding-bottom: max(88px, var(--reader-bottom-safe));
   }
 
   .page-route__left-inner,

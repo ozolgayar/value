@@ -863,7 +863,9 @@ export function Reader({
     const target = e.target
     if (
       target instanceof Element &&
-      target.closest('.menu-overlay, .reader__topbar, .reader__nav-coach, .nav-arrow')
+      target.closest(
+        '.menu-overlay, .reader__topbar, .reader__nav-coach, .nav-arrow, .tlh__chips, .tlh__chip, .tlh__period-nav',
+      )
     ) {
       touchStart.current = null
       return
@@ -928,10 +930,9 @@ export function Reader({
         return
       }
       if (fingerUp && startedAtBottom) {
+        // Vertical swipe only flips pages inside the same section.
+        // Crossing into the closing cover (or any next section) is a side swipe.
         if (pageStaysInSection(index + 1)) {
-          turn('next')
-        } else if (navSectionIndex >= sectionCount - 1 && index < totalPages - 1) {
-          // Last section: allow leaving into closing pages.
           turn('next')
         } else {
           hintSectionEnd()
@@ -967,7 +968,9 @@ export function Reader({
       const target = e.target
       if (
         target instanceof Element &&
-        target.closest('.menu-overlay, .reader__topbar, .reader__nav-coach')
+        target.closest(
+          '.menu-overlay, .reader__topbar, .reader__nav-coach, .tlh__chips, .tlh__chip, .tlh__period-nav',
+        )
       ) {
         return
       }

@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type WheelEvent as ReactWheelEvent } from 'react'
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type WheelEvent as ReactWheelEvent,
+} from 'react'
 import {
   historyPages,
   historyPianoYears,
@@ -46,23 +52,51 @@ function RatingIcon() {
   )
 }
 
-function formatRegistrationBody(block: HistoryBlock) {
-  if (block.lines?.length) {
-    return `Регистрация: ${block.lines.map((line) => fixPrepositions(line)).join('; ')}.`
-  }
-  if (block.text) return fixPrepositions(block.text)
-  return null
+function RegistrationIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <path d="M14 2v6h6" />
+      <path d="m9 15 2 2 4-4" />
+    </svg>
+  )
 }
 
 function EventSection({ block }: { block: HistoryBlock }) {
-  const isRating = block.tone === 'rating'
-
-  if (!isRating) {
-    const body = formatRegistrationBody(block)
+  if (block.tone === 'registration') {
+    const lines =
+      block.lines?.length
+        ? block.lines
+        : block.text
+          ? [block.text]
+          : []
     return (
       <div className="tlh__event tlh__event--registration">
-        <div className="tlh__event-kicker">Также в этом году</div>
-        {body ? <p className="tlh__block-text">{body}</p> : null}
+        <div className="tlh__event-head">
+          <span className="tlh__event-icon" aria-hidden>
+            <RegistrationIcon />
+          </span>
+          <span className="tlh__event-kicker tlh__event-kicker--inline">
+            {fixPrepositions(block.title || 'Регистрация препаратов')}
+          </span>
+        </div>
+        {lines.length ? (
+          <ul className="tlh__event-list">
+            {lines.map((line) => (
+              <li key={line}>{fixPrepositions(line)}</li>
+            ))}
+          </ul>
+        ) : null}
       </div>
     )
   }
@@ -73,10 +107,11 @@ function EventSection({ block }: { block: HistoryBlock }) {
         <span className="tlh__event-icon" aria-hidden>
           <RatingIcon />
         </span>
-        <span className="tlh__event-kicker tlh__event-kicker--inline">Рейтинг</span>
+        <span className="tlh__event-kicker tlh__event-kicker--inline">
+          {fixPrepositions(block.title)}
+        </span>
         {block.badge ? <span className="tlh__event-badge">{block.badge}</span> : null}
       </div>
-      <h3 className="tlh__block-title">{fixPrepositions(block.title)}</h3>
       {block.text ? (
         <p className="tlh__block-text">{fixPrepositions(block.text)}</p>
       ) : null}
@@ -88,20 +123,13 @@ function YearCard({
   entry,
   isFocus,
   density,
-  showSpine,
 }: {
   entry: HistoryYearEntry
   isFocus: boolean
   density: 'compact' | 'comfortable' | 'dense'
-  showSpine: boolean
 }) {
   return (
     <div className="tlh__item" data-year={entry.year} id={`tlh-year-${entry.year}`}>
-      {showSpine ? (
-        <div className="tlh__track" aria-hidden>
-          <span className={`tlh__dot${isFocus ? ' is-active' : ''}`} />
-        </div>
-      ) : null}
       <article
         className={`tlh__card tlh__card--${density}${isFocus ? ' is-latest' : ''}`}
       >
@@ -190,22 +218,37 @@ export function HistoryTimeline({
   const phone = useMediaQuery('(max-width: 768px)')
   const total = page.years.length
   const isLastPage = page.index >= pageCount - 1
-  const showEpilogue = isLastPage
+  const showEpilogue = isLastPage && (phone || revealed.size >= total)
   const density = chapterDensity(page)
 
-  // Chapter pages show their full content at once (no progressive card reveal).
-  useEffect(() => {
-    for (let i = 0; i < total; i++) {
-      if (!revealed.has(i)) onReveal(i)
+  // Mobile: all cards at once. Desktop: progressive reveal — start with the first year.
+  useLayoutEffect(() => {
+    if (phone) {
+      for (let i = 0; i < total; i++) onReveal(i)
+      return
     }
-  }, [page.index, total, revealed, onReveal])
+    onReveal(0)
+  }, [page.index, total, phone, onReveal])
 
   useEffect(() => {
     setActiveYear(page.years[0]?.year ?? null)
     pendingYearRef.current = null
+    pinnedYearRef.current = null
     const root = chapterRef.current
     if (root) root.scrollTo({ top: 0, behavior: 'auto' })
   }, [page.index, page.years])
+
+  // Keep the right piano in sync with the latest revealed card.
+  useEffect(() => {
+    if (phone) return
+    let latest = -1
+    for (let i = 0; i < total; i++) {
+      if (revealed.has(i)) latest = i
+    }
+    const year = page.years[latest]?.year
+    if (!year || pinnedYearRef.current) return
+    setActiveYear(year)
+  }, [revealed, total, phone, page.years])
 
   const scrollChildInto = (
     root: HTMLElement,
@@ -268,15 +311,23 @@ export function HistoryTimeline({
     if (!items.length) return
 
     const rootRect = root.getBoundingClientRect()
-    const focusY = rootRect.top + Math.min(120, root.clientHeight * 0.28)
+    const focusY = rootRect.top + root.clientHeight * 0.38
 
     let active = items[0]
+    let bestDist = Number.POSITIVE_INFINITY
     for (const item of items) {
-      if (item.getBoundingClientRect().top <= focusY + 8) active = item
-      else break
+      const rect = item.getBoundingClientRect()
+      const mid = rect.top + rect.height * 0.35
+      const dist = Math.abs(mid - focusY)
+      if (dist < bestDist) {
+        bestDist = dist
+        active = item
+      }
     }
 
-    if (root.scrollTop + root.clientHeight >= root.scrollHeight - 6) {
+    if (root.scrollTop <= 2) {
+      active = items[0]
+    } else if (root.scrollTop + root.clientHeight >= root.scrollHeight - 6) {
       active = items[items.length - 1]
     }
 
@@ -339,17 +390,27 @@ export function HistoryTimeline({
 
   const onPianoKeyClick = (year: string) => {
     const yearIndex = page.years.findIndex((entry) => entry.year === year)
+    pinnedYearRef.current = year
     setActiveYear(year)
+    scrollPianoIntoView(year)
 
     if (yearIndex < 0) {
       onJumpYear?.(year)
+      window.setTimeout(() => {
+        pinnedYearRef.current = null
+      }, 360)
       return
     }
 
+    // Reveal every card up to the chosen year, then scroll it into view.
+    for (let i = 0; i <= yearIndex; i++) onReveal(i)
     pendingYearRef.current = year
-    if (scrollToYear(year)) {
-      pendingYearRef.current = null
-    }
+    window.requestAnimationFrame(() => {
+      if (scrollToYear(year)) pendingYearRef.current = null
+      window.setTimeout(() => {
+        pinnedYearRef.current = null
+      }, 360)
+    })
   }
 
   const retreatState = useRef({
@@ -371,77 +432,54 @@ export function HistoryTimeline({
     const root = rootRef.current
     if (!root) return
 
-    const onWheelBack = (e: globalThis.WheelEvent) => {
-      const {
-        years,
-        activeYear: current,
-        onRetreat: retreat,
-        onAdvance: advance,
-        phone: isPhone,
-      } = retreatState.current
-
-      if (isPhone) {
-        if (e.deltaY <= 8) return
-        const pageEl = root.closest('.reader__page')
-        if (!pageEl) return
-        const atBottom =
-          pageEl.scrollHeight - pageEl.scrollTop - pageEl.clientHeight <= 16
-        if (!atBottom || !advance) return
-        e.preventDefault()
-        e.stopPropagation()
-        if (wheelLock.current) return
-        wheelLock.current = true
-        advance()
-        window.setTimeout(() => {
-          wheelLock.current = false
-        }, 520)
-        return
-      }
-
-      if (e.deltaY >= -8) return
-      if (!years.length) return
-
-      let idx = years.findIndex((entry) => entry.year === current)
-      if (idx < 0) idx = years.length - 1
-
+    // Phone only: advance past history after reaching the page bottom.
+    // Desktop year-stepping was removed — it fought native scroll and caused jitter.
+    const onWheelPhone = (e: globalThis.WheelEvent) => {
+      const { onAdvance: advance, phone: isPhone } = retreatState.current
+      if (!isPhone) return
+      if (e.deltaY <= 8) return
+      const pageEl = root.closest('.reader__page')
+      if (!pageEl) return
+      const atBottom =
+        pageEl.scrollHeight - pageEl.scrollTop - pageEl.clientHeight <= 16
+      if (!atBottom || !advance) return
       e.preventDefault()
       e.stopPropagation()
       if (wheelLock.current) return
-
-      if (idx > 0) {
-        const year = years[idx - 1].year
-        wheelLock.current = true
-        pinnedYearRef.current = year
-        setActiveYear(year)
-        scrollToYear(year)
-        scrollPianoIntoView(year)
-        window.setTimeout(() => {
-          pinnedYearRef.current = null
-          wheelLock.current = false
-        }, 280)
-        return
-      }
-
-      if (!retreat) return
       wheelLock.current = true
-      retreat()
+      advance()
       window.setTimeout(() => {
         wheelLock.current = false
       }, 520)
     }
 
-    root.addEventListener('wheel', onWheelBack, { capture: true, passive: false })
-    return () => root.removeEventListener('wheel', onWheelBack, { capture: true })
+    root.addEventListener('wheel', onWheelPhone, { capture: true, passive: false })
+    return () => root.removeEventListener('wheel', onWheelPhone, { capture: true })
   }, [page.index])
 
   const onChapterWheel = (e: ReactWheelEvent<HTMLDivElement>) => {
     const el = chapterRef.current
     if (!el) return
     if (retreatState.current.phone) return
+    if (Math.abs(e.deltaY) < 4) return
 
     const overflow = el.scrollHeight > el.clientHeight + 2
     const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 2
     const atTop = el.scrollTop <= 1
+    const hasMoreToReveal = revealed.size < total
+
+    // Progressive reveal: each downward gesture adds the next year card under the stack.
+    if (e.deltaY > 0 && hasMoreToReveal) {
+      e.preventDefault()
+      e.stopPropagation()
+      if (wheelLock.current || !onAdvance) return
+      wheelLock.current = true
+      onAdvance()
+      window.setTimeout(() => {
+        wheelLock.current = false
+      }, 320)
+      return
+    }
 
     if (e.deltaY > 0 && (!overflow || atBottom)) {
       e.preventDefault()
@@ -451,7 +489,19 @@ export function HistoryTimeline({
       onAdvance()
       window.setTimeout(() => {
         wheelLock.current = false
-      }, 520)
+      }, 480)
+      return
+    }
+
+    if (e.deltaY < 0 && (!overflow || atTop)) {
+      e.preventDefault()
+      e.stopPropagation()
+      if (wheelLock.current || !onRetreat) return
+      wheelLock.current = true
+      onRetreat()
+      window.setTimeout(() => {
+        wheelLock.current = false
+      }, 480)
       return
     }
 
@@ -463,8 +513,6 @@ export function HistoryTimeline({
     }
   }
 
-  const chapterYears = new Set(page.years.map((y) => y.year))
-
   useEffect(() => {
     if (!phone) return
     const root = chipsRef.current
@@ -475,15 +523,17 @@ export function HistoryTimeline({
     scrollChildInto(root, chip, 'x')
   }, [page.index, phone, reduced])
 
-  const yearCards = page.years.map((entry) => (
-    <YearCard
-      key={entry.year}
-      entry={entry}
-      isFocus={entry.year === activeYear}
-      density={density}
-      showSpine={!phone}
-    />
-  ))
+  const yearCards = page.years.map((entry, index) => {
+    if (!phone && !revealed.has(index)) return null
+    return (
+      <YearCard
+        key={entry.year}
+        entry={entry}
+        isFocus={entry.year === activeYear}
+        density={density}
+      />
+    )
+  })
 
   if (phone) {
     return (
@@ -502,6 +552,9 @@ export function HistoryTimeline({
           ref={chipsRef}
           className="tlh__chips"
           aria-label="Периоды истории"
+          onTouchStart={(e) => e.stopPropagation()}
+          onTouchEnd={(e) => e.stopPropagation()}
+          onTouchCancel={(e) => e.stopPropagation()}
         >
           {historyPages.map((chapter) => (
             <button
@@ -593,21 +646,12 @@ export function HistoryTimeline({
 
       <div className="tlh__stage">
         <div className="tlh__main">
-          <div className="tlh__head">
-            <div className="tlh__period" aria-live="polite">
-              {page.rangeLabel}
-            </div>
-          </div>
-
           <div
             ref={chapterRef}
-            className="tlh__chapter tlh__chapter--cards"
+            className={`tlh__chapter tlh__chapter--cards tlh__chapter--${density}`}
             aria-live="polite"
             onWheel={onChapterWheel}
           >
-            <div className="tlh__spine" aria-hidden>
-              <div className="tlh__spine-fill is-on" />
-            </div>
             {yearCards}
             {showEpilogue ? (
               <p className="tlh__epilogue" aria-live="polite">
@@ -624,14 +668,11 @@ export function HistoryTimeline({
         >
           {historyPianoYears.map((entry) => {
             const isActive = activeYear === entry.year
-            const inChapter = chapterYears.has(entry.year)
             return (
               <button
                 key={entry.year}
                 type="button"
-                className={`piano-key${isActive ? ' is-active' : ''}${
-                  inChapter ? ' is-local' : ''
-                }`}
+                className={`piano-key${isActive ? ' is-active' : ''}`}
                 data-year={entry.year}
                 aria-label={`Перейти к ${entry.year}`}
                 aria-current={isActive ? 'true' : undefined}

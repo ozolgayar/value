@@ -246,7 +246,10 @@
     height: auto;
     min-height: 100%;
     overflow: visible;
-    padding: calc(var(--nav-safe) + 12px) 20px 90px;
+    padding:
+      calc(var(--nav-safe) + 12px)
+      20px
+      max(90px, calc(var(--reader-bottom-safe, 90px) + 24px));
   }
 
   .mg__badge {
