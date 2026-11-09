@@ -174,14 +174,34 @@ export function PracticeGalleryPage({
     >
       <div className="pg__inner">
         <div className="pg__focus">
-          <h2 className="pg__focus-title">{activeCard.title}</h2>
-          <button
-            type="button"
-            className="pg__select"
-            onClick={() => onOpenStory?.(activeCard.pageId)}
-          >
-            Выбрать
-          </button>
+          <div className="pg__intro">
+            <h2 className="pg__intro-title">Практики-тренажёры</h2>
+            <p className="pg__intro-lead">
+              Практики-тренажёры этого раздела помогают принимать решения по
+              ценностям. Познакомьтесь с ситуацией, выберите и обоснуйте лучший
+              вариант. По возможности обсудите с коллегами преимущества и
+              ограничения каждого варианта. Сверьтесь с «лучшим выбором по
+              ценностям». Подумайте, где в вашей работе встречается похожий выбор.
+            </p>
+            <aside className="pg__intro-suit" aria-label="Подходит для">
+              <span className="pg__intro-suit-label">Подходит для</span>
+              <p className="pg__intro-suit-text">
+                самостоятельной работы, командных встреч, адаптации новичков
+              </p>
+            </aside>
+          </div>
+
+          <div className="pg__case">
+            <p className="pg__case-label">Выбранный кейс</p>
+            <h3 className="pg__case-title">{activeCard.title}</h3>
+            <button
+              type="button"
+              className="pg__select"
+              onClick={() => onOpenStory?.(activeCard.pageId)}
+            >
+              Выбрать
+            </button>
+          </div>
         </div>
 
         <div

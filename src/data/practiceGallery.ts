@@ -55,7 +55,7 @@ export const practiceGallery = {
     {
       id: 'methodology',
       pageId: 'p-practice-methodology',
-      title: 'Методика: разработать или купить',
+      title: 'Разработка методики',
       gradient: 'linear-gradient(160deg, #111827 0%, #d97706 48%, #fbbf24 100%)',
     },
     {

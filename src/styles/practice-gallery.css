@@ -79,22 +79,109 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 1.35rem;
   width: 100%;
-  max-width: none;
+  max-width: 34rem;
   padding-left: 0.25rem;
   padding-right: 0.5rem;
   z-index: 2;
   box-sizing: border-box;
 }
 
-.pg__focus-title {
+.pg__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.7rem;
+  width: 100%;
+}
+
+.pg__intro-title {
   margin: 0;
   width: 100%;
-  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-size: clamp(1.85rem, 3.4vw, 2.6rem);
   font-weight: 700;
-  line-height: 1.05;
+  line-height: 1.08;
   letter-spacing: -0.025em;
+  color: #111827;
+}
+
+.pg__intro-lead {
+  margin: 0;
+  width: 100%;
+  font-size: clamp(0.95rem, 1.05vw, 1.05rem);
+  font-weight: 450;
+  line-height: 1.5;
+  color: #475569;
+}
+
+.pg__intro-suit {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.28rem;
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid rgba(71, 85, 105, 0.16);
+  border-radius: 12px;
+  background: #f8fafc;
+  box-sizing: border-box;
+}
+
+.pg__intro-suit-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.pg__intro-suit-label::before {
+  content: '';
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: #94a3b8;
+  flex-shrink: 0;
+}
+
+.pg__intro-suit-text {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #334155;
+}
+
+.pg__case {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.7rem;
+  width: 100%;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(15, 23, 42, 0.1);
+}
+
+.pg__case-label {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.pg__case-title {
+  margin: 0;
+  width: 100%;
+  font-size: clamp(1.45rem, 2.6vw, 2rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
   color: #111827;
 }
 
@@ -104,13 +191,14 @@
   background: transparent;
   color: #111827;
   font: inherit;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 650;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  padding: 14px 32px;
+  padding: 12px 28px;
   border-radius: 999px;
   min-height: 44px;
+  margin-top: 0.15rem;
   cursor: pointer;
   transition:
     background 160ms ease,
@@ -174,20 +262,38 @@
     display: contents;
   }
 
-  .pg__focus-title {
+  .pg__intro {
     order: 1;
-    position: relative;
-    z-index: 5;
     width: 100%;
     max-width: none;
     margin: 0;
     padding: 0 20px;
-    font-size: clamp(1.75rem, 9vw, 2.75rem);
+    gap: 0.6rem;
+    box-sizing: border-box;
+  }
+
+  .pg__intro-title {
+    font-size: clamp(1.55rem, 7vw, 2.2rem);
     line-height: 1.1;
-    text-align: left;
-    hyphens: none;
-    word-break: normal;
-    overflow-wrap: normal;
+  }
+
+  .pg__intro-lead {
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  .pg__case {
+    order: 4;
+    width: 100%;
+    max-width: none;
+    margin: 12px 0 0;
+    padding: 12px 20px 0;
+    gap: 0.55rem;
+    box-sizing: border-box;
+  }
+
+  .pg__case-title {
+    font-size: clamp(1.25rem, 5.5vw, 1.7rem);
   }
 
   .pg__strip {
@@ -267,7 +373,7 @@
   }
 
   .pg__instruction {
-    order: 4;
+    order: 5;
     flex-shrink: 0;
     transform: none;
     width: 100%;
@@ -287,10 +393,9 @@
   }
 
   .pg__select {
-    order: 5;
     align-self: flex-start;
     width: auto;
-    margin: 16px 20px 0;
+    margin: 0;
     padding: 14px 32px;
     min-height: 48px;
     border-radius: 999px;

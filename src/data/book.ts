@@ -216,6 +216,12 @@ export const sections: Section[] = [
                 sectionId: 'environment',
                 pageId: 'p-env-break',
               },
+              {
+                title: 'Практики-тренажёры',
+                desc: 'Тренировка мышления на рабочих ситуациях',
+                sectionId: 'practice',
+                pageId: 'p-practice-break',
+              },
             ],
             meta: {
               image:
@@ -526,7 +532,6 @@ export const sections: Section[] = [
     tag: 'ТРЕНИРОВКА МЫШЛЕНИЯ',
     summary: 'Тренировка мышления на рабочих ситуациях',
     accent: '#5A44E1',
-    nav: false,
     paragraphs: [
       {
         id: 'practice-break',
@@ -537,7 +542,7 @@ export const sections: Section[] = [
             kind: 'interstitial',
             title: 'ПРАКТИКИ\n-ТРЕНАЖЁРЫ\nГЕРОФАРМ',
             body: [
-              'Каждая ситуация, разобранная здесь, – это шаг к тому, чтобы мы принимали более точные решения, сохраняя силы и время. Так общая культура повышает нашу эффективность на пути к миссии',
+              'Знать ценности и жить по ним — не одно и то же. В реальной работе редко встречаются ситуации, где всё очевидно. Обычно сроки давят, ресурсов не хватает, а у каждого решения есть своя цена. Именно в такие моменты ценности ГЕРОФАРМ становятся критериями для выбора наилучших решений.',
             ],
             meta: {
               logo: 'logo/trans-mark-only.png',
@@ -595,7 +600,7 @@ export const sections: Section[] = [
           {
             id: 'p-practice-methodology',
             kind: 'practice-methodology',
-            title: 'Методика: разработать или купить',
+            title: 'Разработка методики',
           },
           {
             id: 'p-practice-bureaucracy',
