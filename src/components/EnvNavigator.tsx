@@ -1,6 +1,6 @@
-import { asset } from '../asset'
 import { envNavigator, type EnvNavCard, type EnvNavItem } from '../data/envNavigator'
 import { fixPrepositions } from '../lib/fixPrepositions'
+import { SectionEndNav } from './SectionEndNav'
 import '../styles/env-navigator.css'
 
 function NavItem({ item }: { item: EnvNavItem }) {
@@ -55,12 +55,7 @@ export function EnvNavigatorPage() {
 
   return (
     <article className="page-shell page-bleed page-env-navigator">
-      <section
-        className="en__half en__half--left"
-        style={{ backgroundImage: `url(${asset('img/16.png')})` }}
-        aria-label={title}
-      >
-        <div className="en__wash" aria-hidden />
+      <section className="en__half en__half--left" aria-label={title}>
         <div className="en__inner">
           <span className="en__badge">{badge}</span>
           <h1 className="en__title">{title}</h1>
@@ -88,10 +83,8 @@ export function EnvNavigatorPage() {
 
       <section
         className="en__half en__half--right"
-        style={{ backgroundImage: `url(${asset('img/17.png')})` }}
         aria-label="Инструменты окружения"
       >
-        <div className="en__wash" aria-hidden />
         <div className="en__inner en__inner--right">
           <div className="en__tree en__tree--branch">
             <NavCard card={synergyCard} />
@@ -103,6 +96,7 @@ export function EnvNavigatorPage() {
           </div>
           <Brand tone="light" />
         </div>
+        <SectionEndNav />
       </section>
     </article>
   )

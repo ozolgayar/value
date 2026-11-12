@@ -1,14 +1,14 @@
 .page-shell.page-mastery-semavic {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
   align-items: stretch;
   height: 100%;
   min-height: 100%;
   overflow: hidden;
   background: #fff;
-  color: #1a1a1a;
+  color: #183553;
 }
 
 .ms__half {
@@ -27,16 +27,6 @@
   z-index: 1;
 }
 
-.ms__edge--left {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: clamp(0.45rem, 1vw, 0.75rem);
-  background: linear-gradient(180deg, #f97316 0%, #ec4899 55%, #db2777 100%);
-  pointer-events: none;
-}
-
 .ms__left-inner {
   box-sizing: border-box;
   display: flex;
@@ -48,7 +38,7 @@
     clamp(1.1rem, 2vw, 1.6rem)
     clamp(0.85rem, 1.8vh, 1.25rem)
     calc(var(--nav-arrow-lane-left) + 1rem);
-  overflow: auto;
+  overflow: hidden;
 }
 
 .ms__badge {
@@ -75,9 +65,7 @@
   color: #2563eb;
 }
 
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+.page-mastery-semavic
   .ms__title {
   display: flex;
   flex-direction: column;
@@ -85,25 +73,24 @@
   max-width: none;
 }
 
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+.page-mastery-semavic
   .ms__title-line {
   display: block;
 }
 
 .ms__story {
-  margin-top: 2rem; /* ~32px: stable gap after title */
+  margin-top: clamp(1.1rem, 2.2vh, 1.75rem);
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: clamp(0.55rem, 1.1vh, 0.75rem);
+  min-height: 0;
 }
 
 .ms__story p {
   margin: 0;
   font-size: clamp(0.68rem, 0.95vw, 0.82rem);
   line-height: 1.4;
-  color: #222;
+  color: #183553;
 }
 
 /* Invisible header twin — keeps middle/values columns on the same baseline */
@@ -115,15 +102,20 @@
   pointer-events: none;
   user-select: none;
   flex-shrink: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .ms__align-spacer .ms__title {
   margin-bottom: 0;
+  max-width: 100%;
 }
 
 /* Keep spacer line-count identical to the wide left title (no reflow) */
 .ms__align-spacer .ms__title-line {
   white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .ms__half--right {
@@ -132,18 +124,14 @@
 }
 
 /* Semavic story: right half = white continuation + gradient values (like Venezuela) */
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+.page-mastery-semavic
   .ms__half--right {
   display: flex;
   flex-direction: column;
   background: #fff;
 }
 
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+.page-mastery-semavic
   .ms__right-inner {
   display: flex;
   flex-direction: column;
@@ -154,126 +142,102 @@
   overflow: hidden;
 }
 
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+.page-mastery-semavic
   .ms__right-cols {
+  /* Shared vertical rhythm with left page: title → body */
+  --ms-title-gap: 0.9rem; /* = .ms__title margin-top */
+  --ms-body-gap: clamp(1.1rem, 2.2vh, 1.75rem); /* = .ms__story margin-top */
+  --ms-value-gap: clamp(18px, 2.2vh, 24px);
   flex: 1 1 auto;
   min-height: 0;
   display: grid;
-  /* Must stay 1fr 1fr — matches half--right::before at width: 50% */
-  grid-template-columns: 1fr 1fr;
-  /* header | 3 story/value rows — subgrid keeps tops locked */
+  /* minmax(0,1fr) — prevent max-content from blowing column width / h-scroll */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   grid-template-rows: max-content repeat(3, auto);
-  /* no row-gap: gaps via margins so middle matches left (title → 2rem → body) */
   row-gap: 0;
   align-items: stretch;
   column-gap: 0;
 }
 
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+.page-mastery-semavic
   .ms__col-story,
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+.page-mastery-semavic
   .ms__col-values {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: subgrid;
   grid-row: 1 / -1;
   align-items: start;
+  justify-items: stretch;
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
 }
 
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+.page-mastery-semavic
   .ms__col-story {
   background: #fff;
   margin: 0;
   /* vertical pad lives on .ms__right-cols so subgrid rows aren't inflated */
   padding:
     0
-    32px
-    clamp(0.85rem, 1.8vh, 1.25rem)
-    clamp(1.25rem, 2.4vw, 1.85rem);
+    clamp(1rem, 1.6vw, 1.5rem)
+    clamp(0.55rem, 1.2vh, 0.9rem)
+    clamp(1rem, 1.8vw, 1.5rem);
   border-right: none;
-  overflow: auto;
+  overflow: hidden;
 }
 
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+.page-mastery-semavic
   .ms__col-story
   .ms__story-p,
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+.page-mastery-semavic
   .ms__half--left
   .ms__story
   p {
   margin: 0;
-  font-size: 15px;
-  line-height: 1.65;
+  max-width: 100%;
+  box-sizing: border-box;
+  font-size: clamp(0.72rem, 0.95vw, 0.875rem);
+  line-height: 1.45;
   color: #374151;
   text-indent: 0;
+  overflow-wrap: anywhere;
 }
 
-/* Gap after title band → first body/value (matches left .ms__story margin-top) */
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+/* Gap after title band → first middle-column body (matches left .ms__story) */
+.page-mastery-semavic
   .ms__col-story
-  .ms__story-p:first-of-type,
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
-  .ms__col-values
-  .ms__rc-value:first-of-type {
-  margin-top: 2rem;
+  .ms__story-p:first-of-type {
+  margin-top: clamp(1.1rem, 2.2vh, 1.75rem);
 }
 
 /* Same inter-paragraph gap as left .ms__story */
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+.page-mastery-semavic
   .ms__col-story
-  .ms__story-p + .ms__story-p,
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
-  .ms__col-values
-  .ms__rc-value + .ms__rc-value {
-  margin-top: 0.85rem;
+  .ms__story-p + .ms__story-p {
+  margin-top: clamp(0.55rem, 1.1vh, 0.75rem);
 }
 
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+.page-mastery-semavic
   .ms__col-values {
   position: relative;
   min-height: 0;
-  overflow: visible;
+  overflow: hidden;
   padding:
     0
-    calc(var(--nav-arrow-lane-right) + 0.65rem)
-    clamp(0.85rem, 1.8vh, 1.25rem)
-    1.1rem;
+    calc(var(--nav-arrow-lane-right) + 0.5rem)
+    clamp(0.55rem, 1.2vh, 0.9rem)
+    clamp(0.85rem, 1.2vw, 1.1rem);
   background: linear-gradient(180deg, #ff8c00 0%, #e83a7a 42%, #8b3a9e 72%, #f3e6d8 100%);
 }
 
-/* Abspos — does not inflate subgrid row 1; sits on title top */
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+/* Default (mobile keeps abspos via max-width rules); desktop overrides below */
+.page-mastery-semavic
   .ms__lead-slot {
   position: absolute;
   grid-row: 1;
   grid-column: 1;
-  /* grid area is already inside col padding — left:0 = value text edge */
   top: -40px;
   left: 0;
   right: 0;
@@ -286,46 +250,40 @@
   z-index: 1;
 }
 
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+.page-mastery-semavic
   .ms__lead-slot
   .ms__badge {
   visibility: hidden;
   flex-shrink: 0;
 }
 
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+.page-mastery-semavic
   .ms__col-values .ms__right-lead {
-  margin: 0.9rem 0 0; /* same as .ms__title */
+  margin: 0.9rem 0 0;
   max-width: none;
-  font-size: clamp(1.875rem, 2.05vw, 2rem); /* 30–32px */
+  font-size: clamp(1.25rem, 1.55vw, 1.7rem);
   font-weight: 800;
-  line-height: 1.12;
+  line-height: 1.2;
   color: #fff;
   white-space: pre-line;
   pointer-events: auto;
 }
 
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+.page-mastery-semavic
   .ms__rc-value {
   position: relative;
   margin: 0;
   padding-top: 0;
   border-top: none;
-  font-size: clamp(0.82rem, 1.05vw, 0.95rem);
-  line-height: 1.55;
+  max-width: 100%;
+  box-sizing: border-box;
+  font-size: clamp(0.72rem, 0.95vw, 0.875rem);
+  line-height: 1.45;
   color: #fff;
+  overflow-wrap: anywhere;
 }
 
-/* Divider ~15px above value text (text top stays locked to middle paras) */
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+.page-mastery-semavic
   .ms__rc-value:not(:first-of-type)::before {
   content: '';
   position: absolute;
@@ -337,327 +295,14 @@
   pointer-events: none;
 }
 
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+.page-mastery-semavic
   .ms__value-term {
   font-weight: 800;
 }
 
-.page-mastery-venezuela .ms__half--left {
-  background: #fff;
-}
-
-.page-mastery-venezuela .ms__half--left .ms__title {
-  max-width: 20ch;
-  font-size: clamp(22px, 2.4vw, 28px);
-  font-weight: 700;
-  color: #1d4ed8;
-}
-
-.page-mastery-venezuela .ms__half--left .ms__story {
-  gap: 0.95rem;
-}
-
-.page-mastery-venezuela .ms__half--left .ms__story p {
-  font-size: 15px;
-  line-height: 1.65;
-  color: #374151;
-  text-indent: 0;
-}
-
-.page-mastery-venezuela .ms__half--right {
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-}
-
-.page-mastery-venezuela .ms__right-inner {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
-  padding: 0;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-.page-mastery-venezuela .ms__right-cols {
-  flex: 1 1 auto;
-  min-height: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: stretch;
-}
-
-.page-mastery-venezuela .ms__col-story {
-  box-sizing: border-box;
-  background: #fff;
-  margin: 0;
-  padding:
-    calc(var(--nav-safe) + 0.85rem)
-    32px
-    clamp(0.85rem, 1.8vh, 1.25rem)
-    clamp(1.25rem, 2.4vw, 1.85rem);
-  border-right: none;
-  overflow: auto;
-}
-
-.page-mastery-venezuela .ms__col-story p {
-  margin: 0 0 16px;
-  font-size: 15px;
-  line-height: 1.65;
-  color: #374151;
-  text-indent: 0;
-}
-
-.page-mastery-venezuela .ms__col-story p:last-child {
-  margin-bottom: 0;
-}
-
-.page-mastery-venezuela .ms__col-values {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  padding:
-    calc(var(--nav-safe) + 0.85rem)
-    calc(var(--nav-arrow-lane-right) + 1.25rem)
-    clamp(0.85rem, 1.8vh, 1.25rem)
-    32px;
-  background: linear-gradient(180deg, #ff8c00 0%, #e83a7a 42%, #8b3a9e 72%, #f3e6d8 100%);
-}
-
-.page-mastery-venezuela .ms__right-lead {
-  margin: 0 0 24px;
-  max-width: none;
-  font-size: clamp(22px, 2.1vw, 32px);
-  font-weight: 700;
-  line-height: 1.15;
-  color: #fff;
-}
-
-.page-mastery-venezuela .ms__rc-values {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.page-mastery-venezuela .ms__rc-value {
-  margin: 0;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.22);
-  font-size: clamp(13px, 1.25vw, 15px);
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.95);
-}
-
-.page-mastery-venezuela .ms__rc-value:first-child {
-  border-top: none;
-  padding-top: 0;
-}
-
-.page-mastery-venezuela .ms__value-term {
-  display: inline;
-  font-weight: 800;
-  color: #fff;
-}
-
-.page-mastery-venezuela .ms__brand--light {
-  flex: 0 0 auto;
-  align-self: flex-start;
-  margin-top: auto;
-  padding-top: 20px;
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.page-mastery-third-line .ms__half--right,
-.page-mastery-putin .ms__half--right {
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-}
-
-.page-mastery-third-line .ms__right-inner,
-.page-mastery-putin .ms__right-inner {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
-  padding: 0;
-  box-sizing: border-box;
-  overflow: hidden;
-}
-
-/* Две равные колонки: история (белый) | ценности (градиент) */
-.page-mastery-third-line .ms__right-cols,
-.page-mastery-putin .ms__right-cols {
-  flex: 1 1 auto;
-  min-height: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: stretch;
-}
-
-.page-mastery-third-line .ms__col-story,
-.page-mastery-putin .ms__col-story {
-  box-sizing: border-box;
-  background: #fff;
-  margin: 0;
-  padding:
-    calc(var(--nav-safe) + 0.85rem)
-    32px
-    clamp(0.85rem, 1.8vh, 1.25rem)
-    clamp(1.25rem, 2.4vw, 1.85rem);
-  border-right: none;
-  overflow: auto;
-}
-
-.page-mastery-third-line .ms__col-story p {
-  margin: 0 0 16px;
-  font-size: 15px;
-  line-height: 1.65;
-  color: #374151;
-  text-indent: 0;
-}
-
-.page-mastery-putin .ms__half--left .ms__story p {
-  white-space: pre-line;
-  font-size: 15px;
-  line-height: 1.65;
-  color: #374151;
-}
-
-.page-mastery-putin .ms__col-story p {
-  margin: 0 0 16px;
-  font-size: 15px;
-  line-height: 1.65;
-  color: #374151;
-  text-indent: 0;
-}
-
-.page-mastery-third-line .ms__col-story p:last-child,
-.page-mastery-putin .ms__col-story p:last-child {
-  margin-bottom: 0;
-}
-
-.page-mastery-putin .ms__title {
-  display: flex;
-  flex-direction: column;
-  gap: 0.12em;
-  max-width: none;
-}
-
-.page-mastery-putin .ms__title-line {
-  display: block;
-}
-
-.page-mastery-third-line .ms__title {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15em;
-  max-width: none;
-  font-size: clamp(1.15rem, 2.2vw, 1.7rem);
-  line-height: 1.2;
-}
-
-.page-mastery-third-line .ms__title-line {
-  display: block;
-}
-
-.page-mastery-third-line .ms__story {
-  gap: 0;
-}
-
-.page-mastery-third-line .ms__story p,
-.page-mastery-third-line .ms__col-story p {
-  margin: 0 0 18px;
-  font-size: clamp(0.72rem, 1vw, 0.88rem);
-  line-height: 1.75;
-  color: #374151;
-  word-spacing: 0.05em;
-  text-wrap: pretty;
-  text-indent: 0;
-}
-
-.page-mastery-third-line .ms__story p:last-child,
-.page-mastery-third-line .ms__col-story p:last-child {
-  margin-bottom: 0;
-}
-
 .page-mastery-third-line .ms__fact {
-  font-weight: 800;
   color: #1d4ed8;
-}
-
-.page-mastery-third-line .ms__col-values,
-.page-mastery-putin .ms__col-values {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  padding:
-    calc(var(--nav-safe) + 0.85rem)
-    calc(var(--nav-arrow-lane-right) + 1.25rem)
-    clamp(0.85rem, 1.8vh, 1.25rem)
-    32px;
-  background: linear-gradient(
-    165deg,
-    #f59e0b 0%,
-    #f97316 22%,
-    #e11d48 48%,
-    #7c3aed 78%,
-    #fb923c 100%
-  );
-}
-
-.page-mastery-third-line .ms__col-values .ms__right-lead,
-.page-mastery-putin .ms__col-values .ms__right-lead {
-  margin: 0 0 24px;
-  max-width: none;
-  font-size: clamp(22px, 2vw, 32px);
-  font-weight: 700;
-  line-height: 1.15;
-  color: #fff;
-}
-
-.page-mastery-third-line .ms__rc-values,
-.page-mastery-putin .ms__rc-values {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.page-mastery-third-line .ms__rc-value,
-.page-mastery-putin .ms__rc-value {
-  margin: 0;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.22);
-  font-size: clamp(13px, 1.2vw, 15px);
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.95);
-}
-
-.page-mastery-third-line .ms__rc-value:first-child,
-.page-mastery-putin .ms__rc-value:first-child {
-  border-top: none;
-  padding-top: 0;
-}
-
-.page-mastery-third-line .ms__value-term,
-.page-mastery-putin .ms__value-term {
-  display: inline;
   font-weight: 800;
-  color: #fff;
-}
-
-.page-mastery-third-line .ms__brand--light,
-.page-mastery-putin .ms__brand--light {
-  flex: 0 0 auto;
-  align-self: flex-start;
-  margin-top: auto;
-  padding-top: 20px;
-  color: rgba(255, 255, 255, 0.65);
 }
 
 .ms__right-inner {
@@ -683,9 +328,7 @@
   color: #fff;
 }
 
-.page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-    .page-mastery-putin
-  )
+.page-mastery-semavic
   .ms__right-lead {
   max-width: 20em;
   white-space: pre-line;
@@ -729,7 +372,7 @@
 }
 
 .ms__brand--ink {
-  color: #1a1a1a;
+  color: #183553;
 }
 
 .ms__brand--light {
@@ -771,20 +414,14 @@
     align-items: stretch;
     height: 100%;
     min-height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden;
   }
 
   .page-shell.page-mastery-semavic .ms__half,
   .page-shell.page-mastery-semavic .ms__half--left,
   .page-shell.page-mastery-semavic .ms__half--right,
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
-    .ms__half--right,
-  .page-mastery-venezuela .ms__half--right,
-  .page-mastery-third-line .ms__half--right,
-  .page-mastery-putin .ms__half--right {
+  .page-mastery-semavic
+    .ms__half--right {
     display: grid;
     grid-template-rows: subgrid;
     grid-row: 1 / -1;
@@ -795,13 +432,8 @@
 
   .page-shell.page-mastery-semavic .ms__left-inner,
   .page-shell.page-mastery-semavic .ms__right-inner,
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
-    .ms__right-inner,
-  .page-mastery-venezuela .ms__right-inner,
-  .page-mastery-third-line .ms__right-inner,
-  .page-mastery-putin .ms__right-inner {
+  .page-mastery-semavic
+    .ms__right-inner {
     grid-row: 2;
     height: auto;
     min-height: 0;
@@ -829,10 +461,12 @@
   .page-shell.page-mastery-semavic .ms__right-cols {
     flex: 1 1 auto;
     min-height: 0;
+    padding-top: 0.55rem;
+    align-items: start;
   }
 
   /* Full-height gradient strip (right half of the right panel) */
-  .page-mastery-semavic:not(.page-mastery-third-line):not(.page-mastery-putin)
+  .page-mastery-semavic
     .ms__half--right::before {
     content: '';
     position: absolute;
@@ -845,73 +479,103 @@
     z-index: 0;
   }
 
-  .page-mastery-third-line .ms__half--right::before,
-  .page-mastery-putin .ms__half--right::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 50%;
-    background: linear-gradient(
-      165deg,
-      #f59e0b 0%,
-      #f97316 22%,
-      #e11d48 48%,
-      #7c3aed 78%,
-      #fb923c 100%
-    );
-    pointer-events: none;
-    z-index: 0;
-  }
-
   .page-shell.page-mastery-semavic .ms__col-story,
-  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
-      .page-mastery-third-line
-    ):not(.page-mastery-putin)
-    .ms__col-story,
-  .page-mastery-venezuela .ms__col-story,
-  .page-mastery-third-line .ms__col-story,
-  .page-mastery-putin .ms__col-story {
+  .page-shell.page-mastery-semavic
+    .ms__col-story {
     background: #fff;
     padding-top: 0;
+    /* Middle column keeps subgrid only against its own rows */
+    display: flex;
+    flex-direction: column;
+    grid-template-rows: none;
+    grid-row: auto;
   }
 
-  /*
-   * Semavic: top pad on right-cols (not on subgrid children) so row 1
-   * height = badge+title only — middle body lines up with left body.
-   */
-  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
-      .page-mastery-third-line
-    ):not(.page-mastery-putin)
-    .ms__right-cols {
-    padding-top: 0.55rem;
-  }
-
-  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
-      .page-mastery-third-line
-    ):not(.page-mastery-putin)
+  .page-shell.page-mastery-semavic
     .ms__col-story {
     padding-top: 0;
   }
 
+  /*
+   * Values panel grid: title row (≈ left title) → content row (≈ left body).
+   * Spacer keeps only the badge band; lead sits on the title baseline.
+   */
   .page-shell.page-mastery-semavic .ms__col-values,
-  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
-      .page-mastery-third-line
-    ):not(.page-mastery-putin)
-    .ms__col-values,
-  .page-mastery-venezuela .ms__col-values,
-  .page-mastery-third-line .ms__col-values,
-  .page-mastery-putin .ms__col-values {
+  .page-shell.page-mastery-semavic
+    .ms__col-values {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    grid-template-rows: none;
+    grid-row: auto;
+    min-height: 0;
+    height: auto;
     background: transparent;
     padding-top: 0;
+    overflow: hidden;
   }
 
-  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
-      .page-mastery-third-line
-    ):not(.page-mastery-putin)
-    .ms__col-values {
-    min-height: 100%;
+  .page-shell.page-mastery-semavic
+    .ms__col-values
+    .ms__align-spacer {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  /* Title row: badge only — drop mirrored left title so lead aligns with it */
+  .page-shell.page-mastery-semavic
+    .ms__col-values
+    .ms__align-spacer
+    .ms__title {
+    display: none;
+  }
+
+  .page-shell.page-mastery-semavic
+    .ms__lead-slot {
+    position: static;
+    top: auto;
+    left: auto;
+    right: auto;
+    height: auto;
+    display: block;
+    grid-row: auto;
+    pointer-events: auto;
+    flex: 0 0 auto;
+  }
+
+  .page-shell.page-mastery-semavic
+    .ms__lead-slot
+    .ms__badge {
+    display: none;
+  }
+
+  .page-shell.page-mastery-semavic
+    .ms__col-values
+    .ms__right-lead {
+    /* Same offset as .ms__title under the badge */
+    margin: var(--ms-title-gap) 0 0;
+    max-width: 18em;
+    font-size: clamp(1.05rem, 1.45vw, 1.45rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+  }
+
+  /* Content row: first value shares baseline with left body */
+  .page-shell.page-mastery-semavic
+    .ms__rc-value:first-of-type {
+    margin-top: var(--ms-body-gap);
+  }
+
+  .page-shell.page-mastery-semavic
+    .ms__rc-value + .ms__rc-value {
+    margin-top: var(--ms-value-gap);
+  }
+
+  .page-shell.page-mastery-semavic
+    .ms__rc-value:not(:first-of-type)::before {
+    top: calc(var(--ms-value-gap) / -2);
   }
 
   /* Continuous book-fold: own layer over white panels, full height */
@@ -936,10 +600,26 @@
     box-shadow: none;
     z-index: auto;
   }
+}
 
-  .page-shell.page-mastery-semavic .ms__edge--left {
-    top: 0;
-    bottom: 0;
+/* Compact / zoom desktop: denser title + value stack (mobile untouched) */
+@media (min-width: 901px) and (max-height: 900px),
+  (min-width: 901px) and (max-width: 1366px) {
+  .page-mastery-semavic .ms__right-cols {
+    --ms-value-gap: clamp(18px, 2vh, 22px);
+  }
+
+  .page-shell.page-mastery-semavic
+    .ms__col-values
+    .ms__right-lead {
+    font-size: clamp(0.98rem, 1.25vw, 1.28rem);
+    line-height: 1.05;
+  }
+
+  .page-shell.page-mastery-semavic
+    .ms__rc-value {
+    font-size: clamp(0.7rem, 0.9vw, 0.82rem);
+    line-height: 1.4;
   }
 }
 
@@ -967,21 +647,13 @@
     padding-right: calc(var(--nav-arrow-lane-right) + 1rem);
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
-    .ms__right-inner,
-  .page-mastery-venezuela .ms__right-inner,
-  .page-mastery-third-line .ms__right-inner,
-  .page-mastery-putin .ms__right-inner {
+  .page-mastery-semavic
+    .ms__right-inner {
     padding: 0;
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
-    .ms__right-cols,
-  .page-mastery-venezuela .ms__right-cols {
+  .page-mastery-semavic
+    .ms__right-cols {
     display: flex;
     flex-direction: column;
     grid-template-columns: none;
@@ -991,13 +663,9 @@
   }
 
   /* Kill desktop subgrid — same specificity as desktop Semavic rules */
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__col-story,
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__col-values {
     display: flex;
     flex-direction: column;
@@ -1008,11 +676,8 @@
     align-items: stretch;
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
-    .ms__col-story,
-  .page-mastery-venezuela .ms__col-story {
+  .page-mastery-semavic
+    .ms__col-story {
     margin: 0;
     padding:
       calc(var(--nav-safe) + 0.85rem)
@@ -1023,21 +688,15 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__align-spacer,
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__lead-slot
     .ms__badge {
     display: none;
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__lead-slot {
     position: static;
     top: auto;
@@ -1048,9 +707,7 @@
     grid-row: auto;
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__col-values
     .ms__right-lead {
     position: static;
@@ -1060,9 +717,7 @@
     white-space: pre-line;
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__col-story
     .ms__story-p {
     width: 100%;
@@ -1070,35 +725,25 @@
     text-align: left;
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__col-story
     .ms__story-p:first-of-type,
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__col-values
     .ms__rc-value:first-of-type {
     margin-top: 0;
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__col-story
     .ms__story-p + .ms__story-p,
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__col-values
     .ms__rc-value + .ms__rc-value {
     margin-top: 0;
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__rc-value {
     position: static;
     margin: 0 0 1.25rem;
@@ -1106,103 +751,57 @@
     border-top: 1px solid rgba(255, 255, 255, 0.35);
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__rc-value:first-of-type {
     border-top: none;
     padding-top: 0;
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__rc-value:not(:first-of-type)::before {
     content: none;
     display: none;
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__rc-value:last-child {
     margin-bottom: 0;
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
-    .ms__col-values,
-  .page-mastery-venezuela .ms__col-values {
+  .page-mastery-semavic
+    .ms__col-values {
     padding-left: calc(var(--nav-arrow-lane-left) + 1rem);
     padding-right: calc(var(--nav-arrow-lane-right) + 1rem);
     padding-top: 24px;
     background: linear-gradient(180deg, #ff8c00 0%, #e83a7a 42%, #8b3a9e 72%, #f3e6d8 100%);
   }
 
-  .page-mastery-third-line .ms__right-cols,
-  .page-mastery-putin .ms__right-cols {
-    grid-template-columns: 1fr;
-  }
-
-  .page-mastery-third-line .ms__col-story,
-  .page-mastery-putin .ms__col-story {
-    margin: 0;
-    padding:
-      calc(var(--nav-safe) + 0.85rem)
-      calc(var(--nav-arrow-lane-right) + 1rem)
-      24px
-      calc(var(--nav-arrow-lane-left) + 1rem);
-    border-right: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  }
-
-  .page-mastery-third-line .ms__col-values,
-  .page-mastery-putin .ms__col-values {
-    padding-left: calc(var(--nav-arrow-lane-left) + 1rem);
-    padding-right: calc(var(--nav-arrow-lane-right) + 1rem);
-    padding-top: 24px;
-  }
-
-  .ms__edge--left {
-    width: 0.4rem;
-  }
 }
 
 @media (max-width: 1024px) and (min-width: 769px) {
-  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
-      .page-mastery-third-line
-    ):not(.page-mastery-putin) {
+  .page-shell.page-mastery-semavic {
     grid-template-columns: 1fr 1fr;
     height: auto;
     min-height: 100%;
     overflow: auto;
   }
 
-  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
-      .page-mastery-third-line
-    ):not(.page-mastery-putin)
+  .page-shell.page-mastery-semavic
     .ms__half {
     height: auto;
     min-height: 0;
     overflow: visible;
   }
 
-  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
-      .page-mastery-third-line
-    ):not(.page-mastery-putin)
+  .page-shell.page-mastery-semavic
     .ms__left-inner,
-  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
-      .page-mastery-third-line
-    ):not(.page-mastery-putin)
+  .page-shell.page-mastery-semavic
     .ms__right-inner {
     height: auto;
     overflow: visible;
   }
 
-  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
-      .page-mastery-third-line
-    ):not(.page-mastery-putin)
+  .page-shell.page-mastery-semavic
     .ms__left-inner {
     padding:
       calc(var(--nav-safe) + 12px)
@@ -1211,9 +810,7 @@
       max(20px, var(--nav-arrow-lane-left));
   }
 
-  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
-      .page-mastery-third-line
-    ):not(.page-mastery-putin)
+  .page-shell.page-mastery-semavic
     .ms__right-inner {
     padding:
       calc(var(--nav-safe) + 12px)
@@ -1222,115 +819,13 @@
       20px;
   }
 
-  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
-      .page-mastery-third-line
-    ):not(.page-mastery-putin)
+  .page-shell.page-mastery-semavic
     .ms__title,
-  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
-      .page-mastery-third-line
-    ):not(.page-mastery-putin)
+  .page-shell.page-mastery-semavic
     .ms__right-lead,
-  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
-      .page-mastery-third-line
-    ):not(.page-mastery-putin)
+  .page-shell.page-mastery-semavic
     .ms__values li {
     max-width: none;
-  }
-
-  .page-shell.page-mastery-semavic.page-mastery-venezuela,
-  .page-shell.page-mastery-semavic.page-mastery-third-line,
-  .page-shell.page-mastery-semavic.page-mastery-putin {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
-    height: auto;
-    min-height: 100%;
-    overflow: auto;
-  }
-
-  .page-mastery-venezuela .ms__half--right,
-  .page-mastery-venezuela .ms__right-inner,
-  .page-mastery-venezuela .ms__right-cols,
-  .page-mastery-third-line .ms__half--right,
-  .page-mastery-third-line .ms__right-inner,
-  .page-mastery-third-line .ms__right-cols,
-  .page-mastery-putin .ms__half--right,
-  .page-mastery-putin .ms__right-inner,
-  .page-mastery-putin .ms__right-cols {
-    display: contents;
-  }
-
-  .page-mastery-venezuela .ms__half,
-  .page-mastery-third-line .ms__half,
-  .page-mastery-putin .ms__half {
-    height: auto;
-    min-height: 0;
-    overflow: visible;
-  }
-
-  .page-mastery-venezuela .ms__half--left,
-  .page-mastery-third-line .ms__half--left,
-  .page-mastery-putin .ms__half--left {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  .page-mastery-venezuela .ms__left-inner,
-  .page-mastery-third-line .ms__left-inner,
-  .page-mastery-putin .ms__left-inner {
-    height: auto;
-    overflow: visible;
-    padding:
-      calc(var(--nav-safe) + 12px)
-      16px
-      28px
-      max(20px, var(--nav-arrow-lane-left));
-  }
-
-  .page-mastery-venezuela .ms__title,
-  .page-mastery-third-line .ms__title,
-  .page-mastery-putin .ms__title {
-    max-width: none;
-  }
-
-  .page-mastery-venezuela .ms__col-story,
-  .page-mastery-third-line .ms__col-story,
-  .page-mastery-putin .ms__col-story {
-    grid-column: 2;
-    grid-row: 1;
-    height: auto;
-    min-height: 0;
-    overflow: visible;
-    padding:
-      calc(var(--nav-safe) + 12px)
-      max(16px, var(--nav-arrow-lane-right))
-      28px
-      16px;
-    border-bottom: none;
-  }
-
-  .page-mastery-venezuela .ms__story p,
-  .page-mastery-venezuela .ms__col-story p,
-  .page-mastery-third-line .ms__story p,
-  .page-mastery-third-line .ms__col-story p,
-  .page-mastery-putin .ms__story p,
-  .page-mastery-putin .ms__col-story p {
-    text-indent: 0;
-  }
-
-  /* Venezuela / third-line / putin only — Semavic keeps side-by-side cols */
-  .page-mastery-venezuela .ms__col-values,
-  .page-mastery-third-line .ms__col-values,
-  .page-mastery-putin .ms__col-values {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    height: auto;
-    overflow: visible;
-    padding:
-      28px
-      max(24px, var(--nav-arrow-lane-right))
-      36px
-      max(24px, var(--nav-arrow-lane-left));
   }
 }
 
@@ -1363,9 +858,7 @@
   }
 
   /* Match desktop Semavic specificity so subgrid/abspos stay off */
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__right-cols {
     display: block;
     width: 100%;
@@ -1374,13 +867,9 @@
     grid-template-rows: none;
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__col-story,
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__col-values {
     display: block;
     width: 100%;
@@ -1389,16 +878,12 @@
     grid-template-rows: none;
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__align-spacer {
     display: none;
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__lead-slot {
     position: static;
     top: auto;
@@ -1408,9 +893,7 @@
     display: block;
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__lead-slot
     .ms__badge {
     display: none;
@@ -1439,9 +922,7 @@
 
   .page-shell.page-mastery-semavic .ms__story p,
   .page-shell.page-mastery-semavic .ms__col-story p,
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__col-story
     .ms__story-p {
     display: block;
@@ -1455,9 +936,7 @@
   }
 
   .page-shell.page-mastery-semavic .ms__col-story,
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__col-story {
     padding: 0 20px 8px;
     border-bottom: none;
@@ -1484,9 +963,7 @@
   }
 
   .page-shell.page-mastery-semavic .ms__col-values,
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__col-values {
     width: auto;
     margin: 32px 20px 0;
@@ -1497,9 +974,7 @@
 
   .page-shell.page-mastery-semavic .ms__right-lead,
   .page-shell.page-mastery-semavic .ms__col-values .ms__right-lead,
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__col-values
     .ms__right-lead {
     position: static;
@@ -1518,9 +993,7 @@
 
   .page-shell.page-mastery-semavic .ms__rc-value,
   .page-shell.page-mastery-semavic .ms__values li,
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__rc-value {
     position: static;
     margin: 0 0 20px;
@@ -1532,9 +1005,7 @@
     text-align: left;
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__rc-value:not(:first-of-type)::before {
     content: none;
     display: none;
@@ -1542,9 +1013,7 @@
 
   .page-shell.page-mastery-semavic .ms__rc-value:first-child,
   .page-shell.page-mastery-semavic .ms__values li:first-child,
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__rc-value:first-of-type {
     border-top: none;
     padding-top: 0;
@@ -1563,18 +1032,14 @@
     font-weight: 700;
   }
 
-  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
-      .page-mastery-third-line
-    ):not(.page-mastery-putin)
+  .page-shell.page-mastery-semavic
     .ms__right-inner {
     height: auto;
     padding: 0;
     overflow: visible;
   }
 
-  .page-mastery-semavic:not(.page-mastery-venezuela):not(.page-mastery-third-line):not(
-      .page-mastery-putin
-    )
+  .page-mastery-semavic
     .ms__half--right::before {
     display: none;
   }
@@ -1607,7 +1072,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    height: calc(72px + env(safe-area-inset-bottom));
+    height: calc(var(--reader-bottombar-h, 52px) + env(safe-area-inset-bottom));
     background: #fff;
     border-top: 1px solid #e5e7eb;
     z-index: 1;

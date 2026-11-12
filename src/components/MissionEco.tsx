@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import { useEffect, useState } from 'react'
 import { asset } from '../asset'
 import {
   missionLongevity,
@@ -8,6 +8,7 @@ import {
   missionUniqueness,
 } from '../data/missionEco'
 import { fixPrepositions } from '../lib/fixPrepositions'
+import { SectionEndNav } from './SectionEndNav'
 import '../styles/mission-eco.css'
 
 export { MissionCircle3DSlide as MissionEcosystemPage } from './MissionCircle3DSlide'
@@ -99,12 +100,22 @@ export function MissionUniquenessPage() {
           <img src={asset('img/logo_my.png')} alt="Мы" />
         </div>
       </div>
+      <SectionEndNav />
     </article>
   )
 }
 
 export function MissionLongevityPage() {
   const data = missionLongevity
+  const [spread, setSpread] = useState(false)
+
+  useEffect(() => {
+    const id = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => setSpread(true))
+    })
+    return () => window.cancelAnimationFrame(id)
+  }, [])
+
   return (
     <article className="page-shell page-bleed page-mission-panel page-mission-longevity">
       <div className="mlong">
@@ -136,21 +147,19 @@ export function MissionLongevityPage() {
           </div>
         </div>
         <div className="mlong__collage">
-          <div className="mlong__stack" tabIndex={0}>
+          <div
+            className={`mlong__stack${spread ? ' is-spread' : ''}`}
+            aria-hidden
+          >
             {data.photos.map((src, index) => (
-              <span
+              <figure
                 key={src}
-                className="mlong__shot"
-                style={{
-                  backgroundImage: `url(${asset(src)})`,
-                  zIndex: data.photos.length - index,
-                }}
-              />
+                className={`polaroid mlong__shot mlong__shot--${index + 1}`}
+              >
+                <img src={asset(src)} alt="" draggable={false} />
+              </figure>
             ))}
           </div>
-          <p className="mlong__hint">
-            Наведи курсор на фото — из-под него появятся остальные
-          </p>
         </div>
       </div>
     </article>
@@ -172,10 +181,7 @@ export function MissionStrategySpreadPage() {
   const right = missionStrategyRole
 
   return (
-    <article
-      className="page-shell page-bleed page-strategy-spread"
-      style={{ '--strategy-photo': `url(${asset(left.photo)})` } as CSSProperties}
-    >
+    <article className="page-shell page-bleed page-strategy-spread">
       <div className="strategy__text strategy__text--statement">
         <div className="strategy__lead">
           <span className="strategy__badge">{left.badge}</span>
@@ -188,27 +194,28 @@ export function MissionStrategySpreadPage() {
               <p key={p.slice(0, 28)}>{fixPrepositions(p)}</p>
             ))}
           </div>
+          <div className="strategy__role">
+            <h2 className="strategy__title strategy__title--role">
+              {fixPrepositions(right.title)}
+            </h2>
+            <p className="strategy__intro">{fixPrepositions(right.intro)}</p>
+            <ul className="strategy__list">
+              {right.items.map((item) => (
+                <li key={item} className="strategy__list-item">
+                  {fixPrepositions(item)}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
         <StrategyBrand logo={left.logo} />
       </div>
-      <div className="strategy__photo-window" aria-hidden />
-      <div className="strategy__text strategy__text--role">
-        <span className="strategy__badge">{right.badge}</span>
-        <div className="strategy__copy">
-          <h2 className="strategy__title strategy__title--role">
-            {fixPrepositions(right.title)}
-          </h2>
-          <p className="strategy__intro">{fixPrepositions(right.intro)}</p>
-          <ul className="strategy__list">
-            {right.items.map((item) => (
-              <li key={item} className="strategy__list-item">
-                {fixPrepositions(item)}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <StrategyBrand logo={right.logo} />
-      </div>
+      <div
+        className="strategy__photo"
+        style={{ backgroundImage: `url(${asset(left.photo)})` }}
+        role="img"
+        aria-label="Стратегия ГЕРОФАРМ"
+      />
     </article>
   )
 }

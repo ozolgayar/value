@@ -14,6 +14,7 @@ import {
 } from '../data/history'
 import { useMediaQuery } from '../hooks'
 import { fixPrepositions } from '../lib/fixPrepositions'
+import { SectionEndNav } from './SectionEndNav'
 import '../styles/history-timeline.css'
 
 type HistoryTimelineProps = {
@@ -90,7 +91,9 @@ function EventSection({ block }: { block: HistoryBlock }) {
             {fixPrepositions(block.title || 'Регистрация препаратов')}
           </span>
         </div>
-        {lines.length ? (
+        {lines.length === 1 ? (
+          <p className="tlh__block-text">{fixPrepositions(lines[0])}</p>
+        ) : lines.length > 1 ? (
           <ul className="tlh__event-list">
             {lines.map((line) => (
               <li key={line}>{fixPrepositions(line)}</li>
@@ -613,6 +616,7 @@ export function HistoryTimeline({
             Следующий период
           </button>
         </div>
+        <SectionEndNav />
       </section>
     )
   }

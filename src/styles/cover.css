@@ -10,6 +10,8 @@
 }
 
 .cover-hero {
+  --cover-inline: 40px;
+  --cover-content-shift: 50px;
   position: relative;
   flex: 1 1 auto;
   align-self: stretch;
@@ -20,7 +22,7 @@
   justify-content: center;
   align-items: flex-start;
   box-sizing: border-box;
-  padding: 0 40px;
+  padding: 0 var(--cover-inline);
   overflow: hidden;
   background: #7eb6d8;
 }
@@ -39,12 +41,19 @@
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(
-    115deg,
-    rgba(0, 0, 0, 0.35) 0%,
-    rgba(0, 0, 0, 0.18) 28%,
-    rgba(0, 0, 0, 0) 58%
-  );
+  background:
+    linear-gradient(
+      105deg,
+      rgba(8, 24, 56, 0.58) 0%,
+      rgba(8, 24, 56, 0.38) 22%,
+      rgba(8, 24, 56, 0.16) 42%,
+      rgba(8, 24, 56, 0) 62%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(8, 24, 56, 0.18) 0%,
+      transparent 28%
+    );
 }
 
 .cover__gradient {
@@ -130,43 +139,36 @@
 
 .cover__bg-tag {
   position: absolute;
+  right: 6vw;
   white-space: nowrap;
-  font-size: clamp(56px, 4.6vw, 86px);
-  font-weight: 900;
-  line-height: 0.9;
-  letter-spacing: -0.018em;
-  color: rgba(255, 255, 255, 0.085);
-  filter: blur(0.2px);
+  font-size: clamp(48px, 3.8vw, 72px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.015em;
+  color: rgba(255, 255, 255, 0.07);
   text-shadow: none;
+  filter: none;
   transform: translateY(-50%);
 }
 
 .cover__bg-tag--history {
-  top: 22vh;
-  right: 7vw;
+  top: 24%;
 }
 
 .cover__bg-tag--mission {
-  top: 36vh;
-  right: 18vw;
-  color: rgba(255, 255, 255, 0.07);
+  top: 38%;
 }
 
 .cover__bg-tag--values {
-  top: 50vh;
-  right: 7vw;
+  top: 52%;
 }
 
 .cover__bg-tag--mastery {
-  top: 64vh;
-  right: 5vw;
-  color: rgba(255, 255, 255, 0.065);
+  top: 66%;
 }
 
 .cover__bg-tag--env {
-  top: 78vh;
-  right: 5vw;
-  color: rgba(255, 255, 255, 0.075);
+  top: 80%;
 }
 
 .cover__particles span {
@@ -180,8 +182,9 @@
 .cover__top {
   position: absolute;
   top: max(1.25rem, env(safe-area-inset-top));
-  left: max(1.25rem, env(safe-area-inset-left));
-  right: max(1.25rem, env(safe-area-inset-right));
+  /* Align «25 ГЕРОФАРМ» with the left edge of «История. Культура. Будущее» */
+  left: calc(var(--cover-inline) + var(--cover-content-shift));
+  right: var(--cover-inline);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -195,9 +198,7 @@
   flex: 0 1 auto;
   min-width: 0;
   gap: clamp(0.45rem, 1.2vw, 0.75rem);
-  filter:
-    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45))
-    drop-shadow(0 4px 14px rgba(0, 0, 0, 0.35));
+  filter: none;
   user-select: none;
 }
 
@@ -216,7 +217,7 @@
   letter-spacing: 0.04em;
   line-height: 1;
   text-transform: uppercase;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
+  text-shadow: none;
 }
 
 .cover__badge {
@@ -252,7 +253,7 @@
   box-sizing: border-box;
   width: min(640px, 100%);
   max-width: 640px;
-  margin: 0 0 0 50px;
+  margin: 0 0 0 var(--cover-content-shift);
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -288,7 +289,7 @@
   line-height: 1.05;
   font-weight: 800;
   letter-spacing: -0.02em;
-  text-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  text-shadow: 0 2px 18px rgba(8, 24, 56, 0.28);
 }
 
 .cover__hash {
@@ -307,33 +308,50 @@
 }
 
 .btn-open {
-  min-height: 54px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 52px;
+  height: 52px;
   padding: 0 30px;
-  font-size: 17px;
-  font-weight: 800;
-  background: linear-gradient(135deg, #ff8a24, #f06f1a);
-  box-shadow: 0 16px 36px rgba(244, 122, 32, 0.32);
+  border-radius: 999px;
+  border: 0;
+  font-family: var(--btn-font);
+  font-size: 16px;
+  font-weight: 900;
+  color: #fff;
+  background: linear-gradient(135deg, #f3a35d 0%, #e9853f 100%);
+  box-shadow:
+    0 14px 32px rgba(220, 119, 58, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
   transition:
-    transform 200ms ease,
-    box-shadow 200ms ease;
+    filter 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
 }
 
 .btn-open__arrow {
   display: inline-block;
-  transition: transform 200ms ease;
+  color: #ffd0a0;
+  transition: transform 0.18s ease;
 }
 
 .btn-open:hover {
-  transform: scale(1.04);
-  box-shadow: 0 14px 32px rgba(229, 104, 20, 0.45);
+  filter: brightness(1.03);
+  transform: translateY(-1px);
+  box-shadow:
+    0 16px 36px rgba(220, 119, 58, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.32);
 }
 
 .btn-open:hover .btn-open__arrow {
-  transform: translateX(5px);
+  transform: translateX(4px);
 }
 
 .btn-open:active {
-  transform: scale(1.01);
+  transform: translateY(0);
+  filter: brightness(1);
 }
 
 /* —— Ticker —— */
@@ -342,18 +360,16 @@
   z-index: 3;
   flex: 0 0 auto;
   width: 100%;
+  height: 52px;
   overflow: hidden;
-  background: linear-gradient(
-    90deg,
-    rgba(44, 30, 78, 0.42) 0%,
-    rgba(40, 72, 112, 0.36) 50%,
-    rgba(28, 52, 88, 0.42) 100%
-  );
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 0.72rem 0;
-  color: rgba(255, 255, 255, 0.72);
+  display: flex;
+  align-items: center;
+  background: rgba(20, 40, 78, 0.34);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .cover-ticker__track {
@@ -509,8 +525,8 @@
 
 @media (max-width: 640px) {
   .cover-hero {
-    padding-left: 20px;
-    padding-right: 20px;
+    --cover-inline: 20px;
+    --cover-content-shift: 0px;
   }
 
   .logo-25 {
@@ -524,8 +540,6 @@
   }
 
   .cover__top {
-    left: 12px;
-    right: 12px;
     align-items: center;
     gap: 0.5rem;
   }
@@ -549,8 +563,7 @@
 
 @media (max-width: 1024px) and (min-width: 768px) {
   .cover-hero {
-    padding-left: 32px;
-    padding-right: 32px;
+    --cover-inline: 32px;
   }
 
   .cover__title {
@@ -558,22 +571,8 @@
   }
 
   .cover__bg-tag {
-    opacity: 0.78;
-    font-size: clamp(46px, 4.2vw, 72px);
-  }
-
-  .cover__bg-tag--history,
-  .cover__bg-tag--values {
     right: 5vw;
-  }
-
-  .cover__bg-tag--mission {
-    right: 16vw;
-  }
-
-  .cover__bg-tag--mastery,
-  .cover__bg-tag--env {
-    right: 4vw;
+    font-size: clamp(42px, 3.6vw, 64px);
   }
 }
 
@@ -593,6 +592,8 @@
   }
 
   .cover-hero {
+    --cover-inline: 20px;
+    --cover-content-shift: 0px;
     width: 100%;
     max-width: none;
     height: auto;
@@ -600,7 +601,7 @@
     flex: 1 1 auto;
     justify-content: center;
     align-items: flex-start;
-    padding: 72px 20px 88px;
+    padding: 72px var(--cover-inline) 88px;
     overflow: hidden;
   }
 
@@ -710,16 +711,11 @@
   }
 
   .cover .btn-open {
-    display: inline-flex;
     width: auto;
-    min-height: 48px;
-    padding: 14px 28px;
-    border: none;
-    border-radius: 999px;
-    background: #ff6b35;
-    color: #fff;
+    min-height: 52px;
+    height: 52px;
+    padding: 0 28px;
     font-size: clamp(0.9rem, 3.5vw, 1rem);
-    box-shadow: 0 4px 16px rgba(255, 107, 53, 0.4);
   }
 
   .cover-ticker {
@@ -729,13 +725,14 @@
     left: 0;
     right: 0;
     width: 100%;
+    height: 48px;
     box-sizing: border-box;
-    padding: 14px 0;
+    padding: 0;
     overflow: hidden;
-    background: rgba(20, 20, 40, 0.82);
+    background: rgba(20, 40, 78, 0.4);
     color: #fff;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 
   .cover-ticker__track {

@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useState } from 'react'
 import { AkonyGate, requestAkonyClose } from './components/AkonyGate'
+import { BingoResultsPreview } from './components/BingoResultsPreview'
 import { Cover } from './components/Cover'
 import { House3DLab } from './components/House3DLab'
 import { MissionStrategyHousePage } from './components/StrategyHouse'
 import { Preloader } from './components/Preloader'
-import { Cursor } from './components/Cursor'
 import { Reader } from './components/Reader'
 import { Welcome } from './components/Welcome'
 import { readBookLocation, writeBookLocation, type BookView } from './lib/bookLocation'
 import './styles/global.css'
 import './styles/typography.css'
+import './styles/compact-desktop.css'
 
 type View = BookView
 
@@ -79,6 +80,10 @@ function isStrategyHousePreview() {
   return new URLSearchParams(window.location.search).has('strategyHouse')
 }
 
+function isBingoResultsPreview() {
+  return new URLSearchParams(window.location.search).has('bingoResults')
+}
+
 function forcePreloaderPreview() {
   return new URLSearchParams(window.location.search).has('preloader')
 }
@@ -141,7 +146,6 @@ function BookApp() {
       className={`app-shell ${shellTheme}${bookOpenTransition ? ' is-book-open' : ''}`}
     >
       <div className="app-shell__wash" aria-hidden />
-      <Cursor />
 
       {booting && (
         <Preloader loop={preloaderPreview} onDone={finishPreloader} />
@@ -192,6 +196,10 @@ function BookApp() {
 }
 
 export default function App() {
+  if (isBingoResultsPreview()) {
+    return <BingoResultsPreview />
+  }
+
   if (isStrategyHousePreview()) {
     return (
       <div className="app-shell theme-reader" style={{ height: '100vh' }}>

@@ -33,7 +33,9 @@ export function ValuesSpreadPage() {
                         {item.icons.map((src) => (
                           <img
                             key={src}
-                            className="values-spread__icon"
+                            className={`values-spread__icon${
+                              src.includes('11.png') ? ' is-brain' : ''
+                            }`}
                             src={asset(src)}
                             alt=""
                             draggable={false}

@@ -198,12 +198,8 @@ export function Reader({
   const isHistoryEra = current.page.kind === 'history-era'
   const masteryStoryIndex = masteryStoryPageIds.indexOf(current.page.id)
   const isMasteryStory = masteryStoryIndex >= 0
-  const hasNextMasteryStory =
-    masteryStoryIndex >= 0 && masteryStoryIndex < masteryStoryPageIds.length - 1
   const practiceStoryIndex = practiceStoryPageIds.indexOf(current.page.id)
   const isPracticeStory = practiceStoryIndex >= 0
-  const hasNextPracticeStory =
-    practiceStoryIndex >= 0 && practiceStoryIndex < practiceStoryPageIds.length - 1
   const showNavCoach = hintVisible && index === 0 && !isInterstitial && !isHistoryEra
   const anyOverlay = tocOpen || quotesOpen || showNavCoach
   const navLocked = tocOpen || quotesOpen
@@ -223,16 +219,40 @@ export function Reader({
     return `Назад: ${shortPageLabel(index - 1)}`
   }, [isPracticeStory, isMasteryStory, index, onBackToWelcome])
 
+  const nextAfterMasteryStories = useMemo(() => {
+    if (!isMasteryStory) return -1
+    return flatPages.findIndex(
+      (fp, i) => i > index && !masteryStoryPageIds.includes(fp.page.id),
+    )
+  }, [isMasteryStory, index])
+
+  const nextAfterPracticeStories = useMemo(() => {
+    if (!isPracticeStory) return -1
+    return flatPages.findIndex(
+      (fp, i) => i > index && !practiceStoryPageIds.includes(fp.page.id),
+    )
+  }, [isPracticeStory, index])
+
   const nextTooltip = useMemo(() => {
-    if (isPracticeStory && hasNextPracticeStory) return 'Следующая практика'
-    if (isMasteryStory && hasNextMasteryStory) return 'К следующей истории'
+    if (isPracticeStory) {
+      if (nextAfterPracticeStories >= 0) {
+        return `Далее: ${shortPageLabel(nextAfterPracticeStories)}`
+      }
+      return 'Конец книги'
+    }
+    if (isMasteryStory) {
+      if (nextAfterMasteryStories >= 0) {
+        return `Далее: ${shortPageLabel(nextAfterMasteryStories)}`
+      }
+      return 'Конец книги'
+    }
     if (index >= totalPages - 1) return 'Конец книги'
     return `Далее: ${shortPageLabel(index + 1)}`
   }, [
     isPracticeStory,
-    hasNextPracticeStory,
+    nextAfterPracticeStories,
     isMasteryStory,
-    hasNextMasteryStory,
+    nextAfterMasteryStories,
     index,
   ])
   const currentHistoryPage = useMemo(() => {
@@ -289,7 +309,7 @@ export function Reader({
     const now = Date.now()
     if (now - sectionEndToastAt.current < 1800) return
     sectionEndToastAt.current = now
-    setToast('Конец раздела — свайпните вбок')
+    setToast('Конец раздела — свайпни вбок\nили воспользуйся кнопками')
   }, [])
 
   const clearZoomTimers = useCallback(() => {
@@ -427,13 +447,26 @@ export function Reader({
 
   useEffect(() => {
     if (!toast) return
-    const t = window.setTimeout(() => setToast(null), 2000)
+    const t = window.setTimeout(() => setToast(null), 3200)
     return () => window.clearTimeout(t)
   }, [toast])
 
   useEffect(() => {
     if (!isMobile) setChromeAway(false)
   }, [isMobile])
+
+  // Keep the bottom page counter pinned; never leave chrome-away mid-transition.
+  useEffect(() => {
+    setChromeAway(false)
+  }, [index])
+
+  useEffect(() => {
+    if (!isMobile || !isInterstitial) return
+    const now = Date.now()
+    if (now - sectionEndToastAt.current < 1800) return
+    sectionEndToastAt.current = now
+    setToast('Конец раздела — свайпни вбок\nили воспользуйся кнопками')
+  }, [index, isInterstitial, isMobile])
 
   const go = useCallback(
     (next: number, opts?: { force?: boolean }) => {
@@ -604,34 +637,42 @@ export function Reader({
     go(index - 1)
   }, [showNavCoach, isMasteryStory, isPracticeStory, goById, index, onBackToWelcome, go])
 
+  const isGalleryPickPage =
+    current.page.kind === 'mastery-gallery' ||
+    current.page.kind === 'practice-gallery'
+
   const navigateNext = useCallback(() => {
     if (showNavCoach) return
+    // Gallery: user must pick a card — do not advance by swipe/arrow.
+    if (
+      current.page.kind === 'mastery-gallery' ||
+      current.page.kind === 'practice-gallery'
+    ) {
+      return
+    }
     if (isMasteryStory) {
-      if (hasNextMasteryStory) {
-        goById(masteryStoryPageIds[masteryStoryIndex + 1])
+      // After a chosen story — next section, not the next gallery story.
+      if (nextAfterMasteryStories >= 0) {
+        go(nextAfterMasteryStories)
         return
       }
-      go(index + 1)
       return
     }
     if (isPracticeStory) {
-      if (hasNextPracticeStory) {
-        goById(practiceStoryPageIds[practiceStoryIndex + 1])
+      // After a chosen practice — next section, not the next gallery case.
+      if (nextAfterPracticeStories >= 0) {
+        go(nextAfterPracticeStories)
         return
       }
-      go(index + 1)
       return
     }
     go(index + 1)
   }, [
+    current.page.kind,
     isMasteryStory,
-    hasNextMasteryStory,
-    masteryStoryIndex,
+    nextAfterMasteryStories,
     isPracticeStory,
-    hasNextPracticeStory,
-    practiceStoryIndex,
-    goById,
-    index,
+    nextAfterPracticeStories,
     go,
     showNavCoach,
   ])
@@ -818,9 +859,13 @@ export function Reader({
         node = node.parentElement
       }
 
-      // Strategy house / practice gallery: wheel drives local UI, never flips pages.
+      // Local interactive wheels: never flip pages.
       const pageKind = flatPages[index]?.page.kind
-      if (pageKind === 'mission-strategy-house' || pageKind === 'practice-gallery') {
+      if (
+        pageKind === 'mission-strategy-house' ||
+        pageKind === 'practice-gallery' ||
+        pageKind === 'mission-ecosystem'
+      ) {
         e.preventDefault()
         return
       }
@@ -864,7 +909,7 @@ export function Reader({
     if (
       target instanceof Element &&
       target.closest(
-        '.menu-overlay, .reader__topbar, .reader__nav-coach, .nav-arrow, .tlh__chips, .tlh__chip, .tlh__period-nav',
+        '.menu-overlay, .reader__topbar, .reader__nav-coach, .nav-arrow, .tlh__chips, .tlh__chip, .tlh__period-nav, .shouse__mobile-floors, .shouse__floor-stepper, .shouse__floor-step-btn, .shouse__hotspot',
       )
     ) {
       touchStart.current = null
@@ -930,8 +975,9 @@ export function Reader({
         return
       }
       if (fingerUp && startedAtBottom) {
+        // Gallery: must pick a story/practice — no swipe-to-next.
+        if (isGalleryPickPage) return
         // Vertical swipe only flips pages inside the same section.
-        // Crossing into the closing cover (or any next section) is a side swipe.
         if (pageStaysInSection(index + 1)) {
           turn('next')
         } else {
@@ -969,7 +1015,7 @@ export function Reader({
       if (
         target instanceof Element &&
         target.closest(
-          '.menu-overlay, .reader__topbar, .reader__nav-coach, .tlh__chips, .tlh__chip, .tlh__period-nav',
+          '.menu-overlay, .reader__topbar, .reader__nav-coach, .tlh__chips, .tlh__chip, .tlh__period-nav, .shouse__mobile-floors, .shouse__floor-stepper, .shouse__floor-step-btn, .shouse__hotspot',
         )
       ) {
         return
@@ -1070,6 +1116,48 @@ export function Reader({
                   }
                   historyHint={
                     historyHint && fp.page.id === current.page.id && isHistoryEra
+                  }
+                  sectionEndNav={
+                    isMobile &&
+                    fp.globalIndex === index &&
+                    fp.page.kind !== 'interstitial' &&
+                    fp.page.kind !== 'closing-cover' &&
+                    fp.page.kind !== 'culture-bingo' &&
+                    !practiceStoryPageIds.includes(fp.page.id) &&
+                    (masteryStoryPageIds.includes(fp.page.id) ||
+                      fp.sectionPageIndex === fp.sectionPageCount - 1) ? (
+                      <nav
+                        className="reader__section-end-nav"
+                        aria-label="Навигация по разделам"
+                      >
+                        <button
+                          type="button"
+                          className="reader__section-end-btn"
+                          disabled={
+                            navLocked ||
+                            zoomPhase !== 'idle' ||
+                            (navSectionIndex <= 0 &&
+                              !onBackToWelcome &&
+                              index === 0)
+                          }
+                          onClick={goPrevSection}
+                        >
+                          Предыдущий раздел
+                        </button>
+                        <button
+                          type="button"
+                          className="reader__section-end-btn reader__section-end-btn--next"
+                          disabled={
+                            navLocked ||
+                            zoomPhase !== 'idle' ||
+                            index >= totalPages - 1
+                          }
+                          onClick={goNextSection}
+                        >
+                          Следующий раздел
+                        </button>
+                      </nav>
+                    ) : null
                   }
                 />
               ) : null}
@@ -1209,7 +1297,10 @@ export function Reader({
           title={nextTooltip}
           data-tooltip={nextTooltip}
           disabled={
-            index >= totalPages - 1 || navLocked || zoomPhase !== 'idle'
+            isGalleryPickPage ||
+            index >= totalPages - 1 ||
+            navLocked ||
+            zoomPhase !== 'idle'
           }
           onClick={navigateNext}
         >

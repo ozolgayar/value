@@ -2,6 +2,7 @@ import { Fragment } from 'react'
 import { fixPrepositions, splitHighlighted } from '../lib/fixPrepositions'
 import { masteryThirdLine } from '../data/masteryThirdLine'
 import { MasteryDoor } from './MasteryDoor'
+import { SectionEndNav } from './SectionEndNav'
 import '../styles/mastery-semavic.css'
 
 const FACT_HIGHLIGHTS = [
@@ -13,10 +14,16 @@ const FACT_HIGHLIGHTS = [
   '1000',
 ]
 
-function FactParagraph({ text }: { text: string }) {
+function FactParagraph({
+  text,
+  className,
+}: {
+  text: string
+  className?: string
+}) {
   const chunks = splitHighlighted(text, FACT_HIGHLIGHTS)
   return (
-    <p>
+    <p className={className}>
       {chunks.map((chunk, i) =>
         chunk.highlight ? (
           <strong key={`${chunk.text}-${i}`} className="ms__fact">
@@ -32,15 +39,18 @@ function FactParagraph({ text }: { text: string }) {
 
 export function MasteryThirdLinePage() {
   const { left, right } = masteryThirdLine
+  const titleLines = left.titleLines
 
   return (
     <article className="page-shell page-bleed page-mastery-semavic page-mastery-third-line">
-      <section className="ms__half ms__half--left" aria-label={left.titleLines.join(' ')}>
-        <div className="ms__edge ms__edge--left" aria-hidden />
+      <section
+        className="ms__half ms__half--left"
+        aria-label={titleLines.join(' ')}
+      >
         <div className="ms__left-inner">
           <span className="ms__badge">{left.badge}</span>
           <h1 className="ms__title">
-            {left.titleLines.map((line) => (
+            {titleLines.map((line) => (
               <span key={line} className="ms__title-line">
                 {fixPrepositions(line)}
               </span>
@@ -63,30 +73,53 @@ export function MasteryThirdLinePage() {
         <div className="ms__right-inner">
           <div className="ms__right-cols">
             <div className="ms__col-story">
+              <div className="ms__align-spacer" aria-hidden>
+                <span className="ms__badge">{left.badge}</span>
+                <h1 className="ms__title">
+                  {titleLines.map((line) => (
+                    <span key={line} className="ms__title-line">
+                      {fixPrepositions(line)}
+                    </span>
+                  ))}
+                </h1>
+              </div>
               {right.story.map((p) => (
-                <FactParagraph key={p.slice(0, 40)} text={p} />
+                <FactParagraph
+                  key={p.slice(0, 40)}
+                  text={p}
+                  className="ms__story-p"
+                />
               ))}
             </div>
             <div className="ms__col-values">
-              <h2 className="ms__right-lead">{fixPrepositions(right.lead)}</h2>
-              <div className="ms__rc-values">
-                {right.values.map((item) => (
-                  <p key={item.name} className="ms__rc-value">
-                    <span className="ms__value-term">{item.name} — </span>
-                    {fixPrepositions(item.text)}
-                  </p>
-                ))}
+              <div className="ms__align-spacer" aria-hidden>
+                <span className="ms__badge">{left.badge}</span>
+                <h1 className="ms__title">
+                  {titleLines.map((line) => (
+                    <span key={line} className="ms__title-line">
+                      {fixPrepositions(line)}
+                    </span>
+                  ))}
+                </h1>
               </div>
-              <div className="ms__brand ms__brand--light">
-                <span>ГЕРОФАРМ</span>
-                <span className="ms__mark" aria-hidden />
-                <span>ТРАНСФОРМАЦИЯ</span>
+              <div className="ms__lead-slot">
+                <span className="ms__badge" aria-hidden>
+                  {left.badge}
+                </span>
+                <h2 className="ms__right-lead">{fixPrepositions(right.lead)}</h2>
               </div>
+              {right.values.map((item) => (
+                <p key={item.name} className="ms__rc-value">
+                  <span className="ms__value-term">{item.name} — </span>
+                  {fixPrepositions(item.text)}
+                </p>
+              ))}
             </div>
           </div>
         </div>
         <MasteryDoor />
       </section>
+      <SectionEndNav />
     </article>
   )
 }

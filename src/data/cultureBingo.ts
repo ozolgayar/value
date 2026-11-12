@@ -116,8 +116,8 @@ export const cultureBingo = {
   ] satisfies BingoTile[],
 }
 
-const PROFILES: Record<string, BingoResultProfile> = {
-  spark: {
+export const bingoResultProfiles: BingoResultProfile[] = [
+  {
     id: 'spark',
     tag: 'СТАРТ',
     name: 'Искра культуры',
@@ -126,7 +126,7 @@ const PROFILES: Record<string, BingoResultProfile> = {
     icon: 'img/11.png',
     accent: 'spark',
   },
-  ambition: {
+  {
     id: 'ambition',
     tag: 'АМБИЦИОЗНОСТЬ',
     name: 'Архитектор дерзких целей',
@@ -135,7 +135,7 @@ const PROFILES: Record<string, BingoResultProfile> = {
     icon: 'img/11.png',
     accent: 'ambition',
   },
-  passion: {
+  {
     id: 'passion',
     tag: 'СТРАСТЬ',
     name: 'Источник драйва команды',
@@ -144,7 +144,7 @@ const PROFILES: Record<string, BingoResultProfile> = {
     icon: 'img/12.png',
     accent: 'passion',
   },
-  responsibility: {
+  {
     id: 'responsibility',
     tag: 'ОТВЕТСТВЕННОСТЬ',
     name: 'Хранитель качества и слова',
@@ -153,7 +153,7 @@ const PROFILES: Record<string, BingoResultProfile> = {
     icon: 'img/13.png',
     accent: 'responsibility',
   },
-  balanced: {
+  {
     id: 'balanced',
     tag: 'СИНЕРГИЯ ЦЕННОСТЕЙ',
     name: 'Живое воплощение культуры ГЕРОФАРМ',
@@ -162,7 +162,45 @@ const PROFILES: Record<string, BingoResultProfile> = {
     icon: 'logo/trans-mark-only.png',
     accent: 'balanced',
   },
-}
+]
+
+const PROFILES: Record<string, BingoResultProfile> = Object.fromEntries(
+  bingoResultProfiles.map((profile) => [profile.id, profile]),
+)
+
+/** Sample score lines for local preview of every result card. */
+export const bingoResultPreviewSamples = [
+  {
+    profileId: 'spark',
+    count: 2,
+    summary:
+      'Ты уже ловишь отдельные проявления культуры. Чем чаще такие ситуации становятся привычкой, тем заметнее общий стиль ГЕРОФАРМ.',
+  },
+  {
+    profileId: 'ambition',
+    count: 8,
+    summary:
+      'Культура для тебя — не абстракция: ты регулярно проживаешь ценности в рабочих ситуациях. Есть запас, чтобы усилить и другие грани.',
+  },
+  {
+    profileId: 'passion',
+    count: 9,
+    summary:
+      'Культура для тебя — не абстракция: ты регулярно проживаешь ценности в рабочих ситуациях. Есть запас, чтобы усилить и другие грани.',
+  },
+  {
+    profileId: 'responsibility',
+    count: 11,
+    summary:
+      'Ты уверенно воплощаешь культуру в повседневности. Коллеги рядом с тобой видят, как ценности превращаются в решения и поступки.',
+  },
+  {
+    profileId: 'balanced',
+    count: 14,
+    summary:
+      'Ты уверенно воплощаешь культуру в повседневности. Коллеги рядом с тобой видят, как ценности превращаются в решения и поступки.',
+  },
+] as const
 
 export function scoreBingo(selectedIds: ReadonlySet<string>) {
   const total = cultureBingo.tiles.length

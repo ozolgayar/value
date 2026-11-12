@@ -204,6 +204,10 @@ export function PracticeGalleryPage({
           </div>
         </div>
 
+        <p className="pg__pick-hint" aria-hidden={false}>
+          Выбери тренажёр
+        </p>
+
         <div
           ref={stageRef}
           className="pg__stage"
@@ -259,8 +263,16 @@ export function PracticeGalleryPage({
               style={{ background: card.gradient }}
               aria-label={card.title}
               aria-current={i === activeIndex ? 'true' : undefined}
-              onClick={() => goToStripIndex(i)}
-            />
+              onClick={() => {
+                if (i === activeIndex) {
+                  onOpenStory?.(card.pageId)
+                  return
+                }
+                goToStripIndex(i)
+              }}
+            >
+              <span className="pg__strip-card-title">{card.title}</span>
+            </button>
           ))}
         </div>
 
@@ -284,7 +296,7 @@ export function PracticeGalleryPage({
             <br />
             или колесом мыши, чтобы выбрать историю
           </span>
-          <span className="pg__instruction-mobile">Свайпни, чтобы листать</span>
+          <span className="pg__instruction-mobile">Нажми на карточку, чтобы открыть</span>
         </p>
       </div>
     </article>

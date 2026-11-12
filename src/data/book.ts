@@ -72,6 +72,10 @@ export interface BookPage {
   sideTitle?: string
   sideItems?: string[]
   footerSlogan?: string
+  readGuide?: {
+    title: string
+    items: { title: string; desc: string }[]
+  }
 }
 
 export interface Paragraph {
@@ -153,7 +157,8 @@ export const sections: Section[] = [
               'Новым сотрудникам – быстрее погружаться в жизнь компании',
               'Опытным коллегам – видеть новое в привычных вещах.',
             ],
-            footerSlogan: 'У КАЖДОГО ИЗ НАС СВОЯ РОЛЬ,\nНАС ОБЪЕДИНЯЕТ КУЛЬТУРА ГЕРОФАРМ',
+            footerSlogan:
+              'У КАЖДОГО ИЗ НАС СВОЯ РОЛЬ,\nНАС ОБЪЕДИНЯЕТ КУЛЬТУРА\nГЕРОФАРМ',
             meta: {
               logo: 'logo/gero_trans_clear.png',
               qrPlaceholder: '1',
@@ -188,13 +193,13 @@ export const sections: Section[] = [
               },
               {
                 title: 'Миссия и стратегия',
-                desc: 'Какое предназначение нас объединяет,\nна какие глобальные цели влияет вклад каждого из нас',
+                desc: 'Какое предназначение нас объединяет, на какие глобальные цели влияет вклад каждого из нас',
                 sectionId: 'mission',
                 pageId: 'p-mission-break',
               },
               {
                 title: 'МЫ ГЕРОФАРМ',
-                desc: 'В чём уникальность нашей команды,\nчто помогает понимать друг друга',
+                desc: 'В чём уникальность нашей команды, что помогает понимать друг друга',
                 sectionId: 'synergy',
                 pageId: 'p-synergy-break',
               },
@@ -222,10 +227,25 @@ export const sections: Section[] = [
                 sectionId: 'practice',
                 pageId: 'p-practice-break',
               },
+              {
+                title: 'Культурное бинго',
+                desc: 'Отметь ситуации и посмотри, как культура проявляется в работе',
+                sectionId: 'bingo',
+                pageId: 'p-bingo-break',
+              },
             ],
-            meta: {
-              image:
-                'img/1d932e08b96088200b52076bc384a685_833bb7af-b553-450b-867a-dd430f2ce410.png',
+            readGuide: {
+              title: 'Как читать',
+              items: [
+                {
+                  title: 'Последовательно',
+                  desc: 'Чтобы увидеть полную картину',
+                },
+                {
+                  title: 'По разделам',
+                  desc: 'Когда нужен конкретный раздел или возник вопрос',
+                },
+              ],
             },
           },
         ],
@@ -253,6 +273,7 @@ export const sections: Section[] = [
             ],
             meta: {
               logo: 'logo/trans-mark-only.png',
+              theme: 'history',
             },
           },
         ],
@@ -516,11 +537,6 @@ export const sections: Section[] = [
             kind: 'env-navigator',
             title: 'Навигатор по культурному окружению',
           },
-          {
-            id: 'p-culture-bingo',
-            kind: 'culture-bingo',
-            title: 'Сыграем в культурное БИНГО?',
-          },
         ],
       },
     ],
@@ -611,6 +627,47 @@ export const sections: Section[] = [
             id: 'p-practice-habits',
             kind: 'practice-habits',
             title: 'Новые привычки',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'bingo',
+    number: '09',
+    title: 'Культурное бинго',
+    tag: 'ИГРА',
+    summary: 'Отметь ситуации и посмотри, как культура проявляется в работе',
+    accent: '#F97316',
+    paragraphs: [
+      {
+        id: 'bingo-break',
+        title: 'Культурное бинго',
+        pages: [
+          {
+            id: 'p-bingo-break',
+            kind: 'interstitial',
+            title: 'КУЛЬТУРНОЕ\nБИНГО',
+            body: [
+              'Эта игра поможет заметить, как ценности ГЕРОФАРМ уже живут в вашей работе и где ещё есть пространство для роста.',
+            ],
+            meta: {
+              logo: 'logo/trans-mark-only.png',
+              theme: 'bingo',
+              bg: '#1e3a8a',
+              colors: '#F9D816,#64B2FF,#D0ABFF,#64B2FF',
+            },
+          },
+        ],
+      },
+      {
+        id: 'bingo-play',
+        title: 'Игра',
+        pages: [
+          {
+            id: 'p-culture-bingo',
+            kind: 'culture-bingo',
+            title: 'Сыграем в культурное БИНГО?',
           },
         ],
       },

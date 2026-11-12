@@ -9,13 +9,15 @@
     radial-gradient(ellipse 60% 50% at 12% 18%, rgba(249, 115, 22, 0.12), transparent 55%),
     radial-gradient(ellipse 50% 45% at 88% 78%, rgba(124, 58, 237, 0.14), transparent 55%),
     linear-gradient(165deg, #f8fafc 0%, #eef2ff 48%, #f5f3ff 100%);
-  color: #111827;
+  color: #183553;
 }
 
 .mg__inner {
   box-sizing: border-box;
+  position: relative;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   height: 100%;
   min-height: 0;
   padding:
@@ -26,14 +28,23 @@
   overflow: auto;
 }
 
+.mg__stage {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  transform: translateY(-50px);
+}
+
 .mg__badge {
   align-self: flex-start;
   font-size: clamp(0.55rem, 0.8vw, 0.66rem);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #c2410c;
-  border: 1px solid rgba(194, 65, 12, 0.45);
+  color: #183553;
+  border: 1px solid rgba(24, 53, 83, 0.45);
   border-radius: 999px;
   padding: 0.28rem 0.7rem;
 }
@@ -44,7 +55,7 @@
   font-weight: 800;
   line-height: 1.15;
   letter-spacing: -0.01em;
-  color: #111827;
+  color: #183553;
 }
 
 .mg__grid {
@@ -53,10 +64,12 @@
   --CardsOpacity: 1;
   --CardsBorderRadius: 16px;
 
-  margin-top: 1.25rem;
-  flex: 1 1 auto;
+  margin-top: 0.85rem;
+  flex: 0 1 auto;
+  width: 100%;
+  height: min(52vh, 32rem);
   min-height: 16rem;
-  max-height: min(58vh, 34rem);
+  max-height: min(52vh, 32rem);
   display: grid;
   grid-template-columns: 1.45fr 1fr;
   grid-template-rows: 1.15fr 0.95fr;
@@ -178,20 +191,22 @@
 }
 
 .mg__instruction {
-  margin: 1.15rem 0 0;
+  margin: 0.65rem 0 0;
   font-size: clamp(0.95rem, 1.5vw, 1.2rem);
   font-weight: 700;
   line-height: 1.35;
-  color: #1f2937;
+  color: #183553;
 }
 
 .mg__brand {
+  position: absolute;
+  left: calc(var(--nav-arrow-lane-left) + 1.5rem);
+  bottom: clamp(0.85rem, 1.8vh, 1.25rem);
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  margin-top: auto;
-  padding-top: 1rem;
-  align-self: flex-start;
+  margin: 0;
+  padding: 0;
   font-size: clamp(0.55rem, 0.75vw, 0.68rem);
   font-weight: 700;
   letter-spacing: 0.1em;
@@ -245,11 +260,17 @@
   .mg__inner {
     height: auto;
     min-height: 100%;
+    justify-content: flex-start;
     overflow: visible;
     padding:
       calc(var(--nav-safe) + 12px)
       20px
       max(90px, calc(var(--reader-bottom-safe, 90px) + 24px));
+  }
+
+  .mg__stage {
+    width: 100%;
+    transform: none;
   }
 
   .mg__badge {
@@ -304,7 +325,12 @@
   }
 
   .mg__brand {
+    position: static;
+    left: auto;
+    bottom: auto;
     order: 5;
+    margin-top: 1rem;
+    align-self: flex-start;
   }
 
   .app-shell:has(.page-mastery-gallery) .reader__topbar {

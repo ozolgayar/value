@@ -1,5 +1,6 @@
 import { asset } from '../asset'
 import { fixPrepositions } from '../lib/fixPrepositions'
+import { SectionEndNav } from './SectionEndNav'
 import '../styles/value-slide.css'
 
 export type ValueSlideAccent = 'violet' | 'orange' | 'blue'
@@ -79,7 +80,6 @@ export function ValueSlide({
       </section>
 
       <section className="vs__half vs__half--right" aria-label="Как мы живем по ценностям">
-        <div className="vs__edge" aria-hidden />
         <div className="vs__right-inner">
           <div className="vs__right-content">
             <div className="vs__right-head">
@@ -92,7 +92,9 @@ export function ValueSlide({
                 </h2>
               </div>
               <img
-                className="vs__right-icon"
+                className={`vs__right-icon${
+                  icon.includes('11.png') ? ' is-brain' : ''
+                }`}
                 src={asset(icon)}
                 alt=""
                 width={100}
@@ -110,6 +112,7 @@ export function ValueSlide({
           </div>
         </div>
       </section>
+      <SectionEndNav />
     </article>
   )
 }

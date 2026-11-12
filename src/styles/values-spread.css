@@ -11,7 +11,7 @@
   min-height: 100%;
   overflow: hidden;
   background: #fff;
-  color: #1a1a1a;
+  color: #183553;
 }
 
 .values-spread__half {
@@ -64,6 +64,22 @@
   min-height: calc(var(--nav-safe) + 0.55rem + clamp(5.75rem, 14vh, 8rem));
 }
 
+@media (min-width: 901px) and (max-height: 980px) {
+  .values-spread__hero,
+  .values-spread__hero--chain {
+    min-height: calc(var(--nav-safe) + 0.35rem + clamp(4.25rem, 11vh, 6rem));
+  }
+
+  .values-spread__hero-title {
+    font-size: clamp(1.35rem, 2vw, 1.85rem);
+  }
+
+  .values-spread__bar-item p {
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+}
+
 .values-spread__hero--mission {
   background: linear-gradient(135deg, #f0b429 0%, #e85a3c 28%, #a12c8f 62%, #2f6fe8 100%);
   display: flex;
@@ -72,7 +88,7 @@
 }
 
 .values-spread__hero--chain {
-  background: linear-gradient(145deg, #4ec3f7 0%, #3a8fe8 35%, #a12c8f 100%);
+  background: var(--brand-aurora);
   min-height: calc(var(--nav-safe) + 0.55rem + clamp(5.75rem, 14vh, 8rem));
 }
 
@@ -198,7 +214,7 @@
   font-weight: 800;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  color: #111;
+  color: #183553;
 }
 
 .values-spread__bars {
@@ -235,7 +251,7 @@
   font-weight: 800;
   letter-spacing: 0.01em;
   text-transform: uppercase;
-  color: #111;
+  color: #183553;
   background: none;
 }
 
@@ -245,14 +261,14 @@
   margin-left: clamp(1.5rem, 6vw, 3.5rem);
   font-size: clamp(0.72rem, 1.05vw, 0.88rem);
   line-height: 1.35;
-  color: #222;
+  color: #183553;
 }
 
 .values-spread__icons {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 15px;
+  gap: 28px;
   margin-top: 50px;
   margin-left: clamp(1.5rem, 6vw, 3.5rem);
 }
@@ -265,6 +281,12 @@
   user-select: none;
   pointer-events: none;
   flex: 0 0 100px;
+}
+
+/* Brain asset has more empty padding — scale to match heart/hand */
+.values-spread__icon.is-brain {
+  transform: scale(1.24);
+  transform-origin: center center;
 }
 
 .values-spread__links {
@@ -280,12 +302,12 @@
   margin: 0;
   font-size: clamp(0.72rem, 1.05vw, 0.88rem);
   line-height: 1.35;
-  color: #222;
+  color: #183553;
 }
 
 .values-spread__links strong {
   font-weight: 800;
-  color: #111;
+  color: #183553;
 }
 
 .values-spread__slogan {
@@ -320,11 +342,11 @@
 }
 
 .fb-name {
-  color: #1a1a1a;
+  color: #183553;
 }
 
 .fb-sub {
-  color: #1a1a1a;
+  color: #183553;
   font-weight: 700;
 }
 
@@ -495,7 +517,7 @@
     align-items: center;
     width: 100%;
     margin: 24px 0;
-    gap: 8px;
+    gap: 16px;
   }
 
   .values-spread__icon {

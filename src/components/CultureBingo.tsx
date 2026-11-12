@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { asset } from '../asset'
 import { cultureBingo, scoreBingo } from '../data/cultureBingo'
 import { fixPrepositions } from '../lib/fixPrepositions'
@@ -6,11 +6,29 @@ import '../styles/culture-bingo.css'
 
 type Phase = 'play' | 'result'
 
+function scrollBingoPageTop() {
+  const page = document.querySelector(
+    '.reader__page:not([aria-hidden="true"])',
+  ) as HTMLElement | null
+  if (page) page.scrollTop = 0
+  const shell = document.querySelector(
+    '.reader__page:not([aria-hidden="true"]) .page-culture-bingo',
+  ) as HTMLElement | null
+  if (shell) shell.scrollTop = 0
+}
+
 export function CultureBingoPage() {
   const [selected, setSelected] = useState<Set<string>>(() => new Set())
   const [phase, setPhase] = useState<Phase>('play')
 
   const result = useMemo(() => scoreBingo(selected), [selected])
+
+  useEffect(() => {
+    if (phase !== 'result') return
+    scrollBingoPageTop()
+    const id = window.requestAnimationFrame(() => scrollBingoPageTop())
+    return () => window.cancelAnimationFrame(id)
+  }, [phase])
 
   function toggleTile(id: string) {
     setSelected((prev) => {
@@ -26,6 +44,7 @@ export function CultureBingoPage() {
   }
 
   function replay() {
+    setSelected(new Set())
     setPhase('play')
   }
 

@@ -12,6 +12,7 @@ import {
   type StrategyHouseLevelId,
 } from '../data/missionEco'
 import { fixPrepositions } from '../lib/fixPrepositions'
+import { SectionEndNav } from './SectionEndNav'
 import '../styles/mission-eco.css'
 
 /** Zones from the SVG map (img/15.png is 6000×4200). */
@@ -72,50 +73,28 @@ const FLOOR_POLYS: FloorPoly[] = [
   },
 ]
 
-type Hotspot = {
-  id: HouseZoneId
-  tooltip: string
-}
-
 /** Marker order for progressive house-icon fill (foundation → floor 4). */
 const MARKER_ORDER: HouseZoneId[] = ['foundation', '1', '2', '3', '4']
 
-const HOTSPOTS: Hotspot[] = [
-  {
-    id: 'mission',
-    tooltip: 'Миссия компании',
-  },
-  {
-    id: '4',
-    tooltip: '4 этаж · Финансовые показатели',
-  },
-  {
-    id: '3',
-    tooltip: '3 этаж · Портфель и рынки',
-  },
-  {
-    id: '2',
-    tooltip: '2 этаж · Бизнес-процессы и производство',
-  },
-  {
-    id: '1',
-    tooltip: '1 этаж · Персонал',
-  },
-  {
-    id: 'foundation',
-    tooltip: 'Фундамент · Ценности ГЕРОФАРМ',
-  },
-]
+const FLOOR_TOOLTIP: Record<HouseZoneId, string> = {
+  mission: 'Миссия компании',
+  '4': '4 этаж · Финансовые показатели',
+  '3': '3 этаж · Портфель и рынки',
+  '2': '2 этаж · Бизнес-процессы и производство',
+  '1': '1 этаж · Персонал',
+  foundation: 'Фундамент · Ценности ГЕРОФАРМ',
+}
 
-/** Short labels for the mobile floor switcher (bottom → top of the house). */
-const MOBILE_FLOOR_NAV: { id: HouseZoneId; num: string; label: string }[] = [
-  { id: 'foundation', num: 'Фундамент', label: 'Ценности' },
-  { id: '1', num: '1', label: 'Персонал' },
-  { id: '2', num: '2', label: 'Бизнес' },
-  { id: '3', num: '3', label: 'Портфель' },
-  { id: '4', num: '4', label: 'Финансы' },
-  { id: 'mission', num: 'Миссия', label: 'Компании' },
-]
+const DESKTOP_GUIDE_START =
+  'Посмотри все этажи дома, чтобы узнать о стратегии подробнее. Нажми на мигающий фундамент'
+const DESKTOP_GUIDE_AFTER =
+  'Нажимай на мигающий этаж, чтобы узнать о стратегии'
+const DESKTOP_GUIDE_DONE =
+  'Отлично! Ты посмотрел все этажи. Теперь ты знаешь всё о нашей стратегии!'
+const FLOOR_HINT_START =
+  'Нажми на иконку домика, чтобы открыть описание его этажей'
+const FLOOR_HINT_AFTER =
+  'Иконка домика указывает, где находится каждый этаж'
 
 /** Lucide-style house paths (from icons/house.svg). */
 const HOUSE_PATH_ROOF =
@@ -145,7 +124,6 @@ function HouseProgressIcon({
           <rect x="0" y={top} width="24" height={24 * clamped} />
         </clipPath>
       </defs>
-      {/* Gray silhouette */}
       <path
         className="shouse__house-base"
         fill="currentColor"
@@ -160,7 +138,6 @@ function HouseProgressIcon({
         strokeLinejoin="round"
         d={HOUSE_PATH_DOOR}
       />
-      {/* Blue fill rising from the bottom */}
       <g clipPath={`url(#${clipId})`}>
         <path
           className="shouse__house-fill"
@@ -198,54 +175,12 @@ export function MissionStrategyHousePage() {
   const baseId = useId().replace(/:/g, '')
   const panelRef = useRef<HTMLElement>(null)
   const detailRef = useRef<HTMLDivElement>(null)
-  const mobileFloorsRef = useRef<HTMLDivElement>(null)
-  const mobileNavRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState<HouseZoneId>('foundation')
-  const [visited, setVisited] = useState<Set<HouseZoneId>>(
-    () => new Set(['foundation']),
-  )
-  const [pulse, setPulse] = useState(true)
+  const [visited, setVisited] = useState<Set<HouseZoneId>>(() => new Set())
   const [isMobileLayout, setIsMobileLayout] = useState(false)
-
-  const getPageScroller = (from: HTMLElement | null) =>
-    from?.closest('.reader__page') as HTMLElement | null
-
-  const getTopbarOffset = () => {
-    const topbar = document.querySelector('.reader__topbar') as HTMLElement | null
-    if (!topbar) return 64
-    const style = window.getComputedStyle(topbar)
-    if (style.display === 'none' || style.visibility === 'hidden') return 12
-    const opacity = Number.parseFloat(style.opacity || '1')
-    if (opacity < 0.05) return 12
-    return Math.ceil(topbar.getBoundingClientRect().height) + 8
-  }
-
-  const scrollPageTo = (target: HTMLElement, behavior: ScrollBehavior = 'smooth') => {
-    const page = getPageScroller(target)
-    if (!page) {
-      target.scrollIntoView({ behavior, block: 'start' })
-      return
-    }
-    const offset = getTopbarOffset()
-    const pageRect = page.getBoundingClientRect()
-    const targetTop = target.getBoundingClientRect().top
-    const nextTop = page.scrollTop + (targetTop - pageRect.top) - offset
-    page.scrollTo({ top: Math.max(0, nextTop), behavior })
-  }
-
-  const scrollToFloorDetail = () => {
-    const target =
-      mobileNavRef.current ?? mobileFloorsRef.current ?? detailRef.current
-    if (!target) return
-    scrollPageTo(target)
-  }
-
-  const scrollBackToScheme = () => {
-    const target = stageRef.current ?? mobileFloorsRef.current
-    if (!target) return
-    scrollPageTo(target)
-  }
+  const [mobileIntroDone, setMobileIntroDone] = useState(false)
+  const [floorsOpened, setFloorsOpened] = useState(false)
 
   const level: PanelLevel =
     active === 'mission'
@@ -254,6 +189,24 @@ export function MissionStrategyHousePage() {
 
   const tabpanelId = `${baseId}-panel`
   const showFootnotes = active === '4'
+  const floorIndex = Math.max(0, LEVEL_ORDER.indexOf(active))
+  const floorTotal = LEVEL_ORDER.length
+  const floorLabel = `Этаж ${floorIndex + 1} из ${floorTotal}`
+  const canGoPrev = floorIndex > 0
+  const canGoNext = floorIndex < floorTotal - 1
+  const mobileFloorHint = floorsOpened ? FLOOR_HINT_AFTER : FLOOR_HINT_START
+  const allFloorsVisited = LEVEL_ORDER.every((id) => visited.has(id))
+  const desktopGuide = !floorsOpened
+    ? DESKTOP_GUIDE_START
+    : allFloorsVisited
+      ? DESKTOP_GUIDE_DONE
+      : DESKTOP_GUIDE_AFTER
+  const inviteFloorId = !isMobileLayout
+    ? !floorsOpened
+      ? 'foundation'
+      : (LEVEL_ORDER.find((id) => !visited.has(id)) ?? null)
+    : null
+
   const maxMarkerReached = Math.max(
     -1,
     ...[...visited]
@@ -266,25 +219,25 @@ export function MissionStrategyHousePage() {
     0,
     ...[...visited].map((id) => LEVEL_ORDER.indexOf(id)),
   )
-  const progress = Math.max(
-    iconFill,
-    maxReached / Math.max(1, LEVEL_ORDER.length - 1),
-  )
+  const progress = floorsOpened
+    ? Math.max(
+        iconFill,
+        isMobileLayout
+          ? (maxReached + 1) / floorTotal
+          : maxReached / Math.max(1, LEVEL_ORDER.length - 1),
+      )
+    : 0
 
   useEffect(() => {
-    const id = window.setTimeout(() => setPulse(false), 1000)
-    return () => window.clearTimeout(id)
-  }, [])
-
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 768px)')
+    // Match Reader `isMobile` / vertical track breakpoint.
+    const mq = window.matchMedia('(max-width: 860px)')
     const sync = () => setIsMobileLayout(mq.matches)
     sync()
     mq.addEventListener('change', sync)
     return () => mq.removeEventListener('change', sync)
   }, [])
 
-  const selectLevel = (id: HouseZoneId, opts?: { scroll?: boolean }) => {
+  const selectLevel = (id: HouseZoneId) => {
     setActive(id)
     setVisited((prev) => {
       if (prev.has(id)) return prev
@@ -292,70 +245,174 @@ export function MissionStrategyHousePage() {
       next.add(id)
       return next
     })
-    const isMobile = window.matchMedia('(max-width: 768px)').matches
-    if (isMobile) {
-      window.requestAnimationFrame(() => {
-        const btn = mobileNavRef.current?.querySelector<HTMLButtonElement>(
-          `[data-floor="${id}"]`,
-        )
-        btn?.scrollIntoView({
-          behavior: 'smooth',
-          inline: 'center',
-          block: 'nearest',
-        })
-        if (opts?.scroll) scrollToFloorDetail()
-      })
+  }
+
+  const selectDesktopLevel = (id: HouseZoneId) => {
+    if (!floorsOpened) {
+      // First click must open the foundation invite.
+      if (id !== 'foundation') return
+      setFloorsOpened(true)
+      selectLevel('foundation')
       return
     }
-    if (opts?.scroll && window.matchMedia('(max-width: 900px)').matches) {
-      window.requestAnimationFrame(() => {
-        const target = detailRef.current ?? panelRef.current
-        if (target) scrollPageTo(target)
-      })
+    selectLevel(id)
+  }
+
+  const scrollToDetail = () => {
+    const target = detailRef.current
+    if (!target) return
+    const page = target.closest('.reader__page') as HTMLElement | null
+    if (!page) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      return
+    }
+    const topbar = document.querySelector(
+      '.reader__topbar',
+    ) as HTMLElement | null
+    const offset = topbar
+      ? Math.ceil(topbar.getBoundingClientRect().height) + 8
+      : 64
+    const nextTop =
+      page.scrollTop +
+      (target.getBoundingClientRect().top - page.getBoundingClientRect().top) -
+      offset
+    page.scrollTo({ top: Math.max(0, nextTop), behavior: 'smooth' })
+  }
+
+  const openFloors = (id: HouseZoneId = 'foundation') => {
+    const firstOpen = !floorsOpened
+    // First tap always opens the foundation, even if the hit target was another floor.
+    setFloorsOpened(true)
+    selectLevel(firstOpen ? 'foundation' : id)
+    if (firstOpen) {
+      window.requestAnimationFrame(() => scrollToDetail())
     }
   }
 
-  const onTabKeyDown = (
-    e: KeyboardEvent<HTMLButtonElement>,
-    id: HouseZoneId,
-    navOrder: HouseZoneId[],
-    idPrefix: string,
-  ) => {
-    const idx = navOrder.indexOf(id)
-    if (idx < 0) return
+  const goPrevFloor = () => {
+    if (!canGoPrev) return
+    selectLevel(LEVEL_ORDER[floorIndex - 1])
+  }
 
-    let next = -1
+  const goNextFloor = () => {
+    if (!floorsOpened) {
+      openFloors('foundation')
+      return
+    }
+    if (!canGoNext) return
+    selectLevel(LEVEL_ORDER[floorIndex + 1])
+  }
+
+  const onMobileHotspotKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-      next = (idx + 1) % navOrder.length
-    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-      next = (idx - 1 + navOrder.length) % navOrder.length
-    } else if (e.key === 'Home') {
-      next = 0
-    } else if (e.key === 'End') {
-      next = navOrder.length - 1
-    } else {
+      e.preventDefault()
+      goNextFloor()
       return
     }
-
-    e.preventDefault()
-    const nextId = navOrder[next]
-    const scrollMobile =
-      idPrefix.includes('mobile-tab') &&
-      window.matchMedia('(max-width: 768px)').matches
-    selectLevel(nextId, { scroll: scrollMobile })
-    const btn = e.currentTarget
-      .closest('[role="tablist"]')
-      ?.querySelector<HTMLButtonElement>(`#${idPrefix}${nextId}`)
-    btn?.focus()
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault()
+      goPrevFloor()
+      return
+    }
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      openFloors(active)
+    }
   }
 
-  const hotspotNavOrder = HOTSPOTS.map((h) => h.id)
-  const mobileNavOrder = MOBILE_FLOOR_NAV.map((f) => f.id)
+  const enterStrategy = () => {
+    setMobileIntroDone(true)
+    // Do NOT use scrollIntoView here — it scrolls outer containers and lifts
+    // the reader chrome (page counter) off the bottom of the viewport.
+    window.requestAnimationFrame(() => {
+      const page = stageRef.current?.closest(
+        '.reader__page',
+      ) as HTMLElement | null
+      if (page) page.scrollTop = 0
+      window.scrollTo(0, 0)
+      document.documentElement.scrollTop = 0
+      document.body.scrollTop = 0
+    })
+  }
+
+  const activeTooltip = FLOOR_TOOLTIP[active]
+  const showMobileDetail = floorsOpened
+  const articleClass = [
+    'page-shell',
+    'page-bleed',
+    'page-strategy-house',
+    isMobileLayout
+      ? mobileIntroDone
+        ? 'is-strategy-ready'
+        : 'is-strategy-intro'
+      : '',
+    isMobileLayout && floorsOpened ? 'is-floors-open' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
+  const floorDetail = (
+    <div key={active} className="shouse__panel-body-inner">
+      <h2 className="shouse__panel-title">{fixPrepositions(level.title)}</h2>
+      {level.lead ? (
+        <p className="shouse__panel-lead">{fixPrepositions(level.lead)}</p>
+      ) : null}
+      {level.items && level.items.length > 0 ? (
+        <ul className="shouse__list">
+          {level.items.map((item) => (
+            <li key={item}>{fixPrepositions(item)}</li>
+          ))}
+        </ul>
+      ) : null}
+      {showFootnotes ? (
+        <div className="shouse__footnotes">
+          {data.footnotes.map((note) => (
+            <p key={note.slice(0, 24)}>{note}</p>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  )
+
+  const floorStepper = (
+    <div
+      className="shouse__floor-stepper"
+      role="group"
+      aria-label="Навигация по этажам"
+    >
+      <button
+        type="button"
+        className="shouse__floor-step-btn"
+        onClick={goPrevFloor}
+        disabled={!canGoPrev}
+      >
+        Назад
+      </button>
+      <div className="shouse__floor-step-meta">
+        <span className="shouse__floor-step-count">{floorLabel}</span>
+        <div className="shouse__floor-step-progress" aria-hidden>
+          <i
+            style={{
+              width: `${((floorIndex + 1) / floorTotal) * 100}%`,
+            }}
+          />
+        </div>
+      </div>
+      <button
+        type="button"
+        className="shouse__floor-step-btn shouse__floor-step-btn--next"
+        onClick={goNextFloor}
+        disabled={!canGoNext}
+      >
+        Далее
+      </button>
+    </div>
+  )
 
   return (
-    <article className="page-shell page-bleed page-strategy-house">
+    <article className={articleClass}>
       <div
-        className={`shouse${pulse ? ' is-pulse' : ''}`}
+        className={`shouse${inviteFloorId ? ' is-invite-floor' : ''}`}
         style={
           {
             '--sh-progress': String(progress),
@@ -363,9 +420,38 @@ export function MissionStrategyHousePage() {
           } as CSSProperties
         }
       >
+        <section
+          className="shouse__mobile-intro"
+          aria-label="Введение в стратегию"
+        >
+          <div className="shouse__mobile-intro-inner">
+            <p className="shouse__title">{fixPrepositions(data.title)}</p>
+            <p className="shouse__intro">{fixPrepositions(data.intro)}</p>
+            <button
+              type="button"
+              className="shouse__mobile-intro-cta"
+              onClick={enterStrategy}
+            >
+              Перейти к стратегии
+            </button>
+          </div>
+        </section>
+
         <div className="shouse__main">
           <div className="shouse__stage" ref={stageRef}>
-            <div className="shouse__figure">
+            <div
+              className="shouse__figure"
+              onClick={
+                isMobileLayout
+                  ? (e) => {
+                      if ((e.target as Element).closest('.shouse__hotspot'))
+                        return
+                      openFloors(floorsOpened ? active : 'foundation')
+                    }
+                  : undefined
+              }
+              role="presentation"
+            >
               <div className="shouse__map">
                 <img
                   className="shouse__img"
@@ -387,184 +473,144 @@ export function MissionStrategyHousePage() {
                     width="6000"
                     height="4200"
                   />
-                  {FLOOR_POLYS.map((floor) => (
+                  {FLOOR_POLYS.map((floor) => {
+                    const isInvite = inviteFloorId === floor.id
+                    // Only the next invite floor glows — never keep a viewed floor lit
+                    // (including mission after the user has opened it).
+                    const isActive =
+                      floorsOpened &&
+                      active === floor.id &&
+                      !visited.has(floor.id) &&
+                      (!inviteFloorId || isInvite)
+                    return (
                     <polygon
                       key={floor.id}
-                      className={`floor-poly${
-                        active === floor.id ? ' active' : ''
+                      className={`floor-poly${isActive ? ' active' : ''}${
+                        isInvite ? ' is-invite' : ''
                       }`}
                       points={floor.points}
-                      onClick={() => selectLevel(floor.id, { scroll: true })}
+                      onClick={(e) => {
+                        if (isMobileLayout) {
+                          e.stopPropagation()
+                          openFloors(floor.id)
+                          return
+                        }
+                        selectDesktopLevel(floor.id)
+                      }}
                     >
                       <title>{floor.title}</title>
                     </polygon>
-                  ))}
-                </svg>
-
-                <div
-                  className="shouse__tablist"
-                  role={isMobileLayout ? undefined : 'tablist'}
-                  aria-label={isMobileLayout ? undefined : 'Уровни стратегии'}
-                  aria-orientation={isMobileLayout ? undefined : 'vertical'}
-                  aria-hidden={isMobileLayout || undefined}
-                >
-                  {HOTSPOTS.map((spot) => {
-                    const selected = active === spot.id
-                    return (
-                      <button
-                        key={spot.id}
-                        id={`${baseId}-tab-${spot.id}`}
-                        type="button"
-                        role={isMobileLayout ? undefined : 'tab'}
-                        className={`shouse__hotspot shouse__hotspot--${spot.id}${
-                          selected ? ' is-active' : ''
-                        }`}
-                        aria-selected={isMobileLayout ? undefined : selected}
-                        aria-controls={isMobileLayout ? undefined : tabpanelId}
-                        tabIndex={isMobileLayout ? -1 : selected ? 0 : -1}
-                        title={spot.tooltip}
-                        disabled={isMobileLayout}
-                        onClick={() => {
-                          if (isMobileLayout) return
-                          selectLevel(spot.id, { scroll: true })
-                        }}
-                        onKeyDown={(e) => {
-                          if (isMobileLayout) return
-                          onTabKeyDown(
-                            e,
-                            spot.id,
-                            hotspotNavOrder,
-                            `${baseId}-tab-`,
-                          )
-                        }}
-                      >
-                        <span className="shouse__hotspot-num">
-                          <HouseProgressIcon
-                            fill={iconFill}
-                            clipId={`${baseId}-house-clip-${spot.id}`}
-                          />
-                        </span>
-                        <span className="shouse__tooltip" aria-hidden>
-                          {spot.tooltip}
-                        </span>
-                      </button>
                     )
                   })}
-                </div>
+                </svg>
+
+                {isMobileLayout ? (
+                  <div className="shouse__tablist">
+                    <button
+                      id={`${baseId}-tab-active`}
+                      type="button"
+                      className={`shouse__hotspot shouse__hotspot--${active} is-active`}
+                      aria-controls={tabpanelId}
+                      title={activeTooltip}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        openFloors(floorsOpened ? active : 'foundation')
+                      }}
+                      onKeyDown={onMobileHotspotKeyDown}
+                    >
+                      <span className="shouse__hotspot-num">
+                        <HouseProgressIcon
+                          fill={iconFill}
+                          clipId={`${baseId}-house-clip-active`}
+                        />
+                      </span>
+                      <span className="shouse__tooltip" aria-hidden>
+                        {activeTooltip}
+                      </span>
+                    </button>
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>
         </div>
 
-        <div className="shouse__mobile-floors" ref={mobileFloorsRef}>
-          <p className="shouse__mobile-floors-label" id={`${baseId}-mobile-floors`}>
+        <div className="shouse__mobile-floors">
+          <p
+            className="shouse__mobile-floors-label"
+            id={`${baseId}-mobile-floors`}
+          >
             Этажи стратегии
           </p>
-          <p className="shouse__mobile-floors-hint">
-            Нажимай на домики, чтобы посмотреть каждый этаж стратегии
-          </p>
-          <div
-            ref={mobileNavRef}
-            className="shouse__mobile-floor-nav"
-            role="tablist"
-            aria-labelledby={`${baseId}-mobile-floors`}
-            aria-orientation="horizontal"
-          >
-            {MOBILE_FLOOR_NAV.map((floor) => {
-              const selected = active === floor.id
-              const completed = visited.has(floor.id) && !selected
-              return (
-                <button
-                  key={floor.id}
-                  id={`${baseId}-mobile-tab-${floor.id}`}
-                  type="button"
-                  role="tab"
-                  data-floor={floor.id}
-                  className={`shouse__mobile-floor-btn${
-                    selected ? ' is-active' : ''
-                  }${completed ? ' is-completed' : ''}`}
-                  aria-selected={selected}
-                  aria-controls={tabpanelId}
-                  tabIndex={selected ? 0 : -1}
-                  onClick={() => selectLevel(floor.id, { scroll: true })}
-                  onKeyDown={(e) =>
-                    onTabKeyDown(
-                      e,
-                      floor.id,
-                      mobileNavOrder,
-                      `${baseId}-mobile-tab-`,
-                    )
-                  }
-                >
-                  <span className="shouse__mobile-floor-house" aria-hidden>
-                    <HouseProgressIcon
-                      fill={visited.has(floor.id) ? 1 : 0}
-                      clipId={`${baseId}-mobile-house-clip-${floor.id}`}
-                    />
-                  </span>
-                  <span className="shouse__mobile-floor-text">
-                    <small>{floor.num}</small>
-                    <b>{floor.label}</b>
-                  </span>
-                </button>
-              )
-            })}
-          </div>
+          <p className="shouse__mobile-floors-hint">{mobileFloorHint}</p>
         </div>
 
         <aside
           ref={panelRef}
           className="shouse__panel"
           id={tabpanelId}
-          role="tabpanel"
+          role="region"
           tabIndex={-1}
-          aria-labelledby={`${baseId}-tab-${active} ${baseId}-mobile-tab-${active}`}
+          aria-labelledby={
+            isMobileLayout ? `${baseId}-tab-active` : undefined
+          }
+          aria-label={isMobileLayout ? undefined : level.title}
         >
           <div className="shouse__panel-head">
             <p className="shouse__title">{fixPrepositions(data.title)}</p>
             <p className="shouse__intro">{fixPrepositions(data.intro)}</p>
-            <p className="shouse__guide">
-              Посмотри все этажи дома, чтобы узнать о стратегии подробнее
-            </p>
           </div>
 
-          <div
-            ref={detailRef}
-            className="shouse__panel-body"
-            id={`${baseId}-floor-detail`}
-          >
-            <div key={active} className="shouse__panel-body-inner">
-              <h2 className="shouse__panel-title">
-                {fixPrepositions(level.title)}
-              </h2>
-              {level.lead ? (
-                <p className="shouse__panel-lead">{fixPrepositions(level.lead)}</p>
-              ) : null}
-              {level.items && level.items.length > 0 ? (
-                <ul className="shouse__list">
-                  {level.items.map((item) => (
-                    <li key={item}>{fixPrepositions(item)}</li>
-                  ))}
-                </ul>
-              ) : null}
-              {showFootnotes ? (
-                <div className="shouse__footnotes">
-                  {data.footnotes.map((note) => (
-                    <p key={note.slice(0, 24)}>{note}</p>
-                  ))}
+          {isMobileLayout ? (
+            showMobileDetail ? (
+              <div
+                ref={detailRef}
+                className="shouse__panel-body is-open"
+                id={`${baseId}-floor-detail`}
+              >
+                {floorDetail}
+                {floorStepper}
+              </div>
+            ) : null
+          ) : (
+            <>
+              {floorsOpened ? (
+                <div
+                  ref={detailRef}
+                  className="shouse__panel-body"
+                  id={`${baseId}-floor-detail`}
+                >
+                  {floorDetail}
                 </div>
               ) : null}
-              <button
-                type="button"
-                className="shouse__back-to-scheme"
-                onClick={scrollBackToScheme}
+              <div
+                className={`shouse__guide-card${
+                  allFloorsVisited ? ' is-done' : ''
+                }`}
+                role="status"
               >
-                Назад к схеме
-              </button>
-            </div>
-          </div>
+                {allFloorsVisited ? (
+                  <span className="shouse__guide-card-check" aria-hidden>
+                    <svg viewBox="0 0 24 24" width="22" height="22">
+                      <circle cx="12" cy="12" r="11" fill="currentColor" />
+                      <path
+                        d="M7.2 12.4l3 3 6.6-6.8"
+                        fill="none"
+                        stroke="#fff"
+                        strokeWidth="2.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                ) : null}
+                <p className="shouse__guide-card-text">{desktopGuide}</p>
+              </div>
+            </>
+          )}
         </aside>
       </div>
+      {allFloorsVisited ? <SectionEndNav /> : null}
     </article>
   )
 }

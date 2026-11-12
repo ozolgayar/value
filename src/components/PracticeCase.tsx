@@ -16,7 +16,6 @@ function parseBestLetters(bestOption: string) {
 
 export function PracticeCasePage({
   data,
-  onFinishSection,
 }: {
   data: PracticeCaseData
   onFinishSection?: () => void
@@ -126,7 +125,9 @@ export function PracticeCasePage({
                           <li key={item.text} className="pe__value">
                             <span className="pe__icon-wrap">
                               <img
-                                className="pe__icon"
+                                className={`pe__icon${
+                                  item.icon.includes('11.png') ? ' is-brain' : ''
+                                }`}
                                 src={asset(item.icon)}
                                 alt=""
                                 aria-hidden
@@ -139,13 +140,6 @@ export function PracticeCasePage({
                       <p className="pe__result">
                         <strong>{right.resultLabel}</strong> {right.result}
                       </p>
-                      <button
-                        type="button"
-                        className="pe__cta pe__cta--finish"
-                        onClick={() => onFinishSection?.()}
-                      >
-                        Завершить раздел
-                      </button>
                     </>
                   ) : (
                     <>

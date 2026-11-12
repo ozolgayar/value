@@ -48,12 +48,13 @@ export function BentoMenu({
             const firstPage = section.paragraphs[0]?.pages[0]
             const active = section.id === current.sectionId
             const done = currentNavIndex >= 0 && i < currentNavIndex
+            const isLast = i === navSections.length - 1
             const statusLabel = active ? 'сейчас' : done ? 'пройден' : 'не пройден'
             return (
               <button
                 key={section.id}
                 type="button"
-                className={`bento__item${active ? ' is-active' : ''}${done ? ' is-done' : ''}`}
+                className={`bento__item${active ? ' is-active' : ''}${done ? ' is-done' : ''}${isLast ? ' bento__item--wide' : ''}`}
                 onClick={() => {
                   if (firstPage) onGoPageId(firstPage.id)
                   onClose()
@@ -93,6 +94,24 @@ export function BentoMenu({
               aria-hidden
             />
             <span>Мои заметки</span>
+          </button>
+          <button
+            type="button"
+            className="menu-notes"
+            onClick={() => {
+              onGoPageId('p-journey')
+              onClose()
+            }}
+          >
+            <span
+              className="menu-notes__icon"
+              style={{
+                WebkitMaskImage: `url(${asset('icons/mail.svg')})`,
+                maskImage: `url(${asset('icons/mail.svg')})`,
+              }}
+              aria-hidden
+            />
+            <span>Отправить свои предложения</span>
           </button>
         </div>
       </div>

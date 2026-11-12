@@ -3,7 +3,8 @@
   --mc3d-blue: #0057b8;
   --mission-blue: #0057b8;
   --mc3d-panel-w: 320px;
-  --mc3d-panel-h: 360px;
+  /* Tall enough for longest card (diabetes: 4-line body + 3 tags) */
+  --mc3d-panel-h: 420px;
   --mc3d-title-size: 48px;
   height: 100%;
   min-height: 100%;
@@ -250,19 +251,22 @@
 }
 
 .mc3d__panel-text {
-  flex: 1 1 auto;
-  margin: 0 0 0.85rem;
-  overflow: hidden;
+  flex: 0 0 auto;
+  margin: 0 0 0.75rem;
+  /* Avoid mid-glyph clipping from overflow:hidden + tight flex height */
+  overflow: visible;
   font-size: 16px;
   line-height: 1.45;
-  color: rgba(24, 52, 96, 0.88);
+  color: rgba(24, 53, 83, 0.88);
 }
 
 .mc3d__tags {
   display: flex;
   flex-wrap: wrap;
+  flex: 0 0 auto;
   gap: 0.4rem;
-  margin-top: auto;
+  /* Keep badges under the text, not pinned to the card bottom */
+  margin-top: 0.35rem;
 }
 
 .mc3d__tag {
@@ -345,10 +349,10 @@ a.mc3d__tag:hover {
   color: rgba(0, 87, 184, 0.72);
 }
 
-@media (max-width: 1439px) {
+@media (max-width: 1439px) and (min-width: 769px) {
   .page-shell.page-mission-eco.mc3d {
     --mc3d-panel-w: 280px;
-    --mc3d-panel-h: 340px;
+    --mc3d-panel-h: 400px;
     --mc3d-title-size: 42px;
   }
 
@@ -357,10 +361,10 @@ a.mc3d__tag:hover {
   }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1023px) and (min-width: 769px) {
   .page-shell.page-mission-eco.mc3d {
     --mc3d-panel-w: 240px;
-    --mc3d-panel-h: 300px;
+    --mc3d-panel-h: 380px;
     --mc3d-title-size: 36px;
   }
 
@@ -416,10 +420,13 @@ a.mc3d__tag:hover {
     padding:
       calc(var(--nav-safe) + 12px)
       20px
-      max(
-        calc(96px + env(safe-area-inset-bottom, 0px)),
-        calc(var(--reader-bottom-safe, 96px) + 24px)
+      calc(
+        var(--reader-bottombar-h, 52px) + env(safe-area-inset-bottom, 0px) + 5.5rem
       );
+  }
+
+  .mc3d__panel:last-child {
+    margin-bottom: 2.25rem;
   }
 
   .mc3d__head {

@@ -295,13 +295,94 @@
     max(1rem, var(--nav-arrow-lane-left));
 }
 
+.page-culture-bingo--preview {
+  height: auto;
+  min-height: 100%;
+  overflow: auto;
+}
+
+.cb__result-shell--preview {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 1.5rem;
+  max-width: min(960px, 100%);
+  margin: 0 auto;
+  min-height: 0;
+  overflow: visible;
+  padding-bottom: calc(
+    var(--reader-bottombar-h, 52px) + env(safe-area-inset-bottom, 0px) + 48px
+  );
+}
+
+.cb__preview-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #fff;
+  backdrop-filter: blur(8px);
+}
+
+.cb__preview-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.cb__preview-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.cb__preview-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.cb__preview-item[data-accent='ambition'] .cb__result-orb {
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.5), transparent 42%),
+    linear-gradient(145deg, #a78bfa, #7c3aed 50%, #4c1d95);
+}
+
+.cb__preview-item[data-accent='passion'] .cb__result-orb {
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.5), transparent 42%),
+    linear-gradient(145deg, #fdba74, #f97316 45%, #ea580c);
+}
+
+.cb__preview-item[data-accent='responsibility'] .cb__result-orb {
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.5), transparent 42%),
+    linear-gradient(145deg, #93c5fd, #2563eb 50%, #1d4ed8);
+}
+
+.cb__preview-label {
+  margin: 0;
+  padding-left: 0.25rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.82);
+}
+
 .cb__result-card {
   box-sizing: border-box;
   width: min(920px, 100%);
   padding: clamp(1.4rem, 3vw, 2.2rem);
   border-radius: 28px;
   background: #fff;
-  color: #17213a;
+  color: #183553;
   box-shadow: 0 24px 60px rgba(30, 20, 60, 0.28);
 }
 
@@ -512,13 +593,22 @@
     padding-bottom: 0;
   }
 
+  .page-shell.page-culture-bingo.page-culture-bingo--result {
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+  }
+
   .cb__result-shell {
     height: auto;
     min-height: 0;
+    align-items: flex-start;
+    justify-content: flex-start;
     padding-bottom: calc(
       var(--reader-bottombar-h, 52px) + env(safe-area-inset-bottom, 0px) + 40px
     );
   }
+
 }
 
 @media (max-width: 720px) {
@@ -558,6 +648,8 @@
   /* Result: full-width vertical card, not a squeezed desktop layout */
   .page-culture-bingo--result {
     overflow: visible;
+    height: auto;
+    min-height: 100%;
   }
 
   .cb__result-shell {
@@ -572,7 +664,7 @@
   .cb__result-card {
     width: 100%;
     max-width: 420px;
-    margin: 0 auto;
+    margin: 0 auto 0.5rem;
     padding: 1.15rem 1.05rem 1.2rem;
     border-radius: 22px;
   }

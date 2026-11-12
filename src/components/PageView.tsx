@@ -1,8 +1,10 @@
+import { type ReactNode } from 'react'
 import { sections, type BookPage } from '../data/book'
 import { asset } from '../asset'
 import { fixPrepositions } from '../lib/fixPrepositions'
 import { CountUp } from './CountUp'
 import { HistoryTimeline } from './HistoryTimeline'
+import { SectionEndNav, SectionEndNavProvider } from './SectionEndNav'
 import {
   MissionEcosystemPage,
   MissionLongevityPage,
@@ -37,19 +39,7 @@ import { PracticeWeeksPage } from './PracticeWeeks'
 import { getHistoryPage, historyPageCount } from '../data/history'
 import { Velaris } from './Velaris'
 
-export function PageView({
-  page,
-  onGoToSection,
-  onGoToPage,
-  historyRevealed,
-  onHistoryReveal,
-  onHistoryAdvance,
-  onHistoryRetreat,
-  onHistoryJumpYear,
-  historyJumpYear = null,
-  onHistoryJumpYearHandled,
-  historyHint = false,
-}: {
+type PageViewProps = {
   page: BookPage
   onGoToSection?: (sectionId: string) => void
   onGoToPage?: (pageId: string) => void
@@ -61,8 +51,31 @@ export function PageView({
   historyJumpYear?: string | null
   onHistoryJumpYearHandled?: () => void
   historyHint?: boolean
-}) {
-  const finishPractice = () => onGoToPage?.('p-closing-cover')
+  sectionEndNav?: ReactNode
+}
+
+export function PageView({ sectionEndNav = null, ...props }: PageViewProps) {
+  return (
+    <SectionEndNavProvider value={sectionEndNav}>
+      <PageViewContent {...props} />
+    </SectionEndNavProvider>
+  )
+}
+
+function PageViewContent({
+  page,
+  onGoToSection,
+  onGoToPage,
+  historyRevealed,
+  onHistoryReveal,
+  onHistoryAdvance,
+  onHistoryRetreat,
+  onHistoryJumpYear,
+  historyJumpYear = null,
+  onHistoryJumpYearHandled,
+  historyHint = false,
+}: Omit<PageViewProps, 'sectionEndNav'>) {
+  const finishPractice = () => onGoToPage?.('p-bingo-break')
   if (page.kind === 'ceo') {
     return (
       <article className="page-shell page-bleed page-ceo">
@@ -137,16 +150,34 @@ export function PageView({
             )}
             {page.sideItems && (
               <ul className="page-split__list">
-                {page.sideItems.map((item) => (
-                  <li key={item}>{fixPrepositions(item)}</li>
-                ))}
+                {page.sideItems.map((item) => {
+                  const sepMatch = item.match(/\s+[–—-]\s+/)
+                  if (!sepMatch || sepMatch.index == null) {
+                    return <li key={item}>{fixPrepositions(item)}</li>
+                  }
+                  const label = item.slice(0, sepMatch.index)
+                  const rest = item.slice(sepMatch.index + sepMatch[0].length)
+                  return (
+                    <li key={item}>
+                      <strong className="page-split__list-label">
+                        {fixPrepositions(label)}
+                      </strong>
+                      {sepMatch[0]}
+                      {fixPrepositions(rest)}
+                    </li>
+                  )
+                })}
               </ul>
             )}
             {page.footerSlogan && (
               <>
                 <div className="page-split__divider" aria-hidden />
                 <p className="page-split__slogan">
-                  {fixPrepositions(page.footerSlogan.replace(/\n/g, ' '))}
+                  {page.footerSlogan.split('\n').map((line) => (
+                    <span key={line} className="page-split__slogan-line">
+                      {fixPrepositions(line)}
+                    </span>
+                  ))}
                 </p>
               </>
             )}
@@ -169,16 +200,32 @@ export function PageView({
                 <p key={p.slice(0, 24)}>{fixPrepositions(p)}</p>
               ))}
             </div>
+            {page.readGuide && (
+              <section className="page-route__read" aria-label={page.readGuide.title}>
+                <div className="page-route__read-rule" aria-hidden />
+                <h3 className="page-route__read-title">
+                  {fixPrepositions(page.readGuide.title)}
+                </h3>
+                <ol className="page-route__read-list">
+                  {page.readGuide.items.map((item, index) => (
+                    <li key={item.title} className="page-route__read-item">
+                      <span className="page-route__read-num" aria-hidden>
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                      <div className="page-route__read-copy">
+                        <h4 className="page-route__read-item-title">
+                          {fixPrepositions(item.title)}
+                        </h4>
+                        <p className="page-route__read-item-desc">
+                          {fixPrepositions(item.desc)}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            )}
           </div>
-          {page.meta?.image && (
-            <div className="page-route__visual" aria-hidden>
-              <img
-                className="page-route__visual-img"
-                src={`${asset(page.meta.image)}?v=6`}
-                alt=""
-              />
-            </div>
-          )}
         </div>
         <div className="page-route__right">
           <div className="page-route__toc">
@@ -217,6 +264,7 @@ export function PageView({
               })}
             </ul>
           </div>
+          <SectionEndNav />
         </div>
       </article>
     )
@@ -277,7 +325,8 @@ export function PageView({
               ? 7.5
               : theme === 'mastery' ||
                   theme === 'environment' ||
-                  theme === 'practice'
+                  theme === 'practice' ||
+                  theme === 'bingo'
                 ? 1.55
                 : 1.35
           }
@@ -285,7 +334,8 @@ export function PageView({
             theme === 'values' ||
             theme === 'mastery' ||
             theme === 'environment' ||
-            theme === 'practice'
+            theme === 'practice' ||
+            theme === 'bingo'
               ? 0.14
               : 0.18
           }
@@ -295,7 +345,8 @@ export function PageView({
             theme === 'values' ||
             theme === 'mastery' ||
             theme === 'environment' ||
-            theme === 'practice') && (
+            theme === 'practice' ||
+            theme === 'bingo') && (
             <div className="page-interstitial__top-line" aria-hidden />
           )}
           <h2 className="page-interstitial__title">

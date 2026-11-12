@@ -1,6 +1,7 @@
 import { fixPrepositions } from '../lib/fixPrepositions'
 import { masterySemavic } from '../data/masterySemavic'
 import { MasteryDoor } from './MasteryDoor'
+import { SectionEndNav } from './SectionEndNav'
 import '../styles/mastery-semavic.css'
 
 export function MasterySemavicPage() {
@@ -9,7 +10,6 @@ export function MasterySemavicPage() {
   return (
     <article className="page-shell page-bleed page-mastery-semavic">
       <section className="ms__half ms__half--left" aria-label={left.title}>
-        <div className="ms__edge ms__edge--left" aria-hidden />
         <div className="ms__left-inner">
           <span className="ms__badge">{left.badge}</span>
           <h1 className="ms__title">
@@ -82,6 +82,7 @@ export function MasterySemavicPage() {
         </div>
         <MasteryDoor />
       </section>
+      <SectionEndNav />
     </article>
   )
 }

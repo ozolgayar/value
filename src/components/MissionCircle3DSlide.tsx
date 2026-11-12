@@ -4,6 +4,7 @@ import {
   useRef,
   useState,
   type PointerEvent as ReactPointerEvent,
+  type WheelEvent as ReactWheelEvent,
   type KeyboardEvent,
 } from 'react'
 import { asset } from '../asset'
@@ -161,6 +162,7 @@ export function MissionCircle3DSlide() {
   const [orbit, setOrbit] = useState({ x: 540, z: 280, perspective: 1800 })
   const viewportRef = useRef<HTMLDivElement>(null)
   const rotationRef = useRef(0)
+  const wheelLock = useRef(false)
   const dragRef = useRef<{
     pointerId: number
     startX: number
@@ -219,6 +221,30 @@ export function MissionCircle3DSlide() {
     const id = window.setTimeout(() => setAnimating(false), 520)
     return () => window.clearTimeout(id)
   }, [animating, rotation])
+
+  useEffect(() => {
+    const viewport = viewportRef.current
+    if (!viewport || phone) return
+    const prevent = (e: WheelEvent) => {
+      e.preventDefault()
+    }
+    viewport.addEventListener('wheel', prevent, { passive: false })
+    return () => viewport.removeEventListener('wheel', prevent)
+  }, [phone])
+
+  const onWheel = (e: ReactWheelEvent<HTMLDivElement>) => {
+    if (phone) return
+    e.preventDefault()
+    e.stopPropagation()
+    const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX
+    if (Math.abs(delta) < 6 || wheelLock.current) return
+    wheelLock.current = true
+    // Wheel down / right → next card, matching drag-left.
+    stepBy(delta > 0 ? 1 : -1)
+    window.setTimeout(() => {
+      wheelLock.current = false
+    }, 480)
+  }
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (e.button !== 0 && e.pointerType === 'mouse') return
@@ -307,6 +333,7 @@ export function MissionCircle3DSlide() {
         onPointerMove={phone ? undefined : onPointerMove}
         onPointerUp={phone ? undefined : endDrag}
         onPointerCancel={phone ? undefined : endDrag}
+        onWheel={phone ? undefined : onWheel}
         onKeyDown={phone ? undefined : onKeyDown}
       >
         <div className={`mc3d__stage${animating ? ' is-anim' : ''}`}>
@@ -392,11 +419,10 @@ export function MissionCircle3DSlide() {
             />
           ))}
         </div>
-
         <p className="mc3d__hint">
           {phone || coarse
             ? 'Нажми на карточку, чтобы раскрыть'
-            : 'Зажми карточку мышью и перемести влево или вправо, чтобы крутить. Нажми на название проекта на карточке, чтобы узнать о нём подробнее.'}
+            : 'Крути колесиком мыши, чтобы перемещать карточки. Нажми на название проекта на карточке, чтобы узнать о нём подробнее.'}
         </p>
       </nav>
     </article>

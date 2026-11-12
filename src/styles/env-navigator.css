@@ -7,7 +7,7 @@
   height: 100%;
   min-height: 100%;
   overflow: hidden;
-  background: #1e1b4b;
+  background: var(--brand-aurora);
   color: #fff;
 }
 
@@ -19,36 +19,7 @@
   min-height: 0;
   height: 100%;
   overflow: hidden;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.en__wash {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.en__half--left .en__wash {
-  background: linear-gradient(
-    165deg,
-    rgba(96, 165, 250, 0.82) 0%,
-    rgba(99, 102, 241, 0.78) 38%,
-    rgba(124, 58, 237, 0.88) 72%,
-    rgba(76, 29, 149, 0.92) 100%
-  );
-}
-
-.en__half--right .en__wash {
-  background: linear-gradient(
-    175deg,
-    rgba(125, 211, 252, 0.72) 0%,
-    rgba(129, 140, 248, 0.78) 36%,
-    rgba(139, 92, 246, 0.86) 68%,
-    rgba(91, 33, 182, 0.92) 100%
-  );
+  background: transparent;
 }
 
 .en__inner {
@@ -194,7 +165,7 @@
   padding: 1.35rem 0.95rem 0.95rem;
   background: rgba(241, 245, 249, 0.88);
   backdrop-filter: blur(8px);
-  color: #111827;
+  color: #183553;
 }
 
 .en__card-title {
@@ -250,7 +221,7 @@
   font-size: clamp(0.68rem, 0.95vw, 0.8rem);
   font-weight: 700;
   line-height: 1.3;
-  color: #111827;
+  color: #183553;
   text-decoration: underline;
   text-underline-offset: 0.12em;
 }
@@ -263,7 +234,7 @@
   font-size: clamp(0.68rem, 0.95vw, 0.8rem);
   font-weight: 700;
   line-height: 1.3;
-  color: #111827;
+  color: #183553;
 }
 
 .en__desc {
@@ -401,7 +372,6 @@
     height: auto;
     min-height: 0;
     overflow: visible;
-    background-image: none !important;
   }
 
   .en__inner,
@@ -510,6 +480,16 @@
     margin-top: 8px;
   }
 
+  .en__half--right {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .en__half--right > .reader__section-end-nav {
+    order: 99;
+    margin-top: 0.5rem;
+  }
+
   .app-shell:has(.reader__page:not([aria-hidden='true']) .page-env-navigator) .nav-arrow {
     display: none;
   }
@@ -538,7 +518,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    height: calc(72px + env(safe-area-inset-bottom));
+    height: calc(var(--reader-bottombar-h, 52px) + env(safe-area-inset-bottom));
     background: #fff;
     border-radius: 0;
     border-top: 1px solid #e5e7eb;
