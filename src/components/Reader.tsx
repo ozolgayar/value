@@ -311,13 +311,22 @@ export function Reader({
     if (now - sectionEndToastAt.current < 1800) return
     sectionEndToastAt.current = now
     // Interstitials have no section buttons — swipe-only hint.
-    const onInterstitial =
-      flatPages[index]?.page.kind === 'interstitial'
-    setToast(
-      onInterstitial
-        ? 'Свайп влево — следующий раздел,\nсвайп вправо — предыдущий раздел'
-        : 'Конец раздела — свайпни вбок\nили воспользуйся кнопками',
-    )
+    const pageKind = flatPages[index]?.page.kind
+    if (pageKind === 'interstitial') {
+      setToast(
+        'Свайп влево — следующий раздел,\nсвайп вправо — предыдущий раздел',
+      )
+      return
+    }
+    // Strategy intro: CTA gate — do not show the generic section-end tip.
+    if (
+      pageKind === 'mission-strategy-house' &&
+      document.querySelector('.page-strategy-house.is-strategy-intro')
+    ) {
+      setToast('Нажми кнопку «Перейти к стратегии»')
+      return
+    }
+    setToast('Конец раздела — свайпни вбок\nили воспользуйся кнопками')
   }, [flatPages, index])
 
   const clearZoomTimers = useCallback(() => {
@@ -475,6 +484,22 @@ export function Reader({
     sectionEndToastAt.current = now
     setToast('Свайп влево — следующий раздел,\nсвайп вправо — предыдущий раздел')
   }, [index, isInterstitial, isMobile])
+
+  useEffect(() => {
+    const onToast = (event: Event) => {
+      const detail = (event as CustomEvent<string>).detail
+      if (typeof detail !== 'string' || !detail.trim()) return
+      sectionEndToastAt.current = Date.now()
+      setToast(detail)
+    }
+    const onClearToast = () => setToast(null)
+    window.addEventListener('gph:toast', onToast)
+    window.addEventListener('gph:clear-toast', onClearToast)
+    return () => {
+      window.removeEventListener('gph:toast', onToast)
+      window.removeEventListener('gph:clear-toast', onClearToast)
+    }
+  }, [])
 
   const go = useCallback(
     (next: number, opts?: { force?: boolean }) => {
@@ -1130,9 +1155,9 @@ export function Reader({
                     fp.globalIndex === index &&
                     fp.page.kind !== 'interstitial' &&
                     fp.page.kind !== 'closing-cover' &&
-                    fp.page.kind !== 'culture-bingo' &&
-                    !practiceStoryPageIds.includes(fp.page.id) &&
                     (masteryStoryPageIds.includes(fp.page.id) ||
+                      practiceStoryPageIds.includes(fp.page.id) ||
+                      fp.page.kind === 'culture-bingo' ||
                       fp.sectionPageIndex === fp.sectionPageCount - 1) ? (
                       <nav
                         className="reader__section-end-nav"

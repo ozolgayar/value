@@ -979,9 +979,22 @@
   box-shadow: none;
 }
 
-.tlh--mobile > .reader__section-end-nav {
+.tlh--mobile .tlh__era-board:has(> .reader__section-end-nav) {
+  padding-bottom: 0;
+}
+
+.tlh--mobile .tlh__era-board > .reader__section-end-nav {
+  --tlh-end-pad: calc(
+    max(
+        var(--reader-bottom-safe, 92px),
+        calc(80px + env(safe-area-inset-bottom, 0px))
+      ) + 0.75rem
+  );
+  flex: 1 1 auto;
+  justify-content: center;
   margin-top: 0.75rem;
-  padding-top: 0;
+  padding-top: var(--tlh-end-pad);
+  padding-bottom: var(--tlh-end-pad);
   padding-left: 0;
   padding-right: 0;
   border: 0 none;
@@ -990,18 +1003,12 @@
   background: transparent;
 }
 
-.tlh--mobile > .reader__section-end-nav::before,
-.tlh--mobile > .reader__section-end-nav::after,
+.tlh--mobile .tlh__era-board > .reader__section-end-nav::before,
+.tlh--mobile .tlh__era-board > .reader__section-end-nav::after,
 .tlh__period-nav::before,
 .tlh__period-nav::after {
   content: none;
   display: none;
-}
-
-.tlh--mobile:has(> .reader__section-end-nav) {
-  padding-bottom: calc(
-    var(--reader-bottom-safe, 92px) + env(safe-area-inset-bottom, 0px) + 1.5rem
-  );
 }
 
 .tlh__period-btn {

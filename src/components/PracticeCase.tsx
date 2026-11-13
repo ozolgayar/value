@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { asset } from '../asset'
 import type { PracticeCaseData } from '../data/practiceCase'
+import { SectionEndNav } from './SectionEndNav'
 import '../styles/practice-equipment.css'
 
 type Phase = 'choose' | 'feedback'
@@ -167,6 +168,7 @@ export function PracticeCasePage({
           </section>
         </div>
       </div>
+      {phase === 'feedback' && revealBest ? <SectionEndNav /> : null}
     </article>
   )
 }

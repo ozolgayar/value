@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { asset } from '../asset'
 import { cultureBingo, scoreBingo } from '../data/cultureBingo'
 import { fixPrepositions } from '../lib/fixPrepositions'
+import { SectionEndNav } from './SectionEndNav'
 import '../styles/culture-bingo.css'
 
 type Phase = 'play' | 'result'
@@ -93,6 +94,7 @@ export function CultureBingoPage() {
             </div>
           </div>
         </div>
+        <SectionEndNav />
       </article>
     )
   }

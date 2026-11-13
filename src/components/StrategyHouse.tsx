@@ -322,6 +322,7 @@ export function MissionStrategyHousePage() {
 
   const enterStrategy = () => {
     setMobileIntroDone(true)
+    window.dispatchEvent(new CustomEvent('gph:clear-toast'))
     // Do NOT use scrollIntoView here — it scrolls outer containers and lifts
     // the reader chrome (page counter) off the bottom of the viewport.
     window.requestAnimationFrame(() => {
@@ -334,6 +335,15 @@ export function MissionStrategyHousePage() {
       document.body.scrollTop = 0
     })
   }
+
+  useEffect(() => {
+    if (!isMobileLayout || mobileIntroDone) return
+    window.dispatchEvent(
+      new CustomEvent('gph:toast', {
+        detail: 'Нажми кнопку «Перейти к стратегии»',
+      }),
+    )
+  }, [isMobileLayout, mobileIntroDone])
 
   const activeTooltip = FLOOR_TOOLTIP[active]
   const showMobileDetail = floorsOpened

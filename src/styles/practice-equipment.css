@@ -781,6 +781,32 @@
     display: none;
   }
 
+  .page-shell.page-practice-equipment.is-feedback.is-best
+    > .reader__section-end-nav {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 0.35rem;
+    padding-top: 1.15rem;
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
+    padding-bottom: calc(
+      max(
+          var(--reader-bottom-safe, 92px),
+          calc(
+            var(--reader-bottombar-h, 52px) + env(safe-area-inset-bottom, 0px) +
+              28px
+          )
+        ) + 2.75rem
+    );
+    background: transparent;
+  }
+
+  .page-shell.page-practice-equipment.is-feedback.is-best .pe__frame {
+    padding-bottom: 0.5rem;
+  }
+
   .pe__frame {
     height: auto;
     min-height: 0;

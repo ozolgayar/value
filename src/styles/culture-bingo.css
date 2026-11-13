@@ -729,6 +729,29 @@
   .cb__result-actions .cb__btn {
     width: 100%;
   }
+
+  .page-culture-bingo--result > .reader__section-end-nav {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 420px;
+    margin: 0.35rem auto 0;
+    padding-top: 0.85rem;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: calc(
+      max(
+          var(--reader-bottom-safe, 92px),
+          calc(
+            var(--reader-bottombar-h, 52px) + env(safe-area-inset-bottom, 0px) +
+              28px
+          )
+        ) + 2.75rem
+    );
+    background: transparent;
+  }
 }
 
 @media (max-width: 420px) {
