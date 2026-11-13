@@ -120,6 +120,7 @@ function pagerNeedsWhite(kind: PageKind): boolean {
     case 'mission-strategy-spread':
     case 'mission-strategy-house':
     case 'mission-uniqueness':
+    case 'mission-we-brand':
     case 'env-navigator':
     case 'culture-bingo':
     case 'closing-cover':
@@ -309,8 +310,15 @@ export function Reader({
     const now = Date.now()
     if (now - sectionEndToastAt.current < 1800) return
     sectionEndToastAt.current = now
-    setToast('Конец раздела — свайпни вбок\nили воспользуйся кнопками')
-  }, [])
+    // Interstitials have no section buttons — swipe-only hint.
+    const onInterstitial =
+      flatPages[index]?.page.kind === 'interstitial'
+    setToast(
+      onInterstitial
+        ? 'Свайп влево — следующий раздел,\nсвайп вправо — предыдущий раздел'
+        : 'Конец раздела — свайпни вбок\nили воспользуйся кнопками',
+    )
+  }, [flatPages, index])
 
   const clearZoomTimers = useCallback(() => {
     zoomTimers.current.forEach((id) => window.clearTimeout(id))
@@ -465,7 +473,7 @@ export function Reader({
     const now = Date.now()
     if (now - sectionEndToastAt.current < 1800) return
     sectionEndToastAt.current = now
-    setToast('Конец раздела — свайпни вбок\nили воспользуйся кнопками')
+    setToast('Свайп влево — следующий раздел,\nсвайп вправо — предыдущий раздел')
   }, [index, isInterstitial, isMobile])
 
   const go = useCallback(

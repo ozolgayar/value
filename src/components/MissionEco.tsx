@@ -6,6 +6,7 @@ import {
   missionStrategy,
   missionStrategyRole,
   missionUniqueness,
+  missionWeBrand,
 } from '../data/missionEco'
 import { fixPrepositions } from '../lib/fixPrepositions'
 import { SectionEndNav } from './SectionEndNav'
@@ -65,6 +66,40 @@ export function MissionStatementPage() {
   )
 }
 
+export function MissionWeBrandPage() {
+  const data = missionWeBrand
+
+  return (
+    <article className="page-shell page-bleed page-mission-we-brand">
+      <div className="mwe__glow mwe__glow--right" aria-hidden />
+      <div className="mwe__glow mwe__glow--soft" aria-hidden />
+      <div className="mwe__layout">
+        <div className="mwe__inner">
+          <div className="mwe__lead">
+            <span className="mwe__badge">{data.badge}</span>
+            <h2 className="mwe__title">{fixPrepositions(data.title)}</h2>
+          </div>
+          <div className="mwe__body">
+            {data.body.map((p) => (
+              <p key={p.slice(0, 36)}>{fixPrepositions(p)}</p>
+            ))}
+          </div>
+          <footer className="mwe__brand">
+            <span>ГЕРОФАРМ</span>
+            <img src={asset(data.logo)} alt="" aria-hidden />
+            <span>ТРАНСФОРМАЦИЯ</span>
+          </footer>
+        </div>
+        <div className="mwe__stage" aria-hidden>
+          <div className="mwe__mark">
+            <img src={asset(data.mark)} alt="" />
+          </div>
+        </div>
+      </div>
+    </article>
+  )
+}
+
 export function MissionUniquenessPage() {
   const data = missionUniqueness
 
@@ -74,6 +109,7 @@ export function MissionUniquenessPage() {
         <div className="muniq__lead">
           <span className="mstmt__badge">{data.badge}</span>
           <h2 className="muniq__title">{fixPrepositions(data.title)}</h2>
+          <p className="muniq__intro">{fixPrepositions(data.lead)}</p>
         </div>
         <div className="muniq__points">
           {data.points.map((point) => (
@@ -117,33 +153,33 @@ export function MissionLongevityPage() {
   }, [])
 
   return (
-    <article className="page-shell page-bleed page-mission-panel page-mission-longevity">
+    <article className="page-shell page-bleed page-mission-longevity">
       <div className="mlong">
         <div className="mlong__copy">
-          <span className="mpanel__badge">{data.badge}</span>
-          <h2 className="mpanel__title mpanel__title--long">{data.title}</h2>
-          <div className="mpanel__intro">
-            {data.body.map((p) => (
-              <p key={p.slice(0, 28)}>{p}</p>
-            ))}
-          </div>
-          <ul className="mlong__list">
-            {data.items.map((item) => (
-              <li key={item.label} className="mlong__item">
-                <span className="mlong__icon">
-                  <img src={asset(item.icon)} alt="" />
-                </span>
-                <span>{item.label}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="mlong__footer">
-            <span className="mlong__hash">{data.hashtag}</span>
-            <footer className="mpanel__brand">
-              <span>ГЕРОФАРМ</span>
-              <img src={asset(data.logo)} alt="" aria-hidden />
-              <span>ТРАНСФОРМАЦИЯ</span>
-            </footer>
+          <div className="mlong__inner">
+            <span className="mpanel__badge">{data.badge}</span>
+            <h2 className="mpanel__title mpanel__title--long">
+              {fixPrepositions(data.title)}
+            </h2>
+            <div className="mpanel__intro">
+              {data.body.map((p) => (
+                <p key={p.slice(0, 28)}>{fixPrepositions(p)}</p>
+              ))}
+            </div>
+            <section className="mlong__unite-block" aria-label={data.uniteLabel}>
+              <p className="mlong__unite">{fixPrepositions(data.uniteLabel)}</p>
+              <ul className="mlong__list">
+                {data.items.map((item) => (
+                  <li key={item.label} className="mlong__item">
+                    <span className="mlong__icon" aria-hidden>
+                      <img src={asset(item.icon)} alt="" />
+                    </span>
+                    <span>{fixPrepositions(item.label)}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+            <p className="mlong__closing">{fixPrepositions(data.closing)}</p>
           </div>
         </div>
         <div className="mlong__collage">
@@ -162,6 +198,7 @@ export function MissionLongevityPage() {
           </div>
         </div>
       </div>
+      <SectionEndNav />
     </article>
   )
 }

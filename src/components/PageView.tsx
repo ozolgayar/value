@@ -12,6 +12,7 @@ import {
   MissionStrategyHousePage,
   MissionStrategySpreadPage,
   MissionUniquenessPage,
+  MissionWeBrandPage,
 } from './MissionEco'
 import { ValuesSpreadPage } from './ValuesSpread'
 import { ValueAmbitionPage } from './ValueAmbition'
@@ -416,6 +417,10 @@ function PageViewContent({
 
   if (page.kind === 'mission-strategy-house') {
     return <MissionStrategyHousePage />
+  }
+
+  if (page.kind === 'mission-we-brand') {
+    return <MissionWeBrandPage />
   }
 
   if (page.kind === 'mission-uniqueness') {

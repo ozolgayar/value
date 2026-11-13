@@ -188,9 +188,6 @@ function chapterDensity(page: HistoryPage): 'compact' | 'comfortable' | 'dense' 
   return 'comfortable'
 }
 
-const MOBILE_HISTORY_INTRO =
-  'Ключевые вехи становления ГЕРОФАРМ: переломные решения и идеи, сформировавшие корпоративный характер.'
-
 export function HistoryTimeline({
   page,
   pageCount,
@@ -239,7 +236,14 @@ export function HistoryTimeline({
     pinnedYearRef.current = null
     const root = chapterRef.current
     if (root) root.scrollTo({ top: 0, behavior: 'auto' })
-  }, [page.index, page.years])
+    if (phone) {
+      const readerPage = document.querySelector(
+        '.reader__page:not([aria-hidden="true"])',
+      ) as HTMLElement | null
+      readerPage?.scrollTo({ top: 0, behavior: 'auto' })
+      rootRef.current?.scrollTo({ top: 0, behavior: 'auto' })
+    }
+  }, [page.index, page.years, phone])
 
   // Keep the right piano in sync with the latest revealed card.
   useEffect(() => {
@@ -278,11 +282,28 @@ export function HistoryTimeline({
   }
 
   const scrollToYear = (year: string) => {
-    const root = chapterRef.current
-    const node = root?.querySelector<HTMLElement>(
+    const node = rootRef.current?.querySelector<HTMLElement>(
       `.tlh__item[data-year="${year}"]`,
     )
-    if (!root || !node) return false
+    if (!node) return false
+
+    if (phone) {
+      const pageEl = document.querySelector(
+        '.reader__page:not([aria-hidden="true"])',
+      ) as HTMLElement | null
+      if (!pageEl) return false
+      const pageRect = pageEl.getBoundingClientRect()
+      const nodeRect = node.getBoundingClientRect()
+      const top = nodeRect.top - pageRect.top + pageEl.scrollTop - 12
+      pageEl.scrollTo({
+        top: Math.max(0, top),
+        behavior: reduced ? 'auto' : 'smooth',
+      })
+      return true
+    }
+
+    const root = chapterRef.current
+    if (!root) return false
     if (page.years.length === 1) {
       root.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' })
       return true
@@ -545,78 +566,86 @@ export function HistoryTimeline({
         className={`tlh tlh--${page.accent} tlh--mobile tlh--editorial`}
         aria-label={`История ГЕРОФАРМ · ${page.rangeLabel}`}
       >
-        <header className="tlh__mobile-intro">
-          <p className="tlh__mobile-kicker">История ГЕРОФАРМ</p>
-          <h2 className="tlh__mobile-title">История</h2>
-          <p className="tlh__mobile-lead">{MOBILE_HISTORY_INTRO}</p>
+        <header className="tlh__era-intro" aria-label="Описание периода">
+          <div className="tlh__era-intro-inner">
+            <span className="tlh__eyebrow">{page.eyebrow}</span>
+            <h2 className="tlh__quote">{fixPrepositions(page.quote)}</h2>
+            <div className="tlh__body">
+              {page.body.map((p) => (
+                <p key={p.slice(0, 32)}>{fixPrepositions(p)}</p>
+              ))}
+            </div>
+          </div>
         </header>
 
-        <nav
-          ref={chipsRef}
-          className="tlh__chips"
-          aria-label="Периоды истории"
-          onTouchStart={(e) => e.stopPropagation()}
-          onTouchEnd={(e) => e.stopPropagation()}
-          onTouchCancel={(e) => e.stopPropagation()}
-        >
-          {historyPages.map((chapter) => (
+        <div className="tlh__era-board">
+          <nav
+            ref={chipsRef}
+            className="tlh__chips"
+            aria-label="Периоды истории"
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchEnd={(e) => e.stopPropagation()}
+            onTouchCancel={(e) => e.stopPropagation()}
+          >
+            {historyPages.map((chapter) => (
+              <button
+                key={chapter.id}
+                type="button"
+                className={`tlh__chip${
+                  chapter.index === page.index ? ' is-active' : ''
+                }`}
+                data-chapter={chapter.index}
+                aria-current={chapter.index === page.index ? 'true' : undefined}
+                onClick={() => {
+                  const year = chapter.years[0]?.year
+                  if (!year) return
+                  if (chapter.index === page.index) {
+                    setActiveYear(year)
+                    scrollToYear(year)
+                    return
+                  }
+                  onJumpYear?.(year)
+                }}
+              >
+                {chapter.rangeLabel}
+              </button>
+            ))}
+          </nav>
+
+          <div
+            ref={chapterRef}
+            className="tlh__chapter tlh__chapter--mobile"
+            aria-live="polite"
+          >
+            <div className="tlh__period tlh__period--in-panel">{page.rangeLabel}</div>
+            {yearCards}
+            {showEpilogue ? (
+              <p className="tlh__epilogue" aria-live="polite">
+                Реализуем стратегию и ищем новые возможности
+              </p>
+            ) : null}
+          </div>
+
+          <div className="tlh__period-nav">
             <button
-              key={chapter.id}
               type="button"
-              className={`tlh__chip${
-                chapter.index === page.index ? ' is-active' : ''
-              }`}
-              data-chapter={chapter.index}
-              aria-current={chapter.index === page.index ? 'true' : undefined}
-              onClick={() => {
-                const year = chapter.years[0]?.year
-                if (!year) return
-                if (chapter.index === page.index) {
-                  setActiveYear(year)
-                  scrollToYear(year)
-                  return
-                }
-                onJumpYear?.(year)
-              }}
+              className="tlh__period-btn"
+              disabled={page.index <= 0 || !onRetreat}
+              onClick={() => onRetreat?.()}
             >
-              {chapter.rangeLabel}
+              Предыдущий период
             </button>
-          ))}
-        </nav>
-
-        <div
-          ref={chapterRef}
-          className="tlh__chapter tlh__chapter--mobile"
-          aria-live="polite"
-        >
-          <div className="tlh__period tlh__period--in-panel">{page.rangeLabel}</div>
-          {yearCards}
-          {showEpilogue ? (
-            <p className="tlh__epilogue" aria-live="polite">
-              Реализуем стратегию и ищем новые возможности
-            </p>
-          ) : null}
+            <button
+              type="button"
+              className="tlh__period-btn tlh__period-btn--next"
+              disabled={isLastPage || !onAdvance}
+              onClick={() => onAdvance?.()}
+            >
+              Следующий период
+            </button>
+          </div>
+          <SectionEndNav />
         </div>
-
-        <div className="tlh__period-nav">
-          <button
-            type="button"
-            className="tlh__period-btn"
-            disabled={page.index <= 0 || !onRetreat}
-            onClick={() => onRetreat?.()}
-          >
-            Предыдущий период
-          </button>
-          <button
-            type="button"
-            className="tlh__period-btn tlh__period-btn--next"
-            disabled={isLastPage || !onAdvance}
-            onClick={() => onAdvance?.()}
-          >
-            Следующий период
-          </button>
-        </div>
-        <SectionEndNav />
       </section>
     )
   }
