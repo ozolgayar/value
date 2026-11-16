@@ -1,0 +1,65 @@
+/* TT Commons Pro Expanded — local faces for body / display / light UI */
+
+@font-face {
+  font-family: 'TT Commons Pro Expanded';
+  src: url('../fonts/TT-Commons-Pro-Expanded-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TT Commons Pro Expanded';
+  src: url('../fonts/TT-Commons-Pro-Expanded-Normal.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TT Commons Pro Expanded';
+  src: url('../fonts/TT-Commons-Pro-Expanded-Regular.ttf') format('truetype');
+  font-weight: 450;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TT Commons Pro Expanded';
+  src: url('../fonts/TT-Commons-Pro-Expanded-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TT Commons Pro Expanded';
+  src: url('../fonts/TT-Commons-Pro-Expanded-DemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TT Commons Pro Expanded';
+  src: url('../fonts/TT-Commons-Pro-Expanded-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TT Commons Pro Expanded';
+  src: url('../fonts/TT-Commons-Pro-Expanded-ExtraBlack.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TT Commons Pro Expanded';
+  src: url('../fonts/TT-Commons-Pro-Expanded-ExtraBlack.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}

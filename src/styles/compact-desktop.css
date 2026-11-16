@@ -432,130 +432,28 @@
   }
 }
 
-/* —— Welcome compact (desktop only) —— */
-@media (min-width: 1024px) and (max-height: 900px),
-  (min-width: 1024px) and (max-width: 1366px) {
-  .welcome {
-    --frame: clamp(12px, 1.4vw, 24px);
-    --welcome-top-clearance: calc(var(--frame) + 7.25rem);
-  }
-
-  .welcome__top {
-    width: min(380px, calc(100% - var(--frame) * 2));
-    padding: 12px 16px 14px;
-  }
-
-  .welcome__title {
-    --title-size: clamp(42px, 4.4vw, 68px);
-    top: var(--welcome-top-clearance);
-    line-height: 0.92;
-  }
-
-  .welcome__title-row {
-    height: calc(var(--title-size) * 0.68);
-  }
-
-  .welcome__glass {
-    width: min(520px, calc(100% - var(--frame) * 2));
-    padding: 12px 16px 14px;
-    bottom: max(12px, calc(var(--frame) - 4px));
-  }
-
-  .welcome__lead {
-    font-size: clamp(14px, 1.05vw, 17px);
-    line-height: 1.28;
-  }
-
-  .welcome__read {
-    margin-top: 8px;
-    font-size: clamp(12px, 0.9vw, 14px);
-  }
-
-  .welcome__actions {
-    margin-top: 10px;
-    gap: 12px;
-  }
-
-  .welcome__cta,
-  .welcome__back {
-    height: 42px;
-    min-height: 42px;
-  }
-
-  .welcome__back {
-    line-height: 42px;
-  }
-
-  .welcome__emblems {
-    top: 10%;
-    right: clamp(12px, 2.5vw, 40px);
-    width: min(26vw, 340px);
-    height: min(48vh, 300px);
-  }
-
-  .welcome__emblem--heart {
-    width: clamp(92px, 9.5vw, 132px);
-  }
-
-  .welcome__emblem--hand {
-    left: -28px;
-    width: clamp(82px, 8.5vw, 116px);
-  }
-
-  .welcome__emblem--brain {
-    right: 32px;
-    width: clamp(78px, 8vw, 108px);
-  }
-
-  .welcome__bg-hashtag {
-    font-size: clamp(28px, 3vw, 48px);
-  }
-}
-
-@media (min-width: 1024px) and (max-height: 780px) {
-  .welcome {
-    --welcome-top-clearance: calc(var(--frame) + 6.5rem);
-  }
-
-  .welcome__title {
-    --title-size: clamp(36px, 3.8vw, 54px);
-  }
-
-  .welcome__glass {
-    padding: 10px 14px 12px;
-  }
-
-  .welcome__lead {
-    font-size: 13px;
-  }
-
-  .welcome__emblems {
-    height: min(42vh, 240px);
-  }
-
-  .welcome__emblem--heart {
-    width: clamp(76px, 8vw, 104px);
-  }
-
-  .welcome__emblem--hand {
-    width: clamp(68px, 7vw, 92px);
-    left: -16px;
-  }
-
-  .welcome__emblem--brain {
-    width: clamp(64px, 6.5vw, 88px);
-  }
-}
-
-/* —— Cover compact —— */
+/* —— Cover / Welcome compact (short desktop) —— */
 @media (min-width: 900px) and (max-height: 900px),
   (min-width: 900px) and (max-width: 1366px) {
-  .cover-hero {
-    padding-top: 0;
-  }
-
   .cover__title {
     font-size: clamp(2rem, 4.5vw, 3.25rem);
     line-height: 0.98;
+  }
+
+  .cover__visual {
+    height: min(68vh, 34rem);
+    min-height: 18rem;
+  }
+
+  .welcome__title {
+    font-size: clamp(2.25rem, 4.5vw, 3.75rem);
+  }
+
+  .welcome__card {
+    padding: clamp(1.25rem, 2.5vw, 2rem);
+  }
+
+  .welcome__lead {
+    font-size: clamp(1rem, 1.4vw, 1.35rem);
   }
 }

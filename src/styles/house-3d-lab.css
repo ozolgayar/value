@@ -6,7 +6,7 @@
   overflow: hidden;
   background: #e4ebe7;
   color: #183553;
-  font-family: Verdana, Geneva, sans-serif;
+  font-family: var(--font);
 }
 
 .house-lab__header {

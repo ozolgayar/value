@@ -146,7 +146,7 @@
 }
 
 .preloader-brand__word {
-  font-family: Verdana, Geneva, sans-serif;
+  font-family: var(--font);
   font-weight: 700;
   font-size: 1em;
   letter-spacing: 0.06em;

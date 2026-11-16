@@ -66,14 +66,14 @@
 .h1 {
   font-size: var(--h1-size);
   line-height: var(--lh-tight);
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: -0.01em;
 }
 
 .h2 {
   font-size: var(--h2-size);
   line-height: var(--lh-tight);
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: -0.005em;
 }
 
