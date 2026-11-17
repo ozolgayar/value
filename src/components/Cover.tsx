@@ -57,7 +57,7 @@ export function Cover({ onOpen, inert = false }: CoverProps) {
           <div className="cover__cell cover__cell--2 optional">
             <img src={asset('img/main/03.jpg')} alt="" />
           </div>
-          <div className="cover__cell cover__cell--3">
+          <div className="cover__cell cover__cell--3 cover__cell--person">
             <img src={asset('img/main/01.jpg')} alt="" />
           </div>
           <div className="cover__cell cover__cell--4 optional">

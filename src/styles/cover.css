@@ -211,27 +211,72 @@
 
 @media (max-width: 600px) {
   .cover {
+    width: 100%;
+    max-width: none;
+    min-height: auto;
+    height: auto;
     overflow: auto;
   }
 
   .cover__hero {
-    padding: 24px 20px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: none;
+    min-height: auto;
+    height: auto;
+    gap: 0;
+    padding: 28px 20px 40px;
   }
 
   .cover__hero::before {
     display: none;
   }
 
+  .cover__content {
+    width: 100%;
+    max-width: none;
+  }
+
+  .cover__logo {
+    width: min(100%, 15rem);
+    max-height: 2rem;
+  }
+
   .cover__title {
-    font-size: clamp(2.5rem, 12vw, 3.6rem);
-    margin: 1.25rem 0 1.1rem;
+    font-size: clamp(42px, 14vw, 56px);
+    line-height: 0.9;
+    margin: 28px 0 22px;
+  }
+
+  .cover__content .primary-btn {
+    min-height: 52px;
+    padding: 0 28px;
+    margin: 0 0 28px;
+  }
+
+  .cover__hashtag {
+    font-size: clamp(34px, 11vw, 46px);
+    line-height: 0.9;
+    margin: 0 0 28px;
+    max-width: none;
   }
 
   .cover__visual {
-    margin-top: 0.5rem;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 140px 200px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: none;
     gap: 8px;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    margin-top: 0;
+    align-self: stretch;
+  }
+
+  .cover__cell {
+    height: 140px;
   }
 
   .cover__cell--1 {
@@ -244,17 +289,18 @@
     grid-row: 1 / 2;
   }
 
-  .cover__cell--3 {
-    grid-column: 1 / 3;
+  .cover__cell--person {
+    grid-column: 1 / -1;
     grid-row: 2 / 3;
+    height: 200px;
+  }
+
+  .cover__cell--person img {
+    object-fit: cover;
+    object-position: center 18%;
   }
 
   .cover__cell.optional {
     display: none;
-  }
-
-  .cover__hashtag {
-    font-size: clamp(1.6rem, 10vw, 2.4rem);
-    max-width: 14ch;
   }
 }

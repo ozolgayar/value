@@ -123,32 +123,65 @@ function shortestDelta(from: number, to: number) {
   return d
 }
 
-/** Soft cover-flow pose: neighbors stay readable (titles visible), not edge-on strips. */
+/**
+ * Elliptical 360 orbit: front card largest/clearest; sides sit slightly lower
+ * and turn with rotateY; far cards stay sharp (no blur), just smaller/fainter.
+ */
 function panelPose(
   panelIndex: number,
   rotation: number,
   orbitX: number,
   orbitZ: number,
-  perspective: number,
 ) {
   let angle = ((panelIndex * STEP + rotation) % 360 + 360) % 360
   if (angle > 180) angle -= 360
 
   const abs = Math.abs(angle)
+  const sign = Math.sign(angle || 1)
   const rad = (angle * Math.PI) / 180
+
   const x = Math.sin(rad) * orbitX
-  const z = Math.cos(rad) * orbitZ - orbitZ
-  const faceY = Math.sign(angle || 1) * Math.min(30, abs * 0.42)
-  const t = Math.min(1, abs / 160)
-  const opacity = abs > 150 ? 0 : 1 - t * 0.22
-  const scale = (perspective - z) / perspective
-  const visible = abs < 155
+  // Active stays forward; sides fall back along the ellipse.
+  const z = Math.cos(rad) * orbitZ
+  // Farther from center → lower on screen (positive Y), never higher.
+  const y = 20 + Math.min(24, abs * 0.22)
+  const faceY = -sign * Math.min(28, abs * 0.36)
+
+  let scale = 1
+  let opacity = 1
+  let zIndex = 5
+  let slot: 'active' | 'near' | 'far' | 'hidden' = 'active'
+  let visible = true
+
+  if (abs < 22) {
+    slot = 'active'
+    scale = 1
+    opacity = 1
+    zIndex = 5
+  } else if (abs < 95) {
+    slot = 'near'
+    scale = 0.9
+    opacity = 0.72
+    zIndex = 4
+  } else if (abs < 155) {
+    slot = 'far'
+    scale = 0.78
+    opacity = 0.38
+    zIndex = 2
+  } else {
+    slot = 'hidden'
+    scale = 0.72
+    opacity = 0
+    zIndex = 1
+    visible = false
+  }
 
   return {
-    transform: `translateX(${x.toFixed(1)}px) translateZ(${z.toFixed(1)}px) rotateY(${faceY.toFixed(2)}deg) scale(${scale.toFixed(3)})`,
+    transform: `translate(-50%, -50%) translateX(${x.toFixed(1)}px) translateY(${y.toFixed(1)}px) translateZ(${z.toFixed(1)}px) rotateY(${faceY.toFixed(2)}deg) scale(${scale.toFixed(3)})`,
     opacity,
-    zIndex: Math.round((1 - t) * 50),
+    zIndex,
     visible,
+    slot,
   }
 }
 
@@ -159,7 +192,8 @@ export function MissionCircle3DSlide() {
   const [rotation, setRotation] = useState(0)
   const [animating, setAnimating] = useState(false)
   const [ready, setReady] = useState(false)
-  const [orbit, setOrbit] = useState({ x: 540, z: 280, perspective: 1800 })
+  const [dragging, setDragging] = useState(false)
+  const [orbit, setOrbit] = useState({ x: 460, z: 220, perspective: 1400 })
   const viewportRef = useRef<HTMLDivElement>(null)
   const rotationRef = useRef(0)
   const wheelLock = useRef(false)
@@ -175,9 +209,9 @@ export function MissionCircle3DSlide() {
   useEffect(() => {
     const syncOrbit = () => {
       const w = window.innerWidth
-      if (w < 1024) setOrbit({ x: 340, z: 180, perspective: 1300 })
-      else if (w < 1440) setOrbit({ x: 460, z: 240, perspective: 1800 })
-      else setOrbit({ x: 540, z: 280, perspective: 1800 })
+      if (w < 1024) setOrbit({ x: 300, z: 160, perspective: 1200 })
+      else if (w < 1440) setOrbit({ x: 400, z: 200, perspective: 1400 })
+      else setOrbit({ x: 460, z: 220, perspective: 1400 })
     }
     syncOrbit()
     window.addEventListener('resize', syncOrbit)
@@ -255,6 +289,7 @@ export function MissionCircle3DSlide() {
       startX: e.clientX,
       startRotation: rotation,
     }
+    setDragging(true)
     e.currentTarget.setPointerCapture(e.pointerId)
   }
 
@@ -270,6 +305,7 @@ export function MissionCircle3DSlide() {
     const drag = dragRef.current
     if (!drag || drag.pointerId !== e.pointerId) return
     dragRef.current = null
+    setDragging(false)
     try {
       e.currentTarget.releasePointerCapture(e.pointerId)
     } catch {
@@ -323,12 +359,13 @@ export function MissionCircle3DSlide() {
 
       <div
         ref={viewportRef}
-        className="mc3d__viewport"
+        className={`mc3d__viewport${dragging ? ' is-dragging' : ''}`}
         tabIndex={0}
         role="region"
         aria-roledescription="3D-карусель"
         aria-label="Экосистема здорового долголетия"
         aria-live="polite"
+        style={phone ? undefined : { perspective: `${orbit.perspective}px` }}
         onPointerDown={phone ? undefined : onPointerDown}
         onPointerMove={phone ? undefined : onPointerMove}
         onPointerUp={phone ? undefined : endDrag}
@@ -338,7 +375,7 @@ export function MissionCircle3DSlide() {
       >
         <div className={`mc3d__stage${animating ? ' is-anim' : ''}`}>
           {PANELS.map((panel, i) => {
-            const pose = panelPose(i, rotation, orbit.x, orbit.z, orbit.perspective)
+            const pose = panelPose(i, rotation, orbit.x, orbit.z)
             const isActive = i === active
             const open = openId === panel.id
             if (phone) {
@@ -352,7 +389,9 @@ export function MissionCircle3DSlide() {
                     className="mc3d__acc-toggle"
                     aria-expanded={open}
                     onClick={() =>
-                      setOpenId((current) => (current === panel.id ? '' : panel.id))
+                      setOpenId((current) =>
+                        current === panel.id ? '' : panel.id,
+                      )
                     }
                   >
                     <h2 className="mc3d__panel-title">
@@ -362,7 +401,9 @@ export function MissionCircle3DSlide() {
                   </button>
                   <div className="mc3d__acc-body">
                     <div className="mc3d__acc-inner">
-                      <p className="mc3d__panel-text">{fixPrepositions(panel.text)}</p>
+                      <p className="mc3d__panel-text">
+                        {fixPrepositions(panel.text)}
+                      </p>
                       <div className="mc3d__tags">
                         {panel.tags.map((tag) => (
                           <CircleTag key={tag.label} tag={tag} />
@@ -385,7 +426,7 @@ export function MissionCircle3DSlide() {
                   zIndex: pose.zIndex,
                   pointerEvents: pose.visible ? 'auto' : 'none',
                 }}
-                aria-hidden={!isActive}
+                aria-hidden={!pose.visible}
                 onClick={() => {
                   if (!isActive) goTo(i)
                 }}
@@ -393,7 +434,9 @@ export function MissionCircle3DSlide() {
                 <h2 className="mc3d__panel-title">
                   {fixPrepositions(panel.title)}
                 </h2>
-                <p className="mc3d__panel-text">{fixPrepositions(panel.text)}</p>
+                <p className="mc3d__panel-text">
+                  {fixPrepositions(panel.text)}
+                </p>
                 <div className="mc3d__tags">
                   {panel.tags.map((tag) => (
                     <CircleTag key={tag.label} tag={tag} />
@@ -422,7 +465,7 @@ export function MissionCircle3DSlide() {
         <p className="mc3d__hint">
           {phone || coarse
             ? 'Нажми на карточку, чтобы раскрыть'
-            : 'Крути колесиком мыши, чтобы перемещать карточки. Нажми на название проекта на карточке, чтобы узнать о нём подробнее.'}
+            : 'Крути карточки колёсиком мыши. Нажимай ссылки на карточках, чтобы узнать о проектах подробнее'}
         </p>
       </nav>
     </article>

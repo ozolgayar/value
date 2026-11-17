@@ -16,50 +16,39 @@ export { MissionCircle3DSlide as MissionEcosystemPage } from './MissionCircle3DS
 export { MissionCircle3DSlide } from './MissionCircle3DSlide'
 export { MissionStrategyHousePage } from './StrategyHouse'
 
-function renderHighlighted(text: string, highlight?: string) {
-  const fixed = fixPrepositions(text)
-  if (!highlight || !fixed.includes(highlight)) return fixed
-  const parts = fixed.split(highlight)
-  return (
-    <>
-      {parts[0]}
-      <strong>{highlight}</strong>
-      {parts[1]}
-    </>
-  )
-}
-
 export function MissionStatementPage() {
   const data = missionStatement
   return (
     <article className="page-shell page-bleed page-mission-statement">
-      <div
-        className="mstmt__photo"
-        style={{ backgroundImage: `url(${asset(data.photo)})` }}
-        aria-hidden
-      />
-      <div className="mstmt__veil" aria-hidden />
-      <div className="mstmt__inner">
-        <span className="mstmt__badge">{data.badge}</span>
-        <h2 className="mstmt__title">{fixPrepositions(data.title)}</h2>
-        <div className="mstmt__body">
-          <span className="mstmt__arrow" aria-hidden>
-            →
-          </span>
-          <div className="mstmt__paras">
-            {data.body.map((p, i) => (
-              <p key={p.slice(0, 28)}>
-                {i === data.body.length - 1
-                  ? renderHighlighted(p, data.highlight)
-                  : fixPrepositions(p)}
-              </p>
-            ))}
-          </div>
+      <div className="mstmt__spread">
+        <div className="mstmt__bg mstmt__bg--strategy" aria-hidden />
+        <div className="mstmt__bg mstmt__bg--mission" aria-hidden />
+        <div className="mstmt__mid">
+          <section
+            className="mstmt__panel mstmt__panel--mission"
+            aria-label="Миссия"
+          >
+            <span className="mstmt__badge">{data.badge}</span>
+            <h2 className="mstmt__title">{fixPrepositions(data.title)}</h2>
+          </section>
+          <section
+            className="mstmt__panel mstmt__panel--strategy"
+            aria-label="Стратегия"
+          >
+            <span className="mstmt__badge">{data.strategyBadge}</span>
+            <div className="mstmt__paras">
+              {data.strategyBody.map((p) => (
+                <p key={p.slice(0, 28)}>{fixPrepositions(p)}</p>
+              ))}
+            </div>
+          </section>
         </div>
         <footer className="mstmt__brand">
-          <span>ГЕРОФАРМ</span>
-          <img src={asset(data.logo)} alt="" aria-hidden />
-          <span>ТРАНСФОРМАЦИЯ</span>
+          <img
+            className="mstmt__brand-logo"
+            src={asset('img/main/logo.svg')}
+            alt="ГЕРОФАРМ Трансформация"
+          />
         </footer>
       </div>
     </article>
@@ -71,12 +60,9 @@ export function MissionWeBrandPage() {
 
   return (
     <article className="page-shell page-bleed page-mission-we-brand">
-      <div className="mwe__glow mwe__glow--right" aria-hidden />
-      <div className="mwe__glow mwe__glow--soft" aria-hidden />
       <div className="mwe__layout">
         <div className="mwe__inner">
           <div className="mwe__lead">
-            <span className="mwe__badge">{data.badge}</span>
             <h2 className="mwe__title">{fixPrepositions(data.title)}</h2>
           </div>
           <div className="mwe__body">
@@ -85,9 +71,11 @@ export function MissionWeBrandPage() {
             ))}
           </div>
           <footer className="mwe__brand">
-            <span>ГЕРОФАРМ</span>
-            <img src={asset(data.logo)} alt="" aria-hidden />
-            <span>ТРАНСФОРМАЦИЯ</span>
+            <img
+              src={asset(data.logo)}
+              alt="ГЕРОФАРМ"
+              className="mwe__brand-logo"
+            />
           </footer>
         </div>
         <div className="mwe__stage" aria-hidden>

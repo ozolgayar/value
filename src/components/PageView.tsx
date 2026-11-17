@@ -114,7 +114,16 @@ function PageViewContent({
         <div className="page-split__left">
           <div className="page-split__left-inner">
             {page.title && (
-              <h2 className="page-split__title">{fixPrepositions(page.title)}</h2>
+              <h2 className="page-split__title">
+                {fixPrepositions(page.title)
+                  .split('\n')
+                  .map((line, i, arr) => (
+                    <span key={`${i}-${line.slice(0, 16)}`}>
+                      {line}
+                      {i < arr.length - 1 ? <br /> : null}
+                    </span>
+                  ))}
+              </h2>
             )}
             <div className="page-split__body">
               {page.body?.map((p, i) => (
@@ -355,16 +364,7 @@ function PageViewContent({
               <span key={line}>{fixPrepositions(line)}</span>
             ))}
           </h2>
-          {page.id === 'p-history-break' ? (
-            <img
-              className="page-interstitial__mark"
-              src={asset('logo/trans-mark-only.png')}
-              alt=""
-              aria-hidden
-            />
-          ) : (
-            <div className="page-interstitial__rule" aria-hidden />
-          )}
+          <div className="page-interstitial__rule" aria-hidden />
           <div className="page-interstitial__body">
             {page.body?.map((p) => {
               const fixed = fixPrepositions(p)

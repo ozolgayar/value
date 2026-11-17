@@ -6,7 +6,9 @@ import {
   type WheelEvent as ReactWheelEvent,
 } from 'react'
 import {
-  historyPages,
+  getHistoryMobilePeriodIndexForYear,
+  historyMobilePeriodCount,
+  historyMobilePeriods,
   historyPianoYears,
   type HistoryBlock,
   type HistoryPage,
@@ -216,22 +218,49 @@ export function HistoryTimeline({
   const pinnedYearRef = useRef<string | null>(null)
 
   const phone = useMediaQuery('(max-width: 768px)')
-  const total = page.years.length
-  const isLastPage = page.index >= pageCount - 1
+  const mobilePeriodIndex = getHistoryMobilePeriodIndexForYear(
+    page.years[0]?.year ?? '',
+  )
+  const mobilePeriod =
+    mobilePeriodIndex >= 0
+      ? historyMobilePeriods[mobilePeriodIndex]
+      : null
+  const phoneYears = phone && mobilePeriod ? mobilePeriod.years : page.years
+  const phoneQuote = phone && mobilePeriod ? mobilePeriod.quote : page.quote
+  const phoneBody = phone && mobilePeriod ? mobilePeriod.body : page.body
+  const phoneEyebrow =
+    phone && mobilePeriod ? mobilePeriod.eyebrow : page.eyebrow
+  const phoneAccent =
+    phone && mobilePeriod ? mobilePeriod.accent : page.accent
+  const phoneRangeLabel =
+    phone && mobilePeriod ? mobilePeriod.rangeLabel : page.rangeLabel
+  const total = phone ? phoneYears.length : page.years.length
+  const isLastPage = phone
+    ? mobilePeriodIndex >= historyMobilePeriodCount - 1
+    : page.index >= pageCount - 1
   const showEpilogue = isLastPage && (phone || revealed.size >= total)
-  const density = chapterDensity(page)
+  const density = chapterDensity(
+    phone && mobilePeriod
+      ? {
+          ...page,
+          years: mobilePeriod.years,
+          rangeLabel: mobilePeriod.rangeLabel,
+          chapterKind: 'period',
+        }
+      : page,
+  )
 
-  // Mobile: all cards at once. Desktop: progressive reveal — start with the first year.
+  // Mobile: all cards of the era at once. Desktop: progressive reveal.
   useLayoutEffect(() => {
     if (phone) {
       for (let i = 0; i < total; i++) onReveal(i)
       return
     }
     onReveal(0)
-  }, [page.index, total, phone, onReveal])
+  }, [page.index, total, phone, onReveal, mobilePeriodIndex])
 
   useEffect(() => {
-    setActiveYear(page.years[0]?.year ?? null)
+    setActiveYear(phoneYears[0]?.year ?? null)
     pendingYearRef.current = null
     pinnedYearRef.current = null
     const root = chapterRef.current
@@ -243,7 +272,7 @@ export function HistoryTimeline({
       readerPage?.scrollTo({ top: 0, behavior: 'auto' })
       rootRef.current?.scrollTo({ top: 0, behavior: 'auto' })
     }
-  }, [page.index, page.years, phone])
+  }, [page.index, phoneYears, phone, mobilePeriodIndex])
 
   // Keep the right piano in sync with the latest revealed card.
   useEffect(() => {
@@ -438,14 +467,14 @@ export function HistoryTimeline({
   }
 
   const retreatState = useRef({
-    years: page.years,
+    years: phoneYears,
     activeYear,
     onRetreat,
     onAdvance,
     phone,
   })
   retreatState.current = {
-    years: page.years,
+    years: phoneYears,
     activeYear,
     onRetreat,
     onAdvance,
@@ -541,13 +570,13 @@ export function HistoryTimeline({
     if (!phone) return
     const root = chipsRef.current
     const chip = root?.querySelector<HTMLElement>(
-      `.tlh__chip[data-chapter="${page.index}"]`,
+      `.tlh__chip[data-period="${mobilePeriodIndex}"]`,
     )
     if (!root || !chip) return
     scrollChildInto(root, chip, 'x')
-  }, [page.index, phone, reduced])
+  }, [mobilePeriodIndex, phone, reduced])
 
-  const yearCards = page.years.map((entry, index) => {
+  const yearCards = phoneYears.map((entry, index) => {
     if (!phone && !revealed.has(index)) return null
     return (
       <YearCard
@@ -563,16 +592,25 @@ export function HistoryTimeline({
     return (
       <section
         ref={rootRef}
-        className={`tlh tlh--${page.accent} tlh--mobile tlh--editorial`}
-        aria-label={`История ГЕРОФАРМ · ${page.rangeLabel}`}
+        className={`tlh tlh--${phoneAccent} tlh--mobile tlh--editorial`}
+        aria-label={`История ГЕРОФАРМ · ${phoneRangeLabel}`}
       >
         <header className="tlh__era-intro" aria-label="Описание периода">
           <div className="tlh__era-intro-inner">
-            <span className="tlh__eyebrow">{page.eyebrow}</span>
-            <h2 className="tlh__quote">{fixPrepositions(page.quote)}</h2>
+            <span className="tlh__eyebrow">{phoneEyebrow}</span>
+            <h2 className="tlh__quote">{fixPrepositions(phoneQuote)}</h2>
             <div className="tlh__body">
-              {page.body.map((p) => (
-                <p key={p.slice(0, 32)}>{fixPrepositions(p)}</p>
+              {phoneBody.map((p) => (
+                <p key={p.slice(0, 32)}>
+                  {fixPrepositions(p)
+                    .split('\n')
+                    .map((line, i, arr) => (
+                      <span key={`${i}-${line.slice(0, 16)}`}>
+                        {line}
+                        {i < arr.length - 1 ? <br /> : null}
+                      </span>
+                    ))}
+                </p>
               ))}
             </div>
           </div>
@@ -587,19 +625,21 @@ export function HistoryTimeline({
             onTouchEnd={(e) => e.stopPropagation()}
             onTouchCancel={(e) => e.stopPropagation()}
           >
-            {historyPages.map((chapter) => (
+            {historyMobilePeriods.map((period) => (
               <button
-                key={chapter.id}
+                key={period.id}
                 type="button"
                 className={`tlh__chip${
-                  chapter.index === page.index ? ' is-active' : ''
+                  period.index === mobilePeriodIndex ? ' is-active' : ''
                 }`}
-                data-chapter={chapter.index}
-                aria-current={chapter.index === page.index ? 'true' : undefined}
+                data-period={period.index}
+                aria-current={
+                  period.index === mobilePeriodIndex ? 'true' : undefined
+                }
                 onClick={() => {
-                  const year = chapter.years[0]?.year
+                  const year = period.years[0]?.year
                   if (!year) return
-                  if (chapter.index === page.index) {
+                  if (period.index === mobilePeriodIndex) {
                     setActiveYear(year)
                     scrollToYear(year)
                     return
@@ -607,7 +647,7 @@ export function HistoryTimeline({
                   onJumpYear?.(year)
                 }}
               >
-                {chapter.rangeLabel}
+                {period.rangeLabel}
               </button>
             ))}
           </nav>
@@ -617,7 +657,9 @@ export function HistoryTimeline({
             className="tlh__chapter tlh__chapter--mobile"
             aria-live="polite"
           >
-            <div className="tlh__period tlh__period--in-panel">{page.rangeLabel}</div>
+            <div className="tlh__period tlh__period--in-panel">
+              {phoneRangeLabel}
+            </div>
             {yearCards}
             {showEpilogue ? (
               <p className="tlh__epilogue" aria-live="polite">
@@ -630,7 +672,7 @@ export function HistoryTimeline({
             <button
               type="button"
               className="tlh__period-btn"
-              disabled={page.index <= 0 || !onRetreat}
+              disabled={mobilePeriodIndex <= 0 || !onRetreat}
               onClick={() => onRetreat?.()}
             >
               Предыдущий период
@@ -638,10 +680,10 @@ export function HistoryTimeline({
             <button
               type="button"
               className="tlh__period-btn tlh__period-btn--next"
-              disabled={isLastPage || !onAdvance}
+              disabled={!onAdvance}
               onClick={() => onAdvance?.()}
             >
-              Следующий период
+              {isLastPage ? 'Следующий раздел' : 'Следующий период'}
             </button>
           </div>
           <SectionEndNav />

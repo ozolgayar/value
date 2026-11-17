@@ -33,8 +33,8 @@ export const historyEras: HistoryEra[] = [
     eyebrow: 'История ГЕРОФАРМ',
     quote: 'Смелый старт: взгляд на бизнес не из настоящего, а из желаемого будущего',
     body: [
-      'В начале 2000-х рынок был наполнен импортными препаратами, при этом отечественные производства устаревали.',
-      'Мы выбрали свой путь: вкладывать в науку, разрабатывать свои технологии и развивать российский рынок. Пациенты получили доступ к качественным отечественным препаратам. Это было время смелых решений и отказа от компромиссов, которое сформировало культуру долгосрочных целей.',
+      'В начале 2000-х рынок был наполнен импортными\nпрепаратами, при этом отечественные производства\nустаревали.',
+      'Мы выбрали свой путь: вкладывать в науку, разрабатывать\nсвои технологии и развивать российский рынок. Пациенты\nполучили доступ к качественным отечественным препаратам.\nЭто было время смелых решений и отказа от компромиссов,\nкоторое сформировало культуру долгосрочных целей.',
     ],
     years: [
       {
@@ -303,7 +303,7 @@ export const historyEras: HistoryEra[] = [
     quote:
       'Ценности позволяют нам стать эффективнее: делать меньше ошибок, отказываться от ненужных решений и более разумно расходовать время',
     body: [
-      'Компания росла. Мы планомерно выстраивали корпоративную культуру и развивали команду для масштабирования бизнеса.',
+      'Компания росла. Мы планомерно выстраивали\nкорпоративную культуру и развивали команду для\nмасштабирования бизнеса.',
       'Мы продолжали развивать производство полного цикла, чтобы контролировать качество лекарственных препаратов на всех этапах.',
       'Мы учились быть быстрыми, руководствоваться ценностями и сохранять устойчивость даже в самые сложные времена, обеспечивая непрерывность поставок жизненно важных лекарств.',
     ],
@@ -638,15 +638,24 @@ export const historyYears: HistoryYearEntry[] = historyEras.flatMap((era, eraInd
 )
 
 /**
- * Five editorial periods for mobile + desktop history chapters.
- * Each range aligns with one history era intro (quote/body).
+ * Editorial rows for history chapters — one progressive card stack per screen.
  */
 export const HISTORY_CHAPTER_RANGES: ReadonlyArray<readonly string[]> = [
-  ['2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010'],
-  ['2011', '2012', '2013', '2014', '2015', '2016'],
-  ['2017', '2018', '2019', '2020'],
-  ['2021', '2022', '2023', '2024'],
-  ['2025', '2026'],
+  ['2001', '2002', '2003', '2004'],
+  ['2005', '2006', '2007', '2008'],
+  ['2009', '2010'],
+  ['2011', '2012', '2013'],
+  ['2014', '2015'],
+  ['2016'],
+  ['2017', '2018'],
+  ['2019'],
+  ['2020'],
+  ['2021'],
+  ['2022'],
+  ['2023'],
+  ['2024'],
+  ['2025'],
+  ['2026'],
 ]
 
 const yearById = new Map(historyYears.map((y) => [y.year, y]))
@@ -700,6 +709,50 @@ export const historyPageCount = historyPages.length
 
 /** Years shown in the side «piano» navigator — every year that has a timeline entry. */
 export const historyPianoYears = historyYears
+
+/**
+ * Mobile-only editorial periods (5 eras). Desktop keeps HISTORY_CHAPTER_RANGES.
+ */
+export interface HistoryMobilePeriod {
+  id: string
+  index: number
+  accent: 'purple' | 'blue'
+  eyebrow: string
+  quote: string
+  body: string[]
+  years: HistoryYearEntry[]
+  rangeLabel: string
+}
+
+export const historyMobilePeriods: HistoryMobilePeriod[] = historyEras.map(
+  (era, index) => {
+    const years = historyYears.filter((y) => y.eraId === era.id)
+    return {
+      id: era.id,
+      index,
+      accent: era.accent,
+      eyebrow: era.eyebrow,
+      quote: era.quote,
+      body: era.body,
+      years,
+      rangeLabel: formatYearRange(years),
+    }
+  },
+)
+
+export const historyMobilePeriodCount = historyMobilePeriods.length
+
+export function getHistoryMobilePeriodIndexForYear(year: string) {
+  return historyMobilePeriods.findIndex((period) =>
+    period.years.some((y) => y.year === year),
+  )
+}
+
+export function getHistoryMobilePeriod(periodIndex: number) {
+  return historyMobilePeriods[
+    Math.min(Math.max(periodIndex, 0), historyMobilePeriodCount - 1)
+  ]
+}
 
 export function getHistoryPageIndexForYear(year: string) {
   return historyPages.findIndex((page) => page.years.some((y) => y.year === year))

@@ -20,10 +20,13 @@ import {
   practiceStoryPageIds,
 } from '../data/practiceGallery'
 import {
+  getHistoryMobilePeriodIndexForYear,
   getHistoryPage,
   getHistoryPageIndexForYear,
   getYearIndexOnPage,
   historyBookPageId,
+  historyMobilePeriodCount,
+  historyMobilePeriods,
 } from '../data/history'
 import { useMediaQuery, useQuotes } from '../hooks'
 import { asset } from '../asset'
@@ -209,7 +212,31 @@ export function Reader({
     isInterstitial ||
     isClosingCover ||
     zoomPhase !== 'idle'
-  const chromeImmersive = isMobile && chromeAway && !chromeHidden && !anyOverlay
+  const chromeImmersive = chromeAway && !chromeHidden && !anyOverlay
+  const chromeHideTimer = useRef(0)
+
+  const clearChromeHideTimer = useCallback(() => {
+    if (chromeHideTimer.current) {
+      window.clearTimeout(chromeHideTimer.current)
+      chromeHideTimer.current = 0
+    }
+  }, [])
+
+  const revealChrome = useCallback(() => {
+    clearChromeHideTimer()
+    setChromeAway(false)
+  }, [clearChromeHideTimer])
+
+  const scheduleChromeHide = useCallback(
+    (delayMs = 3200) => {
+      clearChromeHideTimer()
+      chromeHideTimer.current = window.setTimeout(() => {
+        chromeHideTimer.current = 0
+        setChromeAway(true)
+      }, delayMs)
+    },
+    [clearChromeHideTimer],
+  )
 
   const prevTooltip = useMemo(() => {
     if (isPracticeStory) return 'К практикам'
@@ -297,16 +324,19 @@ export function Reader({
   const currentNavSection =
     navSectionIndex >= 0 ? navSections[navSectionIndex] : null
   const sectionTitleLabel = useMemo(() => {
-    if (current.page.kind === 'culture-bingo') return 'Игра · Культурное бинго'
-    if (!currentNavSection) return current.paragraphTitle || 'Раздел'
+    if (!currentNavSection || sectionCount < 1) {
+      return current.paragraphTitle || '—'
+    }
     const num = Number(currentNavSection.number) || navSectionIndex + 1
-    return `Раздел ${num} · ${currentNavSection.title}`
-  }, [current.page.kind, currentNavSection, current.paragraphTitle, navSectionIndex])
+    return `${num}/${sectionCount}`
+  }, [currentNavSection, current.paragraphTitle, navSectionIndex, sectionCount])
   const goHome = useCallback(() => {
     if (onBackToWelcome) onBackToWelcome()
     else onExitToHome()
   }, [onBackToWelcome, onExitToHome])
   const hintSectionEnd = useCallback(() => {
+    // Desktop uses arrows / section buttons — no swipe tip.
+    if (!isMobile) return
     const now = Date.now()
     if (now - sectionEndToastAt.current < 1800) return
     sectionEndToastAt.current = now
@@ -314,7 +344,7 @@ export function Reader({
     const pageKind = flatPages[index]?.page.kind
     if (pageKind === 'interstitial') {
       setToast(
-        'Свайп влево — следующий раздел,\nсвайп вправо — предыдущий раздел',
+        'Свайп вправо — следующий раздел,\nсвайп влево — предыдущий экран',
       )
       return
     }
@@ -326,8 +356,8 @@ export function Reader({
       setToast('Нажми кнопку «Перейти к стратегии»')
       return
     }
-    setToast('Конец раздела — свайпни вбок\nили воспользуйся кнопками')
-  }, [flatPages, index])
+    setToast('Это конец раздела — свайпни вбок\nили воспользуйся кнопками')
+  }, [flatPages, index, isMobile])
 
   const clearZoomTimers = useCallback(() => {
     zoomTimers.current.forEach((id) => window.clearTimeout(id))
@@ -424,8 +454,8 @@ export function Reader({
             text: '— возврат на экран «Добро пожаловать».',
           },
           {
-            label: 'Раздел 1 · О книге',
-            text: '— название текущего раздела.',
+            label: '1/9',
+            text: '— номер текущего раздела из общего числа разделов.',
           },
           {
             label: 'Меню',
@@ -469,20 +499,32 @@ export function Reader({
   }, [toast])
 
   useEffect(() => {
-    if (!isMobile) setChromeAway(false)
-  }, [isMobile])
+    return () => clearChromeHideTimer()
+  }, [clearChromeHideTimer])
 
-  // Keep the bottom page counter pinned; never leave chrome-away mid-transition.
+  // Keep chrome visible during coach/overlays; otherwise show briefly, then auto-hide.
   useEffect(() => {
-    setChromeAway(false)
-  }, [index])
+    if (showNavCoach || chromeHidden || anyOverlay) {
+      revealChrome()
+      return
+    }
+    revealChrome()
+    scheduleChromeHide(3200)
+  }, [
+    index,
+    showNavCoach,
+    chromeHidden,
+    anyOverlay,
+    revealChrome,
+    scheduleChromeHide,
+  ])
 
   useEffect(() => {
     if (!isMobile || !isInterstitial) return
     const now = Date.now()
     if (now - sectionEndToastAt.current < 1800) return
     sectionEndToastAt.current = now
-    setToast('Свайп влево — следующий раздел,\nсвайп вправо — предыдущий раздел')
+    setToast('Свайп вправо — следующий раздел,\nсвайп влево — предыдущий экран')
   }, [index, isInterstitial, isMobile])
 
   useEffect(() => {
@@ -653,6 +695,75 @@ export function Reader({
     [go],
   )
 
+  const advanceHistoryMobile = useCallback(() => {
+    if (!currentHistoryPage) {
+      go(index + 1)
+      return
+    }
+    const periodIndex = getHistoryMobilePeriodIndexForYear(
+      currentHistoryPage.years[0]?.year ?? '',
+    )
+    if (periodIndex >= 0 && periodIndex < historyMobilePeriodCount - 1) {
+      const nextYear = historyMobilePeriods[periodIndex + 1]?.years[0]?.year
+      if (nextYear) {
+        jumpToHistoryYear(nextYear)
+        return
+      }
+    }
+    const lastYear =
+      historyMobilePeriods[historyMobilePeriodCount - 1]?.years.at(-1)?.year
+    if (lastYear) {
+      const lastPageIndex = getHistoryPageIndexForYear(lastYear)
+      const lastBookId = historyBookPageId(lastPageIndex)
+      const found = flatPages.findIndex((p) => p.page.id === lastBookId)
+      if (found >= 0 && found < totalPages - 1) {
+        go(found + 1, { force: true })
+        return
+      }
+    }
+    go(index + 1)
+  }, [currentHistoryPage, go, index, jumpToHistoryYear])
+
+  const retreatHistoryMobile = useCallback(() => {
+    if (!currentHistoryPage) {
+      if (index === 0) {
+        onBackToWelcome?.()
+        return
+      }
+      go(index - 1)
+      return
+    }
+    const periodIndex = getHistoryMobilePeriodIndexForYear(
+      currentHistoryPage.years[0]?.year ?? '',
+    )
+    if (periodIndex > 0) {
+      const prevYear = historyMobilePeriods[periodIndex - 1]?.years[0]?.year
+      if (prevYear) {
+        jumpToHistoryYear(prevYear)
+        return
+      }
+    }
+    const firstYear = historyMobilePeriods[0]?.years[0]?.year
+    if (firstYear) {
+      const firstPageIndex = getHistoryPageIndexForYear(firstYear)
+      const firstBookId = historyBookPageId(firstPageIndex)
+      const found = flatPages.findIndex((p) => p.page.id === firstBookId)
+      if (found > 0) {
+        go(found - 1, { force: true })
+        return
+      }
+      if (found === 0) {
+        onBackToWelcome?.()
+        return
+      }
+    }
+    if (index === 0) {
+      onBackToWelcome?.()
+      return
+    }
+    go(index - 1)
+  }, [currentHistoryPage, go, index, jumpToHistoryYear, onBackToWelcome])
+
   const navigatePrev = useCallback(() => {
     if (showNavCoach) return
     if (isMasteryStory) {
@@ -663,12 +774,27 @@ export function Reader({
       goById(practiceGalleryPageId)
       return
     }
+    if (isMobile && isHistoryEra) {
+      retreatHistoryMobile()
+      return
+    }
     if (index === 0) {
       onBackToWelcome?.()
       return
     }
     go(index - 1)
-  }, [showNavCoach, isMasteryStory, isPracticeStory, goById, index, onBackToWelcome, go])
+  }, [
+    showNavCoach,
+    isMasteryStory,
+    isPracticeStory,
+    isMobile,
+    isHistoryEra,
+    retreatHistoryMobile,
+    goById,
+    index,
+    onBackToWelcome,
+    go,
+  ])
 
   const isGalleryPickPage =
     current.page.kind === 'mastery-gallery' ||
@@ -699,6 +825,10 @@ export function Reader({
       }
       return
     }
+    if (isMobile && isHistoryEra) {
+      advanceHistoryMobile()
+      return
+    }
     go(index + 1)
   }, [
     current.page.kind,
@@ -706,7 +836,11 @@ export function Reader({
     nextAfterMasteryStories,
     isPracticeStory,
     nextAfterPracticeStories,
+    isMobile,
+    isHistoryEra,
+    advanceHistoryMobile,
     go,
+    index,
     showNavCoach,
   ])
 
@@ -998,13 +1132,15 @@ export function Reader({
       const isTap = absDx < tapSlop && absDy < tapSlop
 
       if (fingerLeft) {
+        // Swipe left → previous screen
         armSwipeLock()
-        goNextSection()
+        turn('prev')
         return
       }
       if (fingerRight) {
+        // Swipe right → next section
         armSwipeLock()
-        goPrevSection()
+        goNextSection()
         return
       }
       if (fingerUp && startedAtBottom) {
@@ -1130,11 +1266,17 @@ export function Reader({
                   }
                   onHistoryAdvance={
                     fp.page.id === current.page.id
-                      ? () => go(index + 1)
+                      ? isMobile
+                        ? advanceHistoryMobile
+                        : () => go(index + 1)
                       : undefined
                   }
                   onHistoryRetreat={
-                    fp.page.id === current.page.id ? navigatePrev : undefined
+                    fp.page.id === current.page.id
+                      ? isMobile
+                        ? retreatHistoryMobile
+                        : navigatePrev
+                      : undefined
                   }
                   onHistoryJumpYear={
                     fp.page.id === current.page.id ? jumpToHistoryYear : undefined
@@ -1258,11 +1400,28 @@ export function Reader({
         </>
       )}
 
+      <div
+        className="reader__chrome-hotspot"
+        aria-hidden
+        onMouseEnter={() => {
+          if (isMobile || chromeHidden || anyOverlay) return
+          revealChrome()
+        }}
+      />
+
       <div className={`reader__chrome${chromeHidden ? ' is-dimmed' : ''}`}>
         <div
           className={`reader__topbar${isInterstitial ? ' is-hidden' : ''}`}
           role="navigation"
           aria-label="Навигация по книге"
+          onMouseEnter={() => {
+            if (isMobile || chromeHidden) return
+            revealChrome()
+          }}
+          onMouseLeave={() => {
+            if (isMobile || chromeHidden || anyOverlay) return
+            scheduleChromeHide(1600)
+          }}
         >
           <button
             type="button"
@@ -1275,13 +1434,21 @@ export function Reader({
               goHome()
             }}
           >
-            <img
-              src={asset('icons/house.svg')}
-              alt=""
-              width={22}
-              height={22}
+            <svg
+              className="reader__topbar-home-icon"
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               aria-hidden
-            />
+            >
+              <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+              <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            </svg>
           </button>
 
           <p className="reader__topbar-title" aria-live="polite">
@@ -1300,11 +1467,18 @@ export function Reader({
               setTocOpen(true)
             }}
           >
-            <span className="reader__topbar-burger" aria-hidden>
-              <span />
-              <span />
-              <span />
-            </span>
+            <svg
+              className="reader__topbar-burger"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              aria-hidden
+            >
+              <path d="M3 5h14" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+              <path d="M3 10h14" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+              <path d="M3 15h14" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+            </svg>
           </button>
         </div>
 
