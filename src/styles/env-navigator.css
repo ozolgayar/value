@@ -361,38 +361,31 @@
 
 @media (max-width: 768px) {
   .page-shell.page-bleed.page-env-navigator {
-    display: block;
+    display: flex;
+    flex-direction: column;
     width: 100%;
     height: auto;
     min-height: 100%;
     overflow: visible;
+    box-sizing: border-box;
+    padding: 72px 16px max(100px, calc(var(--reader-bottom-safe, 100px) + 24px));
   }
 
-  .en__half {
-    height: auto;
-    min-height: 0;
-    overflow: visible;
-  }
-
+  /* Flatten halves so quote can sit after all cards */
+  .en__half--left,
+  .en__half--right,
   .en__inner,
-  .en__inner--right {
-    display: flex;
-    flex-direction: column;
-    height: auto;
-    min-height: 0;
-    overflow: visible;
-    padding: 72px 16px 0;
+  .en__inner--right,
+  .en__closing {
+    display: contents;
   }
 
-  .en__inner--right {
-    padding-top: 0;
-    padding-bottom: max(
-      100px,
-      calc(var(--reader-bottom-safe, 100px) + 24px)
-    );
+  .en__badge {
+    order: 1;
   }
 
   .en__title {
+    order: 2;
     width: 100%;
     max-width: none;
     font-size: clamp(1.6rem, 8vw, 2.2rem);
@@ -405,10 +398,6 @@
     max-width: none;
     font-size: 0.95rem;
     line-height: 1.6;
-  }
-
-  .en__closing {
-    display: contents;
   }
 
   .en__footnote {
@@ -425,8 +414,15 @@
     line-height: 1.5;
   }
 
-  .en__tree {
+  .en__half--left .en__tree {
     order: 5;
+  }
+
+  .en__half--right .en__tree {
+    order: 6;
+  }
+
+  .en__tree {
     display: block;
     flex: none;
     min-height: 0;
@@ -462,29 +458,28 @@
     padding: 6px 14px;
   }
 
+  /* End of section — after every card */
   .en__quote {
-    order: 6;
+    order: 80;
     width: 100%;
     max-width: none;
-    margin: 24px 0;
+    margin: 24px 0 0;
     font-weight: 700;
     font-size: clamp(1rem, 4.5vw, 1.25rem);
     line-height: 1.4;
   }
 
-  .en__brand,
-  .en__brand--light,
-  .en__half--right .en__brand--light {
-    order: 7;
+  .en__half--left .en__brand {
+    order: 85;
     align-self: flex-start;
-    margin-top: 8px;
+    margin-top: 16px;
   }
 
-  .en__half--right {
-    display: flex;
-    flex-direction: column;
+  .en__half--right .en__brand {
+    display: none;
   }
 
+  .page-shell.page-env-navigator > .en__half--right > .reader__section-end-nav,
   .en__half--right > .reader__section-end-nav {
     order: 99;
     margin-top: 0.5rem;

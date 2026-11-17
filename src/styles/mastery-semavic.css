@@ -44,21 +44,22 @@
 .ms__badge {
   align-self: flex-start;
   max-width: 100%;
-  font-size: clamp(0.5rem, 0.72vw, 0.62rem);
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #2563eb;
-  border: 1px solid rgba(37, 99, 235, 0.55);
+  color: #ffa329;
+  border: 1.5px solid #ffa329;
   border-radius: 999px;
   padding: 0.28rem 0.75rem;
+  background: #fff;
   white-space: nowrap;
 }
 
 .ms__title {
   margin: 0.9rem 0 0;
   max-width: 18ch;
-  font-size: clamp(1.05rem, 2vw, 1.55rem);
+  font-size: 52px;
   font-weight: 800;
   line-height: 1.15;
   letter-spacing: -0.01em;
@@ -88,7 +89,7 @@
 
 .ms__story p {
   margin: 0;
-  font-size: clamp(0.68rem, 0.95vw, 0.82rem);
+  font-size: 19px;
   line-height: 1.4;
   color: #183553;
 }
@@ -119,7 +120,7 @@
 }
 
 .ms__half--right {
-  background: linear-gradient(165deg, #f59e0b 0%, #f97316 22%, #e11d48 48%, #7c3aed 78%, #fb923c 100%);
+  background: var(--brand-aurora);
   color: #fff;
 }
 
@@ -198,7 +199,7 @@
   margin: 0;
   max-width: 100%;
   box-sizing: border-box;
-  font-size: clamp(0.72rem, 0.95vw, 0.875rem);
+  font-size: 19px;
   line-height: 1.45;
   color: #374151;
   text-indent: 0;
@@ -229,7 +230,7 @@
     calc(var(--nav-arrow-lane-right) + 0.5rem)
     clamp(0.55rem, 1.2vh, 0.9rem)
     clamp(0.85rem, 1.2vw, 1.1rem);
-  background: linear-gradient(180deg, #ff8c00 0%, #e83a7a 42%, #8b3a9e 72%, #f3e6d8 100%);
+  background: var(--brand-aurora);
 }
 
 /* Default (mobile keeps abspos via max-width rules); desktop overrides below */
@@ -261,7 +262,7 @@
   .ms__col-values .ms__right-lead {
   margin: 0.9rem 0 0;
   max-width: none;
-  font-size: clamp(1.25rem, 1.55vw, 1.7rem);
+  font-size: 32px;
   font-weight: 800;
   line-height: 1.2;
   color: #fff;
@@ -272,12 +273,15 @@
 .page-mastery-semavic
   .ms__rc-value {
   position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
   margin: 0;
   padding-top: 0;
   border-top: none;
   max-width: 100%;
   box-sizing: border-box;
-  font-size: clamp(0.72rem, 0.95vw, 0.875rem);
+  font-size: 19px;
   line-height: 1.45;
   color: #fff;
   overflow-wrap: anywhere;
@@ -300,8 +304,31 @@
   font-weight: 800;
 }
 
+.ms__value-icon {
+  flex: 0 0 52px;
+  width: 52px;
+  height: 52px;
+  display: block;
+  object-fit: contain;
+  /* Assets are wider than tall — pin artwork to top, not vertical center */
+  object-position: top center;
+  filter: brightness(0) invert(1);
+  user-select: none;
+  pointer-events: none;
+}
+
+.page-mastery-semavic .ms__value-icon {
+  /* Nudge to first-line cap height (line-box half-leading) */
+  margin-top: 0.12em;
+}
+
+.ms__value-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .page-mastery-third-line .ms__fact {
-  color: #1d4ed8;
+  color: #2b2b2b;
   font-weight: 800;
 }
 
@@ -322,7 +349,7 @@
 .ms__right-lead {
   margin: 0 0 1.35rem;
   max-width: 16ch;
-  font-size: clamp(1rem, 1.8vw, 1.35rem);
+  font-size: 32px;
   font-weight: 800;
   line-height: 1.2;
   color: #fff;
@@ -474,7 +501,7 @@
     right: 0;
     bottom: 0;
     width: 50%;
-    background: linear-gradient(180deg, #ff8c00 0%, #e83a7a 42%, #8b3a9e 72%, #f3e6d8 100%);
+    background: var(--brand-aurora);
     pointer-events: none;
     z-index: 0;
   }
@@ -556,10 +583,260 @@
     /* Same offset as .ms__title under the badge */
     margin: var(--ms-title-gap) 0 0;
     max-width: 18em;
-    font-size: clamp(1.05rem, 1.45vw, 1.45rem);
+    font-size: 32px;
     font-weight: 800;
     line-height: 1.08;
     letter-spacing: -0.01em;
+  }
+
+  /*
+   * Venezuela: full-height aurora strip; content bottoms align with
+   * middle story ("передала 20 тысяч игл.").
+   */
+  .page-shell.page-mastery-semavic.page-mastery-venezuela .ms__right-cols {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .page-shell.page-mastery-semavic.page-mastery-venezuela .ms__col-story,
+  .page-shell.page-mastery-semavic.page-mastery-venezuela .ms__col-values {
+    display: flex;
+    flex-direction: column;
+    grid-template-rows: none;
+    grid-row: auto;
+    align-self: stretch;
+    height: auto;
+    min-height: 100%;
+  }
+
+  .page-shell.page-mastery-semavic.page-mastery-venezuela .ms__col-values {
+    justify-content: flex-start;
+    background: transparent;
+  }
+
+  .page-shell.page-mastery-semavic.page-mastery-venezuela
+    .ms__rc-value:first-of-type {
+    margin-top: auto;
+  }
+
+  .page-shell.page-mastery-semavic.page-mastery-venezuela
+    .ms__rc-value + .ms__rc-value {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.35);
+  }
+
+  .page-shell.page-mastery-semavic.page-mastery-venezuela
+    .ms__rc-value:not(:first-of-type)::before {
+    content: none;
+    display: none;
+  }
+
+  /*
+   * Putin: middle story block bottom aligns with left p2
+   * ("Для подготовки к визиту… как в обычный день").
+   */
+  .page-shell.page-mastery-semavic.page-mastery-putin {
+    --ms-putin-brand-space: calc(1.25rem + 1.35em);
+  }
+
+  .page-shell.page-mastery-semavic.page-mastery-putin .ms__brand--ink {
+    margin-top: 1.25rem;
+    padding-top: 0;
+  }
+
+  .page-shell.page-mastery-semavic.page-mastery-putin .ms__right-cols {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .page-shell.page-mastery-semavic.page-mastery-putin .ms__col-story {
+    display: flex;
+    flex-direction: column;
+    grid-template-rows: none;
+    grid-row: auto;
+    align-self: stretch;
+    height: auto;
+    min-height: 100%;
+    box-sizing: border-box;
+    /* Reserve the left brand band so story bottom = left p2 bottom */
+    padding-bottom: var(--ms-putin-brand-space);
+  }
+
+  .page-shell.page-mastery-semavic.page-mastery-putin
+    .ms__col-story
+    .ms__story-p:first-of-type {
+    margin-top: auto;
+  }
+
+  /*
+   * Putin: whole values block (lead + 3 values) bottom aligns with
+   * middle last paragraph ("Для команды ГЕРОФАРМ визит…").
+   */
+  .page-shell.page-mastery-semavic.page-mastery-putin .ms__col-values {
+    display: flex;
+    flex-direction: column;
+    grid-template-rows: none;
+    grid-row: auto;
+    align-self: stretch;
+    height: auto;
+    min-height: 100%;
+    box-sizing: border-box;
+    padding-bottom: var(--ms-putin-brand-space);
+  }
+
+  .page-shell.page-mastery-semavic.page-mastery-putin .ms__lead-slot {
+    margin-top: auto;
+    flex: 0 0 auto;
+  }
+
+  .page-shell.page-mastery-semavic.page-mastery-putin
+    .ms__col-values
+    .ms__right-lead {
+    margin: 0 0 clamp(24px, 3.2vh, 36px);
+  }
+
+  /*
+   * Third line: whole content band centered in the window;
+   * middle story top → "Запуск третьей линии:";
+   * values bottom → last middle paragraph.
+   */
+  .page-shell.page-bleed.page-mastery-semavic.page-mastery-third-line {
+    grid-template-rows:
+      minmax(var(--nav-safe), 1fr)
+      auto
+      1fr;
+  }
+
+  .page-shell.page-mastery-semavic.page-mastery-third-line
+    .ms__brand--ink {
+    margin-top: 1.25rem;
+    padding-top: 0;
+  }
+
+  .page-shell.page-mastery-semavic.page-mastery-third-line
+    .ms__right-cols {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .page-shell.page-mastery-semavic.page-mastery-third-line .ms__col-story,
+  .page-shell.page-mastery-semavic.page-mastery-third-line .ms__col-values {
+    display: flex;
+    flex-direction: column;
+    grid-template-rows: none;
+    grid-row: auto;
+    align-self: stretch;
+    height: auto;
+    min-height: 100%;
+  }
+
+  .page-shell.page-mastery-semavic.page-mastery-third-line
+    .ms__col-story
+    .ms__align-spacer
+    .ms__title {
+    display: none;
+  }
+
+  .page-shell.page-mastery-semavic.page-mastery-third-line
+    .ms__col-story
+    .ms__story-p:first-of-type {
+    margin-top: var(--ms-title-gap);
+  }
+
+  .page-shell.page-mastery-semavic.page-mastery-third-line
+    .ms__rc-value:first-of-type {
+    margin-top: auto;
+  }
+
+  .page-shell.page-mastery-semavic.page-mastery-third-line
+    .ms__rc-value + .ms__rc-value {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.35);
+  }
+
+  .page-shell.page-mastery-semavic.page-mastery-third-line
+    .ms__rc-value:not(:first-of-type)::before {
+    content: none;
+    display: none;
+  }
+
+  /* Semavic: middle + values top align with title line "и управлять результатом" */
+  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
+      .page-mastery-third-line
+    ):not(.page-mastery-putin)
+    .ms__right-cols {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
+      .page-mastery-third-line
+    ):not(.page-mastery-putin)
+    .ms__col-story,
+  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
+      .page-mastery-third-line
+    ):not(.page-mastery-putin)
+    .ms__col-values {
+    display: flex;
+    flex-direction: column;
+    grid-template-rows: none;
+    grid-row: auto;
+    height: 100%;
+    min-height: 0;
+  }
+
+  /* Spacer = badge + title lines 1–2 → content starts at line 3 */
+  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
+      .page-mastery-third-line
+    ):not(.page-mastery-putin)
+    .ms__col-story
+    .ms__align-spacer
+    .ms__title,
+  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
+      .page-mastery-third-line
+    ):not(.page-mastery-putin)
+    .ms__col-values
+    .ms__align-spacer
+    .ms__title {
+    display: flex;
+    visibility: hidden;
+  }
+
+  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
+      .page-mastery-third-line
+    ):not(.page-mastery-putin)
+    .ms__col-story
+    .ms__align-spacer
+    .ms__title-line:nth-child(n + 3),
+  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
+      .page-mastery-third-line
+    ):not(.page-mastery-putin)
+    .ms__col-values
+    .ms__align-spacer
+    .ms__title-line:nth-child(n + 3) {
+    display: none;
+  }
+
+  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
+      .page-mastery-third-line
+    ):not(.page-mastery-putin)
+    .ms__col-story
+    .ms__story-p:first-of-type {
+    margin-top: 0.12em;
+  }
+
+  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
+      .page-mastery-third-line
+    ):not(.page-mastery-putin)
+    .ms__col-values
+    .ms__right-lead {
+    margin: 0.12em 0 clamp(24px, 3.2vh, 36px);
   }
 
   /* Content row: first value shares baseline with left body */
@@ -568,14 +845,36 @@
     margin-top: var(--ms-body-gap);
   }
 
+  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
+      .page-mastery-third-line
+    ):not(.page-mastery-putin)
+    .ms__rc-value:first-of-type {
+    margin-top: 0;
+  }
+
   .page-shell.page-mastery-semavic
     .ms__rc-value + .ms__rc-value {
     margin-top: var(--ms-value-gap);
   }
 
+  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
+      .page-mastery-third-line
+    ):not(.page-mastery-putin)
+    .ms__rc-value + .ms__rc-value {
+    margin-top: clamp(28px, 3.6vh, 40px);
+  }
+
   .page-shell.page-mastery-semavic
     .ms__rc-value:not(:first-of-type)::before {
     top: calc(var(--ms-value-gap) / -2);
+  }
+
+  /* Semavic: line sits in the middle of the restored gap, not through text */
+  .page-shell.page-mastery-semavic:not(.page-mastery-venezuela):not(
+      .page-mastery-third-line
+    ):not(.page-mastery-putin)
+    .ms__rc-value:not(:first-of-type)::before {
+    top: calc(clamp(28px, 3.6vh, 40px) / -2);
   }
 
   /* Continuous book-fold: own layer over white panels, full height */
@@ -612,13 +911,13 @@
   .page-shell.page-mastery-semavic
     .ms__col-values
     .ms__right-lead {
-    font-size: clamp(0.98rem, 1.25vw, 1.28rem);
+    font-size: 32px;
     line-height: 1.05;
   }
 
   .page-shell.page-mastery-semavic
     .ms__rc-value {
-    font-size: clamp(0.7rem, 0.9vw, 0.82rem);
+    font-size: 19px;
     line-height: 1.4;
   }
 }
@@ -773,7 +1072,7 @@
     padding-left: calc(var(--nav-arrow-lane-left) + 1rem);
     padding-right: calc(var(--nav-arrow-lane-right) + 1rem);
     padding-top: 24px;
-    background: linear-gradient(180deg, #ff8c00 0%, #e83a7a 42%, #8b3a9e 72%, #f3e6d8 100%);
+    background: var(--brand-aurora);
   }
 
 }
@@ -969,7 +1268,7 @@
     margin: 32px 20px 0;
     padding: 24px 20px 28px;
     border-radius: 16px;
-    background: linear-gradient(180deg, #ff8c00 0%, #e83a7a 42%, #8b3a9e 72%, #f3e6d8 100%);
+    background: var(--brand-aurora);
   }
 
   .page-shell.page-mastery-semavic .ms__right-lead,

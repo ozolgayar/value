@@ -8,90 +8,89 @@ export function ValuesSpreadPage() {
 
   return (
     <article className="page-shell page-bleed page-values-spread">
-      <section className="values-spread__half values-spread__half--left" aria-label={left.title}>
-        <div className="values-spread__stack">
-          <header className="values-spread__hero values-spread__hero--mission">
-            <div className="values-spread__inset">
-              <span className="values-spread__badge">{left.badge}</span>
-              <h1 className="values-spread__hero-title">{fixPrepositions(left.title)}</h1>
-            </div>
+      <section
+        className="values-spread__half values-spread__half--left"
+        aria-label={left.title}
+      >
+        <div className="values-spread__inner">
+          <header className="values-spread__intro">
+            <span className="values-spread__badge">{left.badge}</span>
+            <h1 className="values-spread__title">
+              {fixPrepositions(left.title)}
+            </h1>
           </header>
-          <div className="values-spread__body">
-            <div className="values-spread__inset">
-              <ul className="values-spread__bars">
-                {left.items.map((item) => (
-                  <li key={item.title} className="values-spread__bar-item">
-                    <div
-                      className="values-spread__bar-head"
-                      style={{ ['--bar' as string]: item.bar }}
-                    >
-                      <h2>{fixPrepositions(item.title)}</h2>
-                    </div>
-                    <p>{fixPrepositions(item.text)}</p>
-                    {'icons' in item && item.icons ? (
-                      <div className="values-spread__icons" aria-hidden>
-                        {item.icons.map((src) => (
-                          <img
-                            key={src}
-                            className={`values-spread__icon${
-                              src.includes('11.png') ? ' is-brain' : ''
-                            }`}
-                            src={asset(src)}
-                            alt=""
-                            draggable={false}
-                          />
-                        ))}
-                      </div>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+
+          <ul className="values-spread__rows">
+            {left.items.map((item) => (
+              <li key={item.title} className="values-spread__row">
+                <div className="values-spread__row-lead">
+                  <span className="values-spread__icon-wrap" aria-hidden>
+                    <img
+                      className={`values-spread__icon${
+                        item.icon.includes('11.png') ? ' is-brain' : ''
+                      }`}
+                      src={asset(item.icon)}
+                      alt=""
+                      draggable={false}
+                    />
+                  </span>
+                  <h2 className="values-spread__row-title">
+                    {fixPrepositions(item.title)}
+                  </h2>
+                </div>
+                <p className="values-spread__row-text">
+                  {fixPrepositions(item.text)}
+                </p>
+              </li>
+            ))}
+          </ul>
         </div>
-        <div className="footer-brand">
-          <span className="fb-name">ГЕРОФАРМ</span>
-          <span className="fb-dot" aria-hidden />
-          <span className="fb-sub">ТРАНСФОРМАЦИЯ</span>
-        </div>
+
+        <footer className="values-spread__brand">
+          <span>ГЕРОФАРМ</span>
+          <span className="values-spread__brand-mark" aria-hidden />
+          <span>ТРАНСФОРМАЦИЯ</span>
+        </footer>
       </section>
 
-      <section className="values-spread__half values-spread__half--right" aria-label={right.title}>
-        <div className="values-spread__stack">
-          <header className="values-spread__hero values-spread__hero--chain" aria-hidden />
-          <div className="values-spread__body">
-            <div className="values-spread__inset">
-              <h2 className="values-spread__section-title">{fixPrepositions(right.title)}</h2>
-              <ul className="values-spread__links">
-                {right.items.map((item) => (
-                  <li key={item.name}>
-                    <p>
-                      <strong>{item.name}</strong> {fixPrepositions(item.text)}
-                    </p>
-                    <p
-                      className={`values-spread__slogan${
-                        item.motto === 'passion' ? ' value-motto--passion' : ''
+      <section
+        className="values-spread__half values-spread__half--right"
+        aria-label={right.title}
+      >
+        <div className="values-spread__inner values-spread__inner--right">
+          <h1 className="values-spread__title values-spread__title--right">
+            {fixPrepositions(right.title)}
+          </h1>
+          <ul className="values-spread__cards">
+            {right.items.map((item) => (
+              <li
+                key={item.name}
+                className="values-spread__card"
+                style={{ ['--value-color' as string]: item.color }}
+              >
+                <div className="values-spread__card-copy">
+                  <h2 className="values-spread__card-name">{item.name}</h2>
+                  <p className="values-spread__card-text">
+                    {fixPrepositions(item.text)}{' '}
+                    <strong>{fixPrepositions(item.slogan)}</strong>
+                  </p>
+                </div>
+                <div className="values-spread__card-aside" aria-hidden>
+                  <span className="values-spread__card-icon-wrap">
+                    <img
+                      className={`values-spread__card-icon${
+                        item.icon.includes('11.png') ? ' is-brain' : ''
                       }`}
-                      style={item.motto === 'passion' ? undefined : { color: item.color }}
-                    >
-                      {fixPrepositions(item.slogan)}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-              <div className="values-spread__chain" aria-hidden>
-                {right.chain.map((pill, i) => (
-                  <div
-                    key={pill.label}
-                    className={`values-spread__chain-row${i > 0 ? ' is-step' : ''}`}
-                  >
-                    {i > 0 && <span className="values-spread__chain-arrow">→</span>}
-                    <span className="values-spread__pill">{pill.label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+                      src={asset(item.icon)}
+                      alt=""
+                      draggable={false}
+                    />
+                  </span>
+                  <span className="values-spread__card-pill">{item.pill}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
     </article>

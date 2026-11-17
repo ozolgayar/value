@@ -22,8 +22,68 @@ export interface HistoryEra {
   eyebrow: string
   quote: string
   body: string[]
+  /** Optional editorial photo under the intro text */
+  image?: string
+  /** Short caption under the photo card */
+  imageCaption?: string
+  /** Fill the whole left aside with the photo (no badge/title/copy) */
+  imageBleed?: boolean
   years: HistoryYear[]
 }
+
+export interface HistoryPolaroid {
+  src: string
+  caption: string
+}
+
+const POLAROIDS_2010: HistoryPolaroid[] = [
+  {
+    src: 'img/history/pushkin-construction.jpg',
+    caption: 'Пушкин — стройка',
+  },
+]
+
+const POLAROIDS_2018: HistoryPolaroid[] = [
+  {
+    src: 'img/history/cultural-code-2019.jpg',
+    caption: 'Культурный код',
+  },
+  {
+    src: 'img/history/mona-lisa.jpg',
+    caption: 'Мона Лиза',
+  },
+  {
+    src: 'img/history/art-mirrors-pushkin.jpg',
+    caption: 'Арт-зеркала в Пушкине',
+  },
+]
+
+const POLAROIDS_2019: HistoryPolaroid[] = [
+  { src: 'img/history/start-forum.jpg', caption: 'STAR FORUM' },
+  {
+    src: 'img/history/white-nights-medals.jpg',
+    caption: 'Белые ночи — команда в сборе',
+  },
+  {
+    src: 'img/history/white-nights-square.jpg',
+    caption: 'Белые ночи — наши медали',
+  },
+  {
+    src: 'img/history/white-nights-highfive.jpg',
+    caption: 'Белые ночи — дай пять!',
+  },
+]
+
+const POLAROIDS_2023: HistoryPolaroid[] = [
+  {
+    src: 'img/history/values-cake.jpg',
+    caption: 'Торт «Ценности»',
+  },
+  {
+    src: 'img/history/living-values-obolensk.jpg',
+    caption: 'Живые ценности — Оболенск',
+  },
+]
 
 export const historyEras: HistoryEra[] = [
   {
@@ -681,6 +741,12 @@ export interface HistoryPage {
   eyebrow: string
   quote: string
   body: string[]
+  image?: string
+  imageCaption?: string
+  imageBleed?: boolean
+  polaroids?: HistoryPolaroid[]
+  /** Show polaroids only after this year card index is revealed (e.g. 1 = 2018) */
+  polaroidsRevealIndex?: number
   years: HistoryYearEntry[]
   /** Display label for the chapter, e.g. «2001–2004» or «2019» */
   rangeLabel: string
@@ -691,14 +757,32 @@ export interface HistoryPage {
 export const historyPages: HistoryPage[] = HISTORY_CHAPTER_RANGES.map((range, index) => {
   const years = resolveChapterYears(range)
   const leadEra = historyEras[years[0]?.eraIndex ?? 0]
+  const is2019 = range.length === 1 && range[0] === '2019'
+  const is2023 = range.length === 1 && range[0] === '2023'
+  const isPolaroidOnly = is2019 || is2023
+  const is2017_18 = range.includes('2017') && range.includes('2018')
+  const is2009_10 = range.includes('2009') && range.includes('2010')
   return {
     id: `history-page-${index}`,
     index,
     accent: leadEra.accent,
     asideSide: 'left' as const,
-    eyebrow: leadEra.eyebrow,
-    quote: leadEra.quote,
-    body: leadEra.body,
+    eyebrow: isPolaroidOnly ? '' : leadEra.eyebrow,
+    quote: isPolaroidOnly ? '' : leadEra.quote,
+    body: isPolaroidOnly ? [] : leadEra.body,
+    image: undefined,
+    imageCaption: undefined,
+    imageBleed: false,
+    polaroids: is2019
+      ? POLAROIDS_2019
+      : is2023
+        ? POLAROIDS_2023
+        : is2017_18
+          ? POLAROIDS_2018
+          : is2009_10
+            ? POLAROIDS_2010
+            : undefined,
+    polaroidsRevealIndex: is2017_18 || is2009_10 ? 1 : undefined,
     years,
     rangeLabel: formatYearRange(years),
     chapterKind: years.length > 1 ? ('period' as const) : ('year' as const),
@@ -720,6 +804,10 @@ export interface HistoryMobilePeriod {
   eyebrow: string
   quote: string
   body: string[]
+  image?: string
+  imageCaption?: string
+  imageBleed?: boolean
+  polaroids?: HistoryPolaroid[]
   years: HistoryYearEntry[]
   rangeLabel: string
 }
@@ -727,6 +815,7 @@ export interface HistoryMobilePeriod {
 export const historyMobilePeriods: HistoryMobilePeriod[] = historyEras.map(
   (era, index) => {
     const years = historyYears.filter((y) => y.eraId === era.id)
+    // Mobile era intro stays text; polaroid collage is desktop 2019-only
     return {
       id: era.id,
       index,
@@ -734,6 +823,10 @@ export const historyMobilePeriods: HistoryMobilePeriod[] = historyEras.map(
       eyebrow: era.eyebrow,
       quote: era.quote,
       body: era.body,
+      image: undefined,
+      imageCaption: undefined,
+      imageBleed: false,
+      polaroids: undefined,
       years,
       rangeLabel: formatYearRange(years),
     }

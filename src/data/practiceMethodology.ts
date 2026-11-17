@@ -3,7 +3,7 @@ import type { PracticeCaseData } from './practiceCase'
 export const practiceMethodology: PracticeCaseData = {
   left: {
     badge: 'ПРАКТИКИ ГЕРОФАРМ',
-    title: 'Практика «Разработка методики»',
+    title: 'Разработка методики',
     situationLabel: 'СИТУАЦИЯ ИЗ ЖИЗНИ КОМПАНИИ:',
     situation:
       'Через полгода выходит новый продукт. Нужна методика хроматографического определения чистоты субстанции. Задача – найти вариант решения, который позволит закрыть потребность компании. Что делать?',
@@ -24,7 +24,7 @@ export const practiceMethodology: PracticeCaseData = {
     ],
   },
   right: {
-    title: 'Практика «Разработка методики»',
+    title: 'Разработка методики',
     bestLabel: 'Лучший выбор по ценностям:',
     bestOption: 'Вариант Б',
     values: [

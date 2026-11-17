@@ -111,6 +111,7 @@ function CircleTag({ tag }: { tag: Circle3DTag }) {
 
 const N = PANELS.length
 const STEP = 360 / N
+const ROTATE_MS = 520
 
 function normalizeIndex(rotation: number) {
   const raw = Math.round(-rotation / STEP)
@@ -121,6 +122,14 @@ function shortestDelta(from: number, to: number) {
   let d = ((to - from) % 360 + 360) % 360
   if (d > 180) d -= 360
   return d
+}
+
+function easeOutCubic(t: number) {
+  return 1 - (1 - t) ** 3
+}
+
+function targetRotationForIndex(index: number) {
+  return -(((index % N) + N) % N) * STEP
 }
 
 /**
@@ -190,13 +199,13 @@ export function MissionCircle3DSlide() {
   const coarse = useMediaQuery('(pointer: coarse)')
   const [openId, setOpenId] = useState(PANELS[0].id)
   const [rotation, setRotation] = useState(0)
-  const [animating, setAnimating] = useState(false)
   const [ready, setReady] = useState(false)
   const [dragging, setDragging] = useState(false)
   const [orbit, setOrbit] = useState({ x: 460, z: 220, perspective: 1400 })
   const viewportRef = useRef<HTMLDivElement>(null)
   const rotationRef = useRef(0)
   const wheelLock = useRef(false)
+  const animFrameRef = useRef(0)
   const dragRef = useRef<{
     pointerId: number
     startX: number
@@ -218,19 +227,56 @@ export function MissionCircle3DSlide() {
     return () => window.removeEventListener('resize', syncOrbit)
   }, [])
 
-  const goTo = useCallback((index: number) => {
-    const target = -(((index % N) + N) % N) * STEP
-    setRotation((prev) => prev + shortestDelta(prev, target))
-    setAnimating(true)
+  useEffect(
+    () => () => {
+      if (animFrameRef.current) {
+        window.cancelAnimationFrame(animFrameRef.current)
+      }
+    },
+    [],
+  )
+
+  /** Animate orbit angle in JS so cards stay on the ellipse (no CSS fly-through-center). */
+  const animateToRotation = useCallback((target: number) => {
+    if (animFrameRef.current) {
+      window.cancelAnimationFrame(animFrameRef.current)
+      animFrameRef.current = 0
+    }
+    const from = rotationRef.current
+    const delta = shortestDelta(from, target)
+    if (Math.abs(delta) < 0.01) {
+      setRotation(from + delta)
+      return
+    }
+    const startedAt = performance.now()
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - startedAt) / ROTATE_MS)
+      const next = from + delta * easeOutCubic(t)
+      rotationRef.current = next
+      setRotation(next)
+      if (t < 1) {
+        animFrameRef.current = window.requestAnimationFrame(tick)
+      } else {
+        animFrameRef.current = 0
+      }
+    }
+    animFrameRef.current = window.requestAnimationFrame(tick)
   }, [])
 
-  const stepBy = useCallback((dir: 1 | -1) => {
-    setRotation((prev) => {
-      const nextIndex = normalizeIndex(prev) + dir
-      return prev + shortestDelta(prev, -(((nextIndex % N) + N) % N) * STEP)
-    })
-    setAnimating(true)
-  }, [])
+  const goTo = useCallback(
+    (index: number) => {
+      animateToRotation(targetRotationForIndex(index))
+    },
+    [animateToRotation],
+  )
+
+  const stepBy = useCallback(
+    (dir: 1 | -1) => {
+      const nextIndex = normalizeIndex(rotationRef.current) + dir
+      animateToRotation(targetRotationForIndex(nextIndex))
+    },
+    [animateToRotation],
+  )
 
   useEffect(() => {
     let cancelled = false
@@ -249,12 +295,6 @@ export function MissionCircle3DSlide() {
     if (!phone) return
     setOpenId(PANELS[normalizeIndex(rotationRef.current)].id)
   }, [phone])
-
-  useEffect(() => {
-    if (!animating) return
-    const id = window.setTimeout(() => setAnimating(false), 520)
-    return () => window.clearTimeout(id)
-  }, [animating, rotation])
 
   useEffect(() => {
     const viewport = viewportRef.current
@@ -284,10 +324,14 @@ export function MissionCircle3DSlide() {
     if (e.button !== 0 && e.pointerType === 'mouse') return
     const target = e.target as HTMLElement | null
     if (target?.closest('a, button')) return
+    if (animFrameRef.current) {
+      window.cancelAnimationFrame(animFrameRef.current)
+      animFrameRef.current = 0
+    }
     dragRef.current = {
       pointerId: e.pointerId,
       startX: e.clientX,
-      startRotation: rotation,
+      startRotation: rotationRef.current,
     }
     setDragging(true)
     e.currentTarget.setPointerCapture(e.pointerId)
@@ -297,8 +341,9 @@ export function MissionCircle3DSlide() {
     const drag = dragRef.current
     if (!drag || drag.pointerId !== e.pointerId) return
     const dx = e.clientX - drag.startX
-    setRotation(drag.startRotation + dx * 0.28)
-    setAnimating(false)
+    const next = drag.startRotation + dx * 0.28
+    rotationRef.current = next
+    setRotation(next)
   }
 
   const endDrag = (e: ReactPointerEvent<HTMLDivElement>) => {
@@ -311,9 +356,9 @@ export function MissionCircle3DSlide() {
     } catch {
       /* already released */
     }
-    const snapped = -normalizeIndex(rotationRef.current) * STEP
-    setRotation((prev) => prev + shortestDelta(prev, snapped))
-    setAnimating(true)
+    animateToRotation(
+      targetRotationForIndex(normalizeIndex(rotationRef.current)),
+    )
   }
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -373,7 +418,7 @@ export function MissionCircle3DSlide() {
         onWheel={phone ? undefined : onWheel}
         onKeyDown={phone ? undefined : onKeyDown}
       >
-        <div className={`mc3d__stage${animating ? ' is-anim' : ''}`}>
+        <div className="mc3d__stage">
           {PANELS.map((panel, i) => {
             const pose = panelPose(i, rotation, orbit.x, orbit.z)
             const isActive = i === active

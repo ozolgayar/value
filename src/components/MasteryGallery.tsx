@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { asset } from '../asset'
 import { masteryGallery } from '../data/masteryGallery'
 import { useMediaQuery } from '../hooks'
 import '../styles/mastery-gallery.css'
@@ -49,9 +50,14 @@ export function MasteryGalleryPage({
               <button
                 key={card.id}
                 type="button"
-                className="mg__card card"
+                className={`mg__card card${
+                  card.id === 'semavic' ? ' is-contain' : ''
+                }${card.id === 'putin' ? ' is-cover-top' : ''}`}
                 role="listitem"
-                style={{ ['--mg-tone' as string]: card.tone }}
+                style={{
+                  ['--mg-tone' as string]: card.tone,
+                  ['--mg-cover' as string]: `url(${asset(card.cover)})`,
+                }}
                 onClick={(e) => {
                   e.currentTarget.blur()
                   onOpenStory?.(card.pageId)
@@ -64,11 +70,6 @@ export function MasteryGalleryPage({
           </div>
         </div>
 
-        <div className="mg__brand">
-          <span>ГЕРОФАРМ</span>
-          <span className="mg__mark" aria-hidden />
-          <span>ТРАНСФОРМАЦИЯ</span>
-        </div>
       </div>
     </article>
   )

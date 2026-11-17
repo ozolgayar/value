@@ -5,7 +5,7 @@ export type PracticeCaseData = {
     situationLabel: string
     situation: string
     optionsLabel: string
-    options: { key: string; text: string }[]
+    options: { key: string; text: string; consequence?: string }[]
   }
   right: {
     title: string

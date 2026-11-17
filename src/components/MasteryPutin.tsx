@@ -1,6 +1,6 @@
 import { fixPrepositions } from '../lib/fixPrepositions'
 import { masteryPutin } from '../data/masteryPutin'
-import { MasteryDoor } from './MasteryDoor'
+import { MasteryValueRow } from './MasteryValueRow'
 import { SectionEndNav } from './SectionEndNav'
 import '../styles/mastery-semavic.css'
 
@@ -72,15 +72,15 @@ export function MasteryPutinPage() {
                 <h2 className="ms__right-lead">{fixPrepositions(right.lead)}</h2>
               </div>
               {right.values.map((item) => (
-                <p key={item.name} className="ms__rc-value">
-                  <span className="ms__value-term">{item.name} — </span>
-                  {fixPrepositions(item.text)}
-                </p>
+                <MasteryValueRow
+                  key={item.name}
+                  name={item.name}
+                  text={item.text}
+                />
               ))}
             </div>
           </div>
         </div>
-        <MasteryDoor />
       </section>
       <SectionEndNav />
     </article>

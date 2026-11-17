@@ -58,16 +58,36 @@ export function ValueSlide({
           <div className="vs__inset">
             <span className="vs__badge">ЦЕННОСТИ ГЕРОФАРМ</span>
             <h1 className="vs__title">{fixPrepositions(title)}</h1>
-            <p className="vs__lead">{fixPrepositions(subtitle)}</p>
-            <ul className="vs__steps">
-              {bullets.map((bullet) => (
-                <li key={bullet} className="vs__step">
-                  <span className="vs__step-dash" aria-hidden>
-                    —
-                  </span>
-                  <span>{fixPrepositions(bullet)}</span>
-                </li>
+            <p className="vs__lead">
+              {subtitle.split('\n').map((line) => (
+                <span key={line} className="vs__lead-line">
+                  {fixPrepositions(line)}
+                </span>
               ))}
+            </p>
+            <ul className="vs__steps">
+              {bullets.map((bullet) => {
+                const lines = bullet.split('\n')
+                const isBroken = lines.length > 1
+
+                return (
+                  <li
+                    key={bullet}
+                    className={`vs__step${isBroken ? ' is-broken' : ''}`}
+                  >
+                    <span className="vs__step-dash" aria-hidden>
+                      —
+                    </span>
+                    <span className="vs__step-text">
+                      {lines.map((line) => (
+                        <span key={line} className="vs__step-line">
+                          {fixPrepositions(line)}
+                        </span>
+                      ))}
+                    </span>
+                  </li>
+                )
+              })}
             </ul>
           </div>
         </div>
@@ -83,31 +103,50 @@ export function ValueSlide({
         <div className="vs__right-inner">
           <div className="vs__right-content">
             <div className="vs__right-head">
-              <div className="vs__right-head-text">
+              <div className="vs__right-title-row">
                 <h1 className="vs__right-title">
                   {fixPrepositions('КАК МЫ ЖИВЕМ ПО ЦЕННОСТЯМ')}
                 </h1>
-                <h2 className="vs__section">
-                  {fixPrepositions('ВЫБОР В РАБОЧЕЙ СИТУАЦИИ')}
-                </h2>
+                <img
+                  className={`vs__right-icon${
+                    icon.includes('11.png') ? ' is-brain' : ''
+                  }`}
+                  src={asset(icon)}
+                  alt=""
+                  width={100}
+                  height={100}
+                  decoding="async"
+                />
               </div>
-              <img
-                className={`vs__right-icon${
-                  icon.includes('11.png') ? ' is-brain' : ''
-                }`}
-                src={asset(icon)}
-                alt=""
-                width={100}
-                height={100}
-                decoding="async"
-              />
+              <h2 className="vs__section">
+                {fixPrepositions('ВЫБОР В РАБОЧЕЙ СИТУАЦИИ')}
+              </h2>
             </div>
             <div className="vs__story">
-              {storyBlocks.map((block) => (
-                <p key={block.label}>
-                  <strong>{block.label}:</strong> {fixPrepositions(block.text)}
-                </p>
-              ))}
+              {storyBlocks.map((block) => {
+                const lines = block.text.split('\n')
+                const isBroken = lines.length > 1
+
+                return (
+                  <p
+                    key={block.label}
+                    className={`vs__story-block${isBroken ? ' is-broken' : ''}`}
+                  >
+                    {lines.map((line, index) => (
+                      <span key={`${block.label}-${index}`} className="vs__story-line">
+                        {index === 0 ? (
+                          <>
+                            <strong>{block.label}:</strong>{' '}
+                            {fixPrepositions(line)}
+                          </>
+                        ) : (
+                          fixPrepositions(line)
+                        )}
+                      </span>
+                    ))}
+                  </p>
+                )
+              })}
             </div>
           </div>
         </div>

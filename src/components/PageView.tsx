@@ -516,7 +516,9 @@ function PageViewContent({
   }
 
   if (page.kind === 'closing-cover') {
-    return <ClosingCoverPage />
+    return (
+      <ClosingCoverPage onRestartBook={() => onGoToPage?.('p-ceo')} />
+    )
   }
 
   if (page.kind === 'history-era') {

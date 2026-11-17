@@ -3,7 +3,7 @@ import type { PracticeCaseData } from './practiceCase'
 export const practiceLongTerm: PracticeCaseData = {
   left: {
     badge: 'ПРАКТИКИ ГЕРОФАРМ',
-    title: 'Практика «Долгосрочное решение»',
+    title: 'Долгосрочное решение',
     situationLabel: 'СИТУАЦИЯ ИЗ ЖИЗНИ КОМПАНИИ:',
     situation:
       'Закупки ведутся вручную: менеджеры собирают заявки по почте, сводят данные в разные таблицы, прогнозы неточные, постоянно возникают срочные дозаказы. Нужно найти наилучшее решение, которое позволит навести порядок и изменить принцип работы отдела. Как поступить?',
@@ -24,7 +24,7 @@ export const practiceLongTerm: PracticeCaseData = {
     ],
   },
   right: {
-    title: 'Практика «Долгосрочное решение»',
+    title: 'Долгосрочное решение',
     bestLabel: 'Лучший выбор по ценностям:',
     bestOption: 'Вариант В',
     values: [

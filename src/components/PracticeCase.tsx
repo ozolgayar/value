@@ -12,7 +12,15 @@ function optionLetter(key: string) {
 }
 
 function parseBestLetters(bestOption: string) {
-  return new Set(bestOption.match(/[АБВ]/g) ?? [])
+  // Only the choice letter after «Вариант», not the «В» inside the word itself.
+  const match = bestOption.match(/Вариант\s*([АБВ])/i)
+  if (match?.[1]) return new Set([match[1].toUpperCase()])
+  const fallback = bestOption.match(/([АБВ])\s*$/)
+  return new Set(fallback?.[1] ? [fallback[1]] : [])
+}
+
+function fallbackConsequence(letter: string) {
+  return `Вариант ${letter} слабее опирается на ценности компании: путь получается дольше, а риски для качества и пациентов выше.`
 }
 
 export function PracticeCasePage({
@@ -24,28 +32,37 @@ export function PracticeCasePage({
   const { left, right } = data
   const [phase, setPhase] = useState<Phase>('choose')
   const [chosenKey, setChosenKey] = useState<string | null>(null)
-  const [showOptimal, setShowOptimal] = useState(false)
+  const [showOthers, setShowOthers] = useState(false)
 
   useEffect(() => {
     setPhase('choose')
     setChosenKey(null)
-    setShowOptimal(false)
+    setShowOthers(false)
   }, [data])
+
+  useEffect(() => {
+    if (!showOthers) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowOthers(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [showOthers])
 
   const bestLetters = useMemo(
     () => parseBestLetters(right.bestOption),
     [right.bestOption],
   )
-  const chosenLetter = chosenKey ? optionLetter(chosenKey) : null
-  const isBest = chosenLetter ? bestLetters.has(chosenLetter) : false
-  const revealBest = isBest || showOptimal
   const chosenOption = left.options.find((o) => o.key === chosenKey)
+  const otherOptions = left.options.filter(
+    (opt) => !bestLetters.has(optionLetter(opt.key)),
+  )
 
   return (
     <article
       className={`page-shell page-bleed page-practice-equipment is-${phase}${
-        revealBest ? ' is-best' : ''
-      }${!isBest && phase === 'feedback' ? ' is-suboptimal' : ''}`}
+        phase === 'feedback' ? ' is-best' : ''
+      }`}
     >
       <div className="pe__frame">
         <div className="pe__split">
@@ -54,19 +71,21 @@ export function PracticeCasePage({
             <h1 className="pe__title pe__title--compact">{left.title}</h1>
             <h2 className="pe__section pe__section--ink">{left.situationLabel}</h2>
             <p className="pe__situation pe__situation--full">{left.situation}</p>
-            <div className="pe__task">
-              <span className="pe__task-label">Задача</span>
-              <p className="pe__task-text">
-                Выберите решение, которое лучше всего соответствует ценностям
-                компании.
-              </p>
-            </div>
+            {phase === 'choose' ? (
+              <div className="pe__task">
+                <p className="pe__task-text">
+                  Выбери решение, которое лучше всего соответствует ценностям
+                  компании
+                </p>
+              </div>
+            ) : null}
 
             {phase === 'feedback' && chosenOption && (
               <div className="pe__picked">
                 <span className="pe__picked-label">Твой выбор</span>
                 <p className="pe__picked-text">
-                  <strong>{chosenOption.key}</strong> {chosenOption.text}
+                  <span className="pe__picked-key">{chosenOption.key}</span>{' '}
+                  {chosenOption.text}
                 </p>
               </div>
             )}
@@ -90,7 +109,7 @@ export function PracticeCasePage({
                       style={{ animationDelay: `${i * 60}ms` }}
                       onClick={() => {
                         setChosenKey(opt.key)
-                        setShowOptimal(false)
+                        setShowOthers(false)
                         setPhase('feedback')
                       }}
                     >
@@ -113,62 +132,94 @@ export function PracticeCasePage({
             {phase === 'feedback' && (
               <div className="pe__feedback pe__feedback-enter">
                 <div className="pe__feedback-body">
-                  {revealBest ? (
-                    <>
-                      <p className="pe__verdict pe__verdict--best">
-                        Лучший выбор ✓
-                        <span className="pe__verdict-sub">
-                          {right.bestLabel} {right.bestOption}
+                  <h2 className="pe__verdict pe__verdict--best-title">
+                    {right.bestLabel} {right.bestOption}
+                  </h2>
+                  <ul className="pe__values">
+                    {right.values.map((item) => (
+                      <li key={item.text} className="pe__value">
+                        <span className="pe__icon-wrap">
+                          <img
+                            className={`pe__icon${
+                              item.icon.includes('11.png') ? ' is-brain' : ''
+                            }`}
+                            src={asset(item.icon)}
+                            alt=""
+                            aria-hidden
+                          />
                         </span>
-                      </p>
-                      <ul className="pe__values">
-                        {right.values.map((item) => (
-                          <li key={item.text} className="pe__value">
-                            <span className="pe__icon-wrap">
-                              <img
-                                className={`pe__icon${
-                                  item.icon.includes('11.png') ? ' is-brain' : ''
-                                }`}
-                                src={asset(item.icon)}
-                                alt=""
-                                aria-hidden
-                              />
-                            </span>
-                            <p>{item.text}</p>
-                          </li>
-                        ))}
-                      </ul>
-                      <p className="pe__result">
-                        <strong>{right.resultLabel}</strong> {right.result}
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <p className="pe__verdict pe__verdict--neutral">
-                        Твой выбор: {chosenLetter}
-                      </p>
-                      <p className="pe__why">
-                        По ценностям ГЕРОФАРМ сильнее работает{' '}
-                        {right.bestOption.replace(/\.$/, '')}. Он лучше удерживает
-                        качество, ответственность и результат для пациентов.
-                      </p>
-                      <p className="pe__why pe__why--muted">{right.result}</p>
+                        <p>{item.text}</p>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="pe__result">
+                    <strong>{right.resultLabel}</strong> {right.result}
+                  </p>
+                  {otherOptions.length > 0 ? (
+                    <div className="pe__others">
                       <button
                         type="button"
                         className="pe__cta pe__cta--ghost"
-                        onClick={() => setShowOptimal(true)}
+                        onClick={() => setShowOthers(true)}
                       >
-                        Посмотреть оптимальный выбор
+                        Посмотреть другие решения
                       </button>
-                    </>
-                  )}
+                    </div>
+                  ) : null}
                 </div>
               </div>
             )}
           </section>
         </div>
       </div>
-      {phase === 'feedback' && revealBest ? <SectionEndNav /> : null}
+
+      {showOthers ? (
+        <div
+          className="pe__modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="pe-others-title"
+        >
+          <button
+            type="button"
+            className="pe__modal-backdrop"
+            aria-label="Закрыть"
+            onClick={() => setShowOthers(false)}
+          />
+          <div className="pe__modal-card">
+            <div className="pe__modal-head">
+              <h2 id="pe-others-title" className="pe__modal-title">
+                Другие решения и последствия
+              </h2>
+              <button
+                type="button"
+                className="pe__modal-close"
+                aria-label="Закрыть"
+                onClick={() => setShowOthers(false)}
+              >
+                ×
+              </button>
+            </div>
+            <ul className="pe__others-list pe__others-list--modal">
+              {otherOptions.map((opt) => {
+                const letter = optionLetter(opt.key)
+                return (
+                  <li key={opt.key} className="pe__other">
+                    <p className="pe__other-title">Вариант {letter}</p>
+                    <p className="pe__other-decision">{opt.text}</p>
+                    <p className="pe__other-text">
+                      <strong>Последствие:</strong>{' '}
+                      {opt.consequence ?? fallbackConsequence(letter)}
+                    </p>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        </div>
+      ) : null}
+
+      {phase === 'feedback' ? <SectionEndNav /> : null}
     </article>
   )
 }

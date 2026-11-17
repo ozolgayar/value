@@ -125,9 +125,11 @@ function pagerNeedsWhite(kind: PageKind): boolean {
     case 'mission-uniqueness':
     case 'mission-we-brand':
     case 'env-navigator':
-    case 'culture-bingo':
     case 'closing-cover':
       return true
+    case 'culture-bingo':
+      // Bingo play surface is light (#F5F7FB) — keep dark page counter.
+      return false
     default: {
       const _exhaustive: never = kind
       return _exhaustive
@@ -1311,13 +1313,26 @@ export function Reader({
                           disabled={
                             navLocked ||
                             zoomPhase !== 'idle' ||
-                            (navSectionIndex <= 0 &&
+                            (!(
+                              masteryStoryPageIds.includes(fp.page.id) ||
+                              practiceStoryPageIds.includes(fp.page.id)
+                            ) &&
+                              navSectionIndex <= 0 &&
                               !onBackToWelcome &&
                               index === 0)
                           }
-                          onClick={goPrevSection}
+                          onClick={
+                            masteryStoryPageIds.includes(fp.page.id) ||
+                            practiceStoryPageIds.includes(fp.page.id)
+                              ? navigatePrev
+                              : goPrevSection
+                          }
                         >
-                          Предыдущий раздел
+                          {masteryStoryPageIds.includes(fp.page.id)
+                            ? 'К историям'
+                            : practiceStoryPageIds.includes(fp.page.id)
+                              ? 'К практикам'
+                              : 'Предыдущий раздел'}
                         </button>
                         <button
                           type="button"
@@ -1515,7 +1530,9 @@ export function Reader({
         </button>
 
         <div
-          className={`reader__pager${isInterstitial ? ' is-hidden' : ''}`}
+          className={`reader__pager${
+            isInterstitial || isClosingCover ? ' is-hidden' : ''
+          }`}
           aria-live="polite"
         >
           {`${index + 1} / ${totalPages}`}

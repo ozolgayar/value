@@ -5,6 +5,7 @@ import {
   useState,
   type WheelEvent as ReactWheelEvent,
 } from 'react'
+import { asset } from '../asset'
 import {
   getHistoryMobilePeriodIndexForYear,
   historyMobilePeriodCount,
@@ -230,6 +231,11 @@ export function HistoryTimeline({
   const phoneBody = phone && mobilePeriod ? mobilePeriod.body : page.body
   const phoneEyebrow =
     phone && mobilePeriod ? mobilePeriod.eyebrow : page.eyebrow
+  const phoneImage = phone && mobilePeriod ? mobilePeriod.image : page.image
+  const phoneImageCaption =
+    phone && mobilePeriod ? mobilePeriod.imageCaption : page.imageCaption
+  const phoneImageBleed =
+    phone && mobilePeriod ? mobilePeriod.imageBleed : page.imageBleed
   const phoneAccent =
     phone && mobilePeriod ? mobilePeriod.accent : page.accent
   const phoneRangeLabel =
@@ -595,25 +601,55 @@ export function HistoryTimeline({
         className={`tlh tlh--${phoneAccent} tlh--mobile tlh--editorial`}
         aria-label={`История ГЕРОФАРМ · ${phoneRangeLabel}`}
       >
-        <header className="tlh__era-intro" aria-label="Описание периода">
-          <div className="tlh__era-intro-inner">
-            <span className="tlh__eyebrow">{phoneEyebrow}</span>
-            <h2 className="tlh__quote">{fixPrepositions(phoneQuote)}</h2>
-            <div className="tlh__body">
-              {phoneBody.map((p) => (
-                <p key={p.slice(0, 32)}>
-                  {fixPrepositions(p)
-                    .split('\n')
-                    .map((line, i, arr) => (
-                      <span key={`${i}-${line.slice(0, 16)}`}>
-                        {line}
-                        {i < arr.length - 1 ? <br /> : null}
-                      </span>
-                    ))}
-                </p>
-              ))}
+        <header
+          className={`tlh__era-intro${phoneImageBleed && phoneImage ? ' tlh__era-intro--bleed' : ''}`}
+          aria-label="Описание периода"
+          style={
+            phoneImageBleed && phoneImage
+              ? { backgroundImage: `url(${asset(phoneImage)})` }
+              : undefined
+          }
+        >
+          {phoneImageBleed && phoneImage ? null : (
+            <div className="tlh__era-intro-inner">
+              {phoneEyebrow ? (
+                <span className="tlh__eyebrow">{phoneEyebrow}</span>
+              ) : null}
+              {phoneQuote ? (
+                <h2 className="tlh__quote">{fixPrepositions(phoneQuote)}</h2>
+              ) : null}
+              {phoneBody.length > 0 ? (
+                <div className="tlh__body">
+                  {phoneBody.map((p) => (
+                    <p key={p.slice(0, 32)}>
+                      {fixPrepositions(p)
+                        .split('\n')
+                        .map((line, i, arr) => (
+                          <span key={`${i}-${line.slice(0, 16)}`}>
+                            {line}
+                            {i < arr.length - 1 ? <br /> : null}
+                          </span>
+                        ))}
+                    </p>
+                  ))}
+                </div>
+              ) : null}
+              {phoneImage ? (
+                <figure className="tlh__aside-photo">
+                  <img
+                    src={asset(phoneImage)}
+                    alt={phoneImageCaption ?? ''}
+                    draggable={false}
+                  />
+                  {phoneImageCaption ? (
+                    <figcaption className="tlh__aside-photo-caption">
+                      {fixPrepositions(phoneImageCaption)}
+                    </figcaption>
+                  ) : null}
+                </figure>
+              ) : null}
             </div>
-          </div>
+          )}
         </header>
 
         <div className="tlh__era-board">
@@ -692,31 +728,101 @@ export function HistoryTimeline({
     )
   }
 
+  const showPolaroids = Boolean(
+    page.polaroids?.length &&
+      (page.polaroidsRevealIndex == null ||
+        revealed.has(page.polaroidsRevealIndex)),
+  )
+
   return (
     <section
       ref={rootRef}
       className={`tlh tlh--${page.accent} tlh--aside-left tlh--editorial`}
       aria-label={`История ГЕРОФАРМ · ${page.rangeLabel}`}
     >
-      <aside className="tlh__aside">
-        <div className="tlh__aside-content">
-          <span className="tlh__eyebrow">{page.eyebrow}</span>
-          <h2 className="tlh__quote">{fixPrepositions(page.quote)}</h2>
-          <div className="tlh__body">
-            {page.body.map((p) => (
-              <p key={p.slice(0, 32)}>
-                {fixPrepositions(p)
-                  .split('\n')
-                  .map((line, i, arr) => (
-                    <span key={`${i}-${line.slice(0, 16)}`}>
-                      {line}
-                      {i < arr.length - 1 ? <br /> : null}
-                    </span>
-                  ))}
-              </p>
+      <aside
+        className={`tlh__aside${
+          showPolaroids
+            ? ' tlh__aside--polaroids'
+            : page.imageBleed && page.image
+              ? ' tlh__aside--bleed'
+              : page.image
+                ? ' tlh__aside--with-photo'
+                : ''
+        }`}
+        style={
+          page.imageBleed && page.image && !showPolaroids
+            ? { backgroundImage: `url(${asset(page.image)})` }
+            : undefined
+        }
+        aria-label={
+          showPolaroids
+            ? 'Фотоархив периода'
+            : page.imageBleed
+              ? page.imageCaption || 'STAR FORUM, 2019'
+              : undefined
+        }
+      >
+        {showPolaroids && page.polaroids ? (
+          <div
+            className={`tlh__polaroids tlh__polaroids--count-${page.polaroids.length}`}
+          >
+            {page.polaroids.map((shot, index) => (
+              <figure
+                key={shot.src}
+                className={`tlh__polaroid tlh__polaroid--${index + 1}`}
+              >
+                <img
+                  src={asset(shot.src)}
+                  alt={shot.caption}
+                  draggable={false}
+                />
+                <figcaption className="tlh__polaroid-caption">
+                  {fixPrepositions(shot.caption)}
+                </figcaption>
+              </figure>
             ))}
           </div>
-        </div>
+        ) : page.imageBleed && page.image ? null : (
+          <div className="tlh__aside-content">
+            {page.eyebrow ? (
+              <span className="tlh__eyebrow">{page.eyebrow}</span>
+            ) : null}
+            {page.quote ? (
+              <h2 className="tlh__quote">{fixPrepositions(page.quote)}</h2>
+            ) : null}
+            {page.body.length > 0 ? (
+              <div className="tlh__body">
+                {page.body.map((p) => (
+                  <p key={p.slice(0, 32)}>
+                    {fixPrepositions(p)
+                      .split('\n')
+                      .map((line, i, arr) => (
+                        <span key={`${i}-${line.slice(0, 16)}`}>
+                          {line}
+                          {i < arr.length - 1 ? <br /> : null}
+                        </span>
+                      ))}
+                  </p>
+                ))}
+              </div>
+            ) : null}
+            {page.image ? (
+              <figure className="tlh__aside-photo">
+                <img
+                  src={asset(page.image)}
+                  alt={page.imageCaption ?? ''}
+                  draggable={false}
+                />
+                {page.imageCaption ? (
+                  <figcaption className="tlh__aside-photo-caption">
+                    {fixPrepositions(page.imageCaption)}
+                  </figcaption>
+                ) : null}
+              </figure>
+            ) : null}
+          </div>
+        )}
       </aside>
 
       <div className="tlh__stage">

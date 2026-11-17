@@ -2,13 +2,18 @@ import { BOOK_META } from '../data/book'
 import { asset } from '../asset'
 import '../styles/closing-cover.css'
 
-export function ClosingCoverPage() {
+export function ClosingCoverPage({
+  onRestartBook,
+}: {
+  onRestartBook?: () => void
+}) {
   return (
-    <article className="page-shell page-bleed page-closing-cover" aria-label="Культурный путеводитель ГЕРОФАРМ">
+    <article
+      className="page-shell page-bleed page-closing-cover"
+      aria-label="Продолжение следует"
+    >
       <div className="closing-cover__media" aria-hidden />
       <div className="closing-cover__scrim" aria-hidden />
-      <div className="closing-cover__gradient" aria-hidden />
-      <div className="closing-cover__gradient-glow" aria-hidden />
 
       <div className="closing-cover__top">
         <span className="pill closing-cover__badge">
@@ -25,14 +30,17 @@ export function ClosingCoverPage() {
 
       <div className="closing-cover__bottom">
         <div className="closing-cover__copy">
-          <h1 className="closing-cover__title">
-            Культурный
-            <br />
-            путеводитель
-            <br />
-            ГЕРОФАРМ
-          </h1>
+          <h1 className="closing-cover__title">Продолжение следует</h1>
           <p className="closing-cover__hash">{BOOK_META.hashtag}</p>
+          {onRestartBook ? (
+            <button
+              type="button"
+              className="closing-cover__cta primary-btn"
+              onClick={onRestartBook}
+            >
+              В начало книги
+            </button>
+          ) : null}
         </div>
         <img
           className="closing-cover__qr"

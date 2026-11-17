@@ -355,15 +355,6 @@
   }
 
   /* Values / mission / value slides densify */
-  .reader:not(.is-vertical) .values-spread__hero,
-  .reader:not(.is-vertical) .values-spread__hero--chain {
-    min-height: calc(var(--nav-safe) + 0.25rem + clamp(3.75rem, 10vh, 5.5rem));
-  }
-
-  .reader:not(.is-vertical) .values-spread__hero-title {
-    font-size: clamp(1.25rem, 1.9vw, 1.7rem);
-  }
-
   .reader:not(.is-vertical) .vs__title,
   .reader:not(.is-vertical) .value-slide__title {
     font-size: clamp(1.35rem, 2.2vw, 2rem);

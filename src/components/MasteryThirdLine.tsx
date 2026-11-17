@@ -1,7 +1,7 @@
 import { Fragment } from 'react'
 import { fixPrepositions, splitHighlighted } from '../lib/fixPrepositions'
 import { masteryThirdLine } from '../data/masteryThirdLine'
-import { MasteryDoor } from './MasteryDoor'
+import { MasteryValueRow } from './MasteryValueRow'
 import { SectionEndNav } from './SectionEndNav'
 import '../styles/mastery-semavic.css'
 
@@ -109,15 +109,15 @@ export function MasteryThirdLinePage() {
                 <h2 className="ms__right-lead">{fixPrepositions(right.lead)}</h2>
               </div>
               {right.values.map((item) => (
-                <p key={item.name} className="ms__rc-value">
-                  <span className="ms__value-term">{item.name} — </span>
-                  {fixPrepositions(item.text)}
-                </p>
+                <MasteryValueRow
+                  key={item.name}
+                  name={item.name}
+                  text={item.text}
+                />
               ))}
             </div>
           </div>
         </div>
-        <MasteryDoor />
       </section>
       <SectionEndNav />
     </article>

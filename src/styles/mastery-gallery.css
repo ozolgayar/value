@@ -5,10 +5,7 @@
   height: 100%;
   min-height: 100%;
   overflow: hidden;
-  background:
-    radial-gradient(ellipse 60% 50% at 12% 18%, rgba(249, 115, 22, 0.12), transparent 55%),
-    radial-gradient(ellipse 50% 45% at 88% 78%, rgba(124, 58, 237, 0.14), transparent 55%),
-    linear-gradient(165deg, #f8fafc 0%, #eef2ff 48%, #f5f3ff 100%);
+  background: #fff;
   color: #183553;
 }
 
@@ -43,10 +40,11 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #183553;
-  border: 1px solid rgba(24, 53, 83, 0.45);
+  color: #ffa329;
+  border: 1.5px solid #ffa329;
   border-radius: 999px;
   padding: 0.28rem 0.7rem;
+  background: #fff;
 }
 
 .mg__title {
@@ -174,7 +172,30 @@
   pointer-events: none;
   border-radius: inherit;
   background:
-    linear-gradient(160deg, rgba(15, 23, 42, 0.15), rgba(15, 23, 42, 0.55)),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.18) 0%, rgba(15, 23, 42, 0.72) 100%),
+    var(--mg-cover) center / cover no-repeat,
+    linear-gradient(135deg, var(--mg-tone, #7c3aed), #111827 120%);
+}
+
+.mg__card.is-contain .mg__card-face {
+  background-color: #fff;
+  background-image:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.04) 40%, rgba(15, 23, 42, 0.55) 100%),
+    var(--mg-cover);
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.mg__card.is-contain .mg__card-title {
+  color: #fff;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
+}
+
+.mg__card.is-cover-top .mg__card-face {
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.18) 0%, rgba(15, 23, 42, 0.72) 100%),
+    var(--mg-cover) center top / cover no-repeat,
     linear-gradient(135deg, var(--mg-tone, #7c3aed), #111827 120%);
 }
 
@@ -195,7 +216,7 @@
   font-size: clamp(0.95rem, 1.5vw, 1.2rem);
   font-weight: 700;
   line-height: 1.35;
-  color: #183553;
+  color: #2b2b2b;
 }
 
 .mg__brand {
