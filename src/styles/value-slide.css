@@ -34,9 +34,7 @@
   min-height: 0;
   max-width: 100%;
   height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
 }
 
 .vs__half--left {
@@ -60,9 +58,14 @@
     56px
     72px
     max(56px, var(--nav-arrow-lane-left));
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
+  scrollbar-width: none;
+}
+
+.vs__top::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .vs__inset {
@@ -397,9 +400,13 @@
       20px;
   }
 
-  .vs__title {
-    font-size: clamp(1.5rem, 7.6vw, 2.05rem);
-    letter-spacing: 0.01em;
+  .vs__title,
+  .page-shell.vs .vs__half--left .vs__title,
+  .page-shell.vs .vs__half--left h1 {
+    max-width: 100%;
+    font-size: 23px;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
     overflow-wrap: normal;
     word-break: normal;
   }
@@ -424,13 +431,30 @@
     white-space: normal;
   }
 
+  .vs__right-title-row {
+    display: grid;
+    grid-template-columns: minmax(0, max-content) minmax(72px, 1fr);
+    align-items: start;
+    column-gap: 0;
+    margin-bottom: 0.95rem;
+  }
+
   .vs__right-icon {
-    width: calc(100px / 1.5);
-    height: calc(100px / 1.5);
+    width: 52px;
+    height: 52px;
+    margin: 0;
+    justify-self: center;
+  }
+
+  .vs__right-icon.is-brain {
+    transform: none;
   }
 
   .vs__right-title {
-    font-size: clamp(1.65rem, 7vw, 2.4rem);
+    min-width: 0;
+    max-width: none;
+    padding-right: 0;
+    font-size: clamp(1.45rem, 6.2vw, 2rem);
   }
 
   .vs__story-block {

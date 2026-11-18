@@ -35,58 +35,83 @@ export function BentoMenu({
         onTouchStart={(e) => e.stopPropagation()}
         onTouchMove={(e) => e.stopPropagation()}
       >
-        <div className="menu-panel__head">
-          <span className="menu-panel__spacer" aria-hidden />
-          <h2>Оглавление</h2>
-          <button type="button" className="menu-close" onClick={onClose} aria-label="Закрыть">
+        <header className="menu-panel__head">
+          <img
+            className="menu-panel__brand"
+            src={asset('img/main/logo.svg')}
+            alt="ГЕРОФАРМ ТРАНСФОРМАЦИЯ"
+          />
+          <button
+            type="button"
+            className="menu-close"
+            onClick={onClose}
+            aria-label="Закрыть"
+          >
             ×
           </button>
-        </div>
+          <h2 className="menu-panel__title">Оглавление</h2>
+          <p className="menu-panel__lead">Выбери раздел книги</p>
+        </header>
 
-        <div className="bento">
+        <nav className="toc" aria-label="Разделы книги">
           {navSections.map((section, i) => {
             const firstPage = section.paragraphs[0]?.pages[0]
             const active = section.id === current.sectionId
             const done = currentNavIndex >= 0 && i < currentNavIndex
-            const isLast = i === navSections.length - 1
-            const statusLabel = active ? 'сейчас' : done ? 'пройден' : 'не пройден'
+            const statusLabel = active
+              ? 'сейчас'
+              : done
+                ? 'пройден'
+                : 'не пройден'
+
             return (
               <button
                 key={section.id}
                 type="button"
-                className={`bento__item${active ? ' is-active' : ''}${done ? ' is-done' : ''}${isLast ? ' bento__item--wide' : ''}`}
+                className={`toc__item${active ? ' is-active' : ''}${done ? ' is-done' : ''}`}
                 onClick={() => {
                   if (firstPage) onGoPageId(firstPage.id)
                   onClose()
                 }}
               >
-                <span className="bento__row">
-                  <span className="bento__num">{section.number}</span>
-                  <span
-                    className={`bento__status${done ? ' is-done' : ''}${active ? ' is-active' : ''}`}
-                    aria-label={statusLabel}
-                  >
-                    {done ? '✓' : active ? '●' : '○'}
+                <span className="toc__num" aria-hidden>
+                  {section.number}
+                </span>
+                <span className="toc__copy">
+                  <span className="toc__title">{section.title}</span>
+                  <span className="toc__desc">{section.summary}</span>
+                </span>
+                <span className="toc__meta">
+                  {active ? (
+                    <span className="toc__here">вы здесь</span>
+                  ) : (
+                    <span
+                      className={`toc__status${done ? ' is-done' : ''}`}
+                      aria-label={statusLabel}
+                    >
+                      {done ? '✓' : ''}
+                    </span>
+                  )}
+                  <span className="toc__arrow" aria-hidden>
+                    →
                   </span>
                 </span>
-                <span className="bento__title">{section.title}</span>
-                <span className="bento__tag">{section.tag}</span>
               </button>
             )
           })}
-        </div>
+        </nav>
 
         <div className="menu-panel__footer">
           <button
             type="button"
-            className="menu-notes"
+            className="menu-service"
             onClick={() => {
               onClose()
               onQuotes()
             }}
           >
             <span
-              className="menu-notes__icon"
+              className="menu-service__icon"
               style={{
                 WebkitMaskImage: `url(${asset('icons/notebook-text.svg')})`,
                 maskImage: `url(${asset('icons/notebook-text.svg')})`,
@@ -97,14 +122,14 @@ export function BentoMenu({
           </button>
           <button
             type="button"
-            className="menu-notes"
+            className="menu-service"
             onClick={() => {
               onGoPageId('p-journey')
               onClose()
             }}
           >
             <span
-              className="menu-notes__icon"
+              className="menu-service__icon"
               style={{
                 WebkitMaskImage: `url(${asset('icons/mail.svg')})`,
                 maskImage: `url(${asset('icons/mail.svg')})`,

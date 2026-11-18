@@ -4,8 +4,12 @@ export type EnvNavItem = {
   href?: string
 }
 
+export type EnvNavAccent = 'orange' | 'violet' | 'rose' | 'blue' | 'coral'
+
 export type EnvNavCard = {
   title: string
+  index: string
+  accent: EnvNavAccent
   items: EnvNavItem[]
 }
 
@@ -13,12 +17,15 @@ export const envNavigator = {
   badge: 'ОКРУЖЕНИЕ ГЕРОФАРМ',
   title: 'Навигатор по культурному окружению',
   intro:
-    'Поддерживать и развивать культуру ГЕРОФАРМ помогает наше окружение: сообщество коллег и внутренняя инфраструктура.',
+    'Поддерживать и развивать культуру ГЕРОФАРМ помогает наше окружение: сообщество коллег и внутренняя инфраструктура',
+  lead: 'Каждый день мы можем использовать возможности, которые компания создаёт для нашего успеха',
   footnote:
-    'На странице есть активные ссылки: при клике/нажатии они ведут на внешние ресурсы',
-  leftCards: [
+    'На странице есть активные ссылки — наведи на пункты в карточках, они открывают внешние ресурсы',
+  cards: [
     {
       title: 'История',
+      index: '01',
+      accent: 'orange',
       items: [
         {
           label: 'Каталог журнала gNEWS (с 2017 по 2025 г.)',
@@ -27,13 +34,15 @@ export const envNavigator = {
         },
         {
           label: 'Медиатека',
-          desc: 'Архив фото и видео бренда.',
+          desc: 'Архив фото и видео бренда',
           href: 'https://academiageropharm.ekvio.ru/430/video',
         },
       ],
     },
     {
       title: 'Миссия и стратегия',
+      index: '02',
+      accent: 'violet',
       items: [
         {
           label: 'Официальный сайт компании',
@@ -58,10 +67,10 @@ export const envNavigator = {
         },
       ],
     },
-  ] satisfies EnvNavCard[],
-  rightCards: [
     {
-      title: 'Синергия «Мы»',
+      title: 'МЫ — ГЕРОФАРМ',
+      index: '03',
+      accent: 'rose',
       items: [
         {
           label: 'Корпоративный интернет-портал «СФЕРА»',
@@ -73,7 +82,7 @@ export const envNavigator = {
           desc: 'Канал о событиях корпоративной жизни',
         },
         {
-          label: '«Пульс»',
+          label: 'Пульс',
           desc: 'Ежегодный опрос вовлечённости',
         },
         {
@@ -93,6 +102,8 @@ export const envNavigator = {
     },
     {
       title: 'Ценности',
+      index: '04',
+      accent: 'blue',
       items: [
         {
           label: 'Сообщество амбассадоров',
@@ -118,6 +129,8 @@ export const envNavigator = {
     },
     {
       title: 'Мастерство',
+      index: '05',
+      accent: 'coral',
       items: [
         {
           label: 'Академия',
@@ -145,10 +158,4 @@ export const envNavigator = {
       ],
     },
   ] satisfies EnvNavCard[],
-  quote: [
-    'Каждый день мы можем',
-    'использовать возможности, которые',
-    'компания создает',
-    'для нашего успеха',
-  ],
 }

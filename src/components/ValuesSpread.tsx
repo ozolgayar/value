@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef } from 'react'
 import { asset } from '../asset'
 import { valuesSpread } from '../data/valuesSpread'
 import { fixPrepositions } from '../lib/fixPrepositions'
@@ -5,9 +6,46 @@ import '../styles/values-spread.css'
 
 export function ValuesSpreadPage() {
   const { left, right } = valuesSpread
+  const rootRef = useRef<HTMLElement>(null)
+  const leftTitleRef = useRef<HTMLHeadingElement>(null)
+  const rightHalfRef = useRef<HTMLElement>(null)
+
+  useLayoutEffect(() => {
+    const root = rootRef.current
+    const leftTitle = leftTitleRef.current
+    const rightHalf = rightHalfRef.current
+    if (!root || !leftTitle || !rightHalf) return
+
+    const sync = () => {
+      if (window.matchMedia('(max-width: 900px)').matches) {
+        root.style.removeProperty('--values-right-top')
+        return
+      }
+      const halfTop = rightHalf.getBoundingClientRect().top
+      const titleTop = leftTitle.getBoundingClientRect().top
+      root.style.setProperty(
+        '--values-right-top',
+        `${Math.max(0, Math.round(titleTop - halfTop))}px`,
+      )
+    }
+
+    sync()
+    const ro = new ResizeObserver(sync)
+    ro.observe(root)
+    ro.observe(leftTitle)
+    window.addEventListener('resize', sync)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', sync)
+      root.style.removeProperty('--values-right-top')
+    }
+  }, [])
 
   return (
-    <article className="page-shell page-bleed page-values-spread">
+    <article
+      ref={rootRef}
+      className="page-shell page-bleed page-values-spread"
+    >
       <section
         className="values-spread__half values-spread__half--left"
         aria-label={left.title}
@@ -15,7 +53,7 @@ export function ValuesSpreadPage() {
         <div className="values-spread__inner">
           <header className="values-spread__intro">
             <span className="values-spread__badge">{left.badge}</span>
-            <h1 className="values-spread__title">
+            <h1 ref={leftTitleRef} className="values-spread__title">
               {fixPrepositions(left.title)}
             </h1>
           </header>
@@ -54,6 +92,7 @@ export function ValuesSpreadPage() {
       </section>
 
       <section
+        ref={rightHalfRef}
         className="values-spread__half values-spread__half--right"
         aria-label={right.title}
       >
@@ -69,10 +108,14 @@ export function ValuesSpreadPage() {
                 style={{ ['--value-color' as string]: item.color }}
               >
                 <div className="values-spread__card-copy">
-                  <h2 className="values-spread__card-name">{item.name}</h2>
+                  <div className="values-spread__card-head">
+                    <h2 className="values-spread__card-name">{item.name}</h2>
+                  </div>
                   <p className="values-spread__card-text">
-                    {fixPrepositions(item.text)}{' '}
-                    <strong>{fixPrepositions(item.slogan)}</strong>
+                    {fixPrepositions(item.text)}
+                  </p>
+                  <p className="values-spread__card-slogan">
+                    {fixPrepositions(item.slogan)}
                   </p>
                 </div>
                 <div className="values-spread__card-aside" aria-hidden>

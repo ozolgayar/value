@@ -26,7 +26,7 @@ export const practiceErrorFirst: PracticeCaseData = {
   right: {
     title: 'Найти ошибку первыми',
     bestLabel: 'Лучший выбор по ценностям:',
-    bestOption: 'Вариант В.',
+    bestOption: 'Вариант В',
     values: [
       {
         icon: 'img/11.png',

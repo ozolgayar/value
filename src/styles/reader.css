@@ -377,8 +377,9 @@
 .page-split__right-inner {
   position: absolute;
   left: var(--split-x-right);
-  top: var(--spread-content-center);
-  transform: translateY(-50%);
+  /* Synced to left title top via --split-right-top (see SplitJourneyPage) */
+  top: var(--split-right-top, var(--spread-content-center));
+  transform: none;
   gap: 0;
   width: min(700px, calc(100% - var(--split-x-right) - max(var(--nav-arrow-lane-right), 48px)));
   max-width: 700px;
@@ -406,7 +407,7 @@
 
 .page-split__body p {
   margin: 0;
-  font-size: clamp(0.9rem, 1.35vw, 1.05rem);
+  font-size: 20px;
   line-height: 1.48;
   color: rgba(255, 255, 255, 0.95);
 }
@@ -444,9 +445,10 @@
 
 .page-split__side-title {
   margin: 0;
-  font-size: clamp(1.35rem, 2.2vw, 1.75rem);
-  line-height: 1.1;
+  font-size: clamp(1.85rem, 2.4vw, 2.5rem);
+  line-height: 1.12;
   font-weight: 800;
+  letter-spacing: -0.02em;
   color: var(--page-heading);
 }
 
@@ -593,7 +595,7 @@
 .page-route__body p {
   margin: 0;
   max-width: 100%;
-  font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+  font-size: 20px;
   line-height: 1.58;
   color: var(--page-body-text);
 }
@@ -664,7 +666,7 @@
 
 .page-route__read-item-desc {
   margin: 0.28rem 0 0;
-  font-size: clamp(0.9rem, 1.1vw, 1rem);
+  font-size: 20px;
   line-height: 1.45;
   color: var(--page-body-text);
 }
@@ -706,10 +708,10 @@
 
 .page-route__toc-title {
   margin: 0;
-  font-size: clamp(1.85rem, 2.2vw, 2.125rem);
+  font-size: clamp(2.2rem, 2.8vw, 2.875rem);
   font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
   color: #ffffff;
   text-shadow: none;
   text-wrap: balance;
@@ -717,7 +719,7 @@
 
 .page-route__toc-hint {
   margin: 0 0 0.15rem;
-  font-size: 1rem;
+  font-size: 20px;
   line-height: 1.35;
   font-weight: 500;
   color: #ffffff;
@@ -980,11 +982,19 @@
 
   .page-split__left-inner,
   .page-split__right-inner {
-    top: max(84px, calc(var(--reader-topbar-h) + 16px));
-    transform: none;
     max-height: calc(100% - 84px - 56px);
     overflow-x: hidden;
     overflow-y: auto;
+  }
+
+  .page-split__left-inner {
+    top: max(84px, calc(var(--reader-topbar-h) + 16px));
+    transform: none;
+  }
+
+  .page-split__right-inner {
+    top: var(--split-right-top, max(84px, calc(var(--reader-topbar-h) + 16px)));
+    transform: none;
   }
 
   .page-split__left-inner {
@@ -1004,7 +1014,8 @@
     box-shadow: none;
   }
 
-  .page-split__title {
+  .page-split__title,
+  .page-split__side-title {
     font-size: clamp(1.35rem, 1.9vw, 1.85rem);
   }
 
@@ -1013,7 +1024,7 @@
   }
 
   .page-split__body p {
-    font-size: clamp(0.84rem, 1.05vw, 0.95rem);
+    font-size: 20px;
     line-height: 1.4;
   }
 
@@ -1026,10 +1037,6 @@
 
   .page-split__logo {
     width: min(calc(100% - 2rem), 180px);
-  }
-
-  .page-split__side-title {
-    font-size: clamp(1.15rem, 1.6vw, 1.4rem);
   }
 
   .page-split__list {
@@ -1076,7 +1083,8 @@
     width: min(440px, calc(100% - var(--page-left-x) - 1.25rem));
   }
 
-  .page-route__title {
+  .page-route__title,
+  .page-route__toc-title {
     font-size: clamp(1.45rem, 2vw, 1.9rem);
   }
 
@@ -1085,7 +1093,7 @@
   }
 
   .page-route__body p {
-    font-size: clamp(0.86rem, 1vw, 0.98rem);
+    font-size: 20px;
     line-height: 1.4;
   }
 
@@ -1112,7 +1120,7 @@
   }
 
   .page-route__read-item-desc {
-    font-size: 0.88rem;
+    font-size: 20px;
   }
 
   .page-route__toc {
@@ -1120,12 +1128,8 @@
     padding-bottom: 36px;
   }
 
-  .page-route__toc-title {
-    font-size: clamp(1.25rem, 1.6vw, 1.55rem);
-  }
-
   .page-route__toc-hint {
-    font-size: 0.85rem;
+    font-size: 20px;
   }
 
   .chapters-timeline {
@@ -2823,16 +2827,26 @@
   background: #ffa329;
   border-color: #ffa329;
   color: #fff;
-  box-shadow: none;
+  box-shadow: 0 4px 14px rgba(255, 163, 41, 0.28);
 }
 
 .reader__section-end-btn:hover:not(:disabled) {
   border-color: rgba(24, 53, 83, 0.28);
+  box-shadow: 0 6px 18px rgba(24, 53, 83, 0.1);
 }
 
 .reader__section-end-btn--next:hover:not(:disabled) {
   background: #f09215;
   border-color: #f09215;
+  box-shadow: 0 6px 18px rgba(255, 163, 41, 0.34);
+}
+
+.reader__section-end-btn:active:not(:disabled) {
+  box-shadow: 0 2px 8px rgba(24, 53, 83, 0.08);
+}
+
+.reader__section-end-btn--next:active:not(:disabled) {
+  box-shadow: 0 2px 8px rgba(255, 163, 41, 0.24);
 }
 
 .reader__section-end-btn:disabled {
@@ -3328,7 +3342,7 @@
   }
 
   .page-route__body p {
-    font-size: clamp(1.06rem, 1.32vw, 1.27rem);
+    font-size: 20px;
     line-height: 1.48;
   }
 }

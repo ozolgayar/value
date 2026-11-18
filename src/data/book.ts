@@ -256,7 +256,7 @@ export const sections: Section[] = [
   {
     id: 'history',
     number: '02',
-    title: 'История ГЕРОФАРМ',
+    title: 'История',
     tag: 'ПУТЬ / КУЛЬТУРА',
     summary: 'Путь, который сформировал нашу культуру',
     accent: '#9b4dff',
@@ -294,7 +294,7 @@ export const sections: Section[] = [
   {
     id: 'mission',
     number: '03',
-    title: 'Миссия и стратегия ГЕРОФАРМ',
+    title: 'Миссия и стратегия',
     tag: 'ГОРИЗОНТ / 2030',
     summary: 'Какое предназначение нас объединяет, на какие глобальные цели влияет вклад каждого из нас',
     accent: '#E56814',
@@ -392,7 +392,7 @@ export const sections: Section[] = [
   {
     id: 'values',
     number: '05',
-    title: 'Ценности ГЕРОФАРМ',
+    title: 'Ценности',
     tag: 'ВНУТРЕННИЙ КОМПАС',
     summary: 'На что мы ориентируемся при принятии решений',
     accent: '#3BB9B8',
@@ -448,7 +448,7 @@ export const sections: Section[] = [
   {
     id: 'mastery',
     number: '06',
-    title: 'Мастерство ГЕРОФАРМ',
+    title: 'Мастерство',
     tag: 'ИСТОРИИ ПОБЕД',
     summary: 'Какие способности помогают нам добиваться успеха',
     accent: '#E56814',
@@ -509,7 +509,7 @@ export const sections: Section[] = [
   {
     id: 'environment',
     number: '07',
-    title: 'Окружение ГЕРОФАРМ',
+    title: 'Окружение',
     tag: 'ИНФРАСТРУКТУРА КУЛЬТУРЫ',
     summary: 'Кто и что в компании поддерживает и развивает культуру',
     accent: '#2C1264',
@@ -643,7 +643,7 @@ export const sections: Section[] = [
     number: '09',
     title: 'Культурное бинго',
     tag: 'ИГРА',
-    summary: 'Отметь ситуации и посмотри, как культура проявляется в работе',
+    summary: 'Игра',
     accent: '#F97316',
     paragraphs: [
       {

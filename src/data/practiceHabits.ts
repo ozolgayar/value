@@ -26,7 +26,7 @@ export const practiceHabits: PracticeCaseData = {
   right: {
     title: 'Новые привычки',
     bestLabel: 'Лучший выбор по ценностям:',
-    bestOption: 'Вариант Б и В.',
+    bestOption: 'Вариант Б и В',
     values: [
       {
         icon: 'img/11.png',

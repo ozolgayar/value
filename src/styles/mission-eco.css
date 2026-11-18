@@ -1572,10 +1572,11 @@
   display: block;
   width: 1.35rem;
   height: 1.35rem;
+  opacity: 0.55;
 }
 
 .shouse__house-base {
-  color: #b8c2d0;
+  color: rgba(255, 163, 41, 0.45);
   transition: color 280ms ease;
 }
 
@@ -1584,7 +1585,7 @@
 }
 
 .shouse__house-fill {
-  color: var(--sh-blue);
+  color: #ffa329;
   transition: color 280ms ease;
 }
 
@@ -1615,11 +1616,15 @@
 }
 
 .shouse__hotspot.is-active .shouse__house-base {
-  color: #c5d0de;
+  color: rgba(255, 163, 41, 0.4);
 }
 
 .shouse__hotspot.is-active .shouse__house-fill {
-  color: var(--sh-blue);
+  color: #ffa329;
+}
+
+.shouse__hotspot.is-active .shouse__house-icon {
+  opacity: 0.55;
 }
 
 .shouse:has(.shouse__hotspot:hover) .shouse__hotspot:not(:hover):not(.is-active) .shouse__hotspot-num,
@@ -2240,7 +2245,7 @@
     font-size: 0.92rem;
     line-height: 1.35;
     font-weight: 600;
-    color: #183553;
+    color: #2b2b2b;
   }
 
   .shouse__guide {
@@ -2255,9 +2260,9 @@
     margin-top: 0;
     min-height: 0;
     padding: 20px 20px calc(env(safe-area-inset-bottom, 0px) + 88px);
-    border-top: none;
-    background: linear-gradient(180deg, #0b63c7 0%, #0057b8 55%, #004899 100%);
-    color: #fff;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+    color: #000000;
     box-sizing: border-box;
   }
 
@@ -2276,7 +2281,7 @@
     gap: 10px 12px;
     margin-top: 1.25rem;
     padding-top: 0.85rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
     flex: 0 0 auto;
     width: 100%;
   }
@@ -2296,7 +2301,7 @@
     font-weight: 800;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.88);
+    color: rgba(0, 0, 0, 0.55);
     text-align: center;
   }
 
@@ -2304,7 +2309,7 @@
     width: min(100%, 160px);
     height: 4px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.22);
+    background: rgba(0, 0, 0, 0.1);
     overflow: hidden;
   }
 
@@ -2312,7 +2317,7 @@
     display: block;
     height: 100%;
     border-radius: inherit;
-    background: #ffffff;
+    background: #ffa329;
     transition: width 0.35s ease;
   }
 
@@ -2321,10 +2326,10 @@
     width: 100%;
     min-height: 44px;
     padding: 0.55rem 0.9rem;
-    border: 1px solid rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(0, 0, 0, 0.18);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.12);
-    color: #fff;
+    background: #ffffff;
+    color: #000000;
     font: inherit;
     font-size: 0.9rem;
     font-weight: 700;
@@ -2340,7 +2345,9 @@
   }
 
   .shouse__floor-step-btn--next {
-    background: rgba(255, 255, 255, 0.22);
+    background: #ffa329;
+    border-color: #ffa329;
+    color: #ffffff;
     justify-self: stretch;
   }
 
@@ -2979,7 +2986,7 @@
 
   .mstmt__panel--strategy {
     background: #ffffff;
-    padding-bottom: 6.5rem;
+    padding-bottom: 1.25rem;
   }
 
   .mstmt__panel--mission .mstmt__title,
@@ -2988,8 +2995,19 @@
   }
 
   .page-mission-statement .mstmt__brand {
-    left: 20px;
+    position: relative;
+    left: auto;
     right: auto;
+    bottom: auto;
+    z-index: 1;
+    margin: 0;
+    padding: 0.75rem 20px calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    background: #ffffff;
+  }
+
+  .page-mission-statement .mstmt__brand-logo {
+    height: 1.55rem;
+    max-width: min(14.5rem, 100%);
   }
 
   .page-shell.page-mission-statement,

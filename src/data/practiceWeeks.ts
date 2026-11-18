@@ -26,7 +26,7 @@ export const practiceWeeks: PracticeCaseData = {
   right: {
     title: 'Недели, которые нельзя потерять',
     bestLabel: 'Лучший выбор по ценностям:',
-    bestOption: 'Вариант А.',
+    bestOption: 'Вариант А',
     values: [
       {
         icon: 'img/11.png',

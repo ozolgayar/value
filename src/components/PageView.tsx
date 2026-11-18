@@ -37,7 +37,9 @@ import { PracticeMarketPage } from './PracticeMarket'
 import { PracticeMethodologyPage } from './PracticeMethodology'
 import { PracticeModernizationPage } from './PracticeModernization'
 import { PracticeWeeksPage } from './PracticeWeeks'
+import { SplitJourneyPage } from './SplitJourneyPage'
 import { getHistoryPage, historyPageCount } from '../data/history'
+import { practiceGalleryPageId } from '../data/practiceGallery'
 import { Velaris } from './Velaris'
 
 type PageViewProps = {
@@ -76,7 +78,7 @@ function PageViewContent({
   onHistoryJumpYearHandled,
   historyHint = false,
 }: Omit<PageViewProps, 'sectionEndNav'>) {
-  const finishPractice = () => onGoToPage?.('p-bingo-break')
+  const backToPractices = () => onGoToPage?.(practiceGalleryPageId)
   if (page.kind === 'ceo') {
     return (
       <article className="page-shell page-bleed page-ceo">
@@ -109,92 +111,7 @@ function PageViewContent({
   }
 
   if (page.kind === 'split') {
-    return (
-      <article className="page-shell page-bleed page-split">
-        <div className="page-split__left">
-          <div className="page-split__left-inner">
-            {page.title && (
-              <h2 className="page-split__title">
-                {fixPrepositions(page.title)
-                  .split('\n')
-                  .map((line, i, arr) => (
-                    <span key={`${i}-${line.slice(0, 16)}`}>
-                      {line}
-                      {i < arr.length - 1 ? <br /> : null}
-                    </span>
-                  ))}
-              </h2>
-            )}
-            <div className="page-split__body">
-              {page.body?.map((p, i) => (
-                <p
-                  key={p.slice(0, 24)}
-                  className={
-                    page.meta?.qrPlaceholder && i === (page.body?.length ?? 0) - 1
-                      ? 'page-split__invite'
-                      : undefined
-                  }
-                >
-                  {fixPrepositions(p)}
-                </p>
-              ))}
-              {page.meta?.qrPlaceholder && (
-                <div className="page-split__qr" aria-hidden>
-                  <span>QR</span>
-                </div>
-              )}
-            </div>
-          </div>
-          {page.meta?.logo && (
-            <img
-              className="page-split__logo"
-              src={asset(page.meta.logo)}
-              alt="ГЕРОФАРМ Трансформация"
-            />
-          )}
-        </div>
-        <div className="page-split__right">
-          <div className="page-split__right-inner">
-            {page.sideTitle && (
-              <h3 className="page-split__side-title">{fixPrepositions(page.sideTitle)}</h3>
-            )}
-            {page.sideItems && (
-              <ul className="page-split__list">
-                {page.sideItems.map((item) => {
-                  const sepMatch = item.match(/\s+[–—-]\s+/)
-                  if (!sepMatch || sepMatch.index == null) {
-                    return <li key={item}>{fixPrepositions(item)}</li>
-                  }
-                  const label = item.slice(0, sepMatch.index)
-                  const rest = item.slice(sepMatch.index + sepMatch[0].length)
-                  return (
-                    <li key={item}>
-                      <strong className="page-split__list-label">
-                        {fixPrepositions(label)}
-                      </strong>
-                      {sepMatch[0]}
-                      {fixPrepositions(rest)}
-                    </li>
-                  )
-                })}
-              </ul>
-            )}
-            {page.footerSlogan && (
-              <>
-                <div className="page-split__divider" aria-hidden />
-                <p className="page-split__slogan">
-                  {page.footerSlogan.split('\n').map((line) => (
-                    <span key={line} className="page-split__slogan-line">
-                      {fixPrepositions(line)}
-                    </span>
-                  ))}
-                </p>
-              </>
-            )}
-          </div>
-        </div>
-      </article>
-    )
+    return <SplitJourneyPage page={page} />
   }
 
   if (page.kind === 'route') {
@@ -476,43 +393,43 @@ function PageViewContent({
   }
 
   if (page.kind === 'practice-equipment') {
-    return <PracticeEquipmentPage onFinishSection={finishPractice} />
+    return <PracticeEquipmentPage onFinishSection={backToPractices} />
   }
 
   if (page.kind === 'practice-weeks') {
-    return <PracticeWeeksPage onFinishSection={finishPractice} />
+    return <PracticeWeeksPage onFinishSection={backToPractices} />
   }
 
   if (page.kind === 'practice-error-first') {
-    return <PracticeErrorFirstPage onFinishSection={finishPractice} />
+    return <PracticeErrorFirstPage onFinishSection={backToPractices} />
   }
 
   if (page.kind === 'practice-market') {
-    return <PracticeMarketPage onFinishSection={finishPractice} />
+    return <PracticeMarketPage onFinishSection={backToPractices} />
   }
 
   if (page.kind === 'practice-modernization') {
-    return <PracticeModernizationPage onFinishSection={finishPractice} />
+    return <PracticeModernizationPage onFinishSection={backToPractices} />
   }
 
   if (page.kind === 'practice-ai') {
-    return <PracticeAiPage onFinishSection={finishPractice} />
+    return <PracticeAiPage onFinishSection={backToPractices} />
   }
 
   if (page.kind === 'practice-long-term') {
-    return <PracticeLongTermPage onFinishSection={finishPractice} />
+    return <PracticeLongTermPage onFinishSection={backToPractices} />
   }
 
   if (page.kind === 'practice-methodology') {
-    return <PracticeMethodologyPage onFinishSection={finishPractice} />
+    return <PracticeMethodologyPage onFinishSection={backToPractices} />
   }
 
   if (page.kind === 'practice-bureaucracy') {
-    return <PracticeBureaucracyPage onFinishSection={finishPractice} />
+    return <PracticeBureaucracyPage onFinishSection={backToPractices} />
   }
 
   if (page.kind === 'practice-habits') {
-    return <PracticeHabitsPage onFinishSection={finishPractice} />
+    return <PracticeHabitsPage onFinishSection={backToPractices} />
   }
 
   if (page.kind === 'closing-cover') {

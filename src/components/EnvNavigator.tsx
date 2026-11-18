@@ -1,103 +1,116 @@
-import { envNavigator, type EnvNavCard, type EnvNavItem } from '../data/envNavigator'
+import {
+  envNavigator,
+  type EnvNavCard,
+  type EnvNavItem,
+} from '../data/envNavigator'
 import { fixPrepositions } from '../lib/fixPrepositions'
 import { SectionEndNav } from './SectionEndNav'
 import '../styles/env-navigator.css'
 
 function NavItem({ item }: { item: EnvNavItem }) {
-  return (
-    <li className="en__item">
-      {item.href ? (
+  if (item.href) {
+    return (
+      <li className="en__item">
         <a
           className="en__link"
           href={item.href}
           target="_blank"
           rel="noopener noreferrer"
         >
-          {fixPrepositions(item.label)}
+          <span className="en__link-label">{fixPrepositions(item.label)}</span>
+          <span className="en__link-arrow" aria-hidden>
+            ↗
+          </span>
         </a>
-      ) : (
-        <span className="en__label">{fixPrepositions(item.label)}</span>
-      )}
-      {item.desc ? <span className="en__desc">{fixPrepositions(item.desc)}</span> : null}
+        {item.desc ? (
+          <span className="en__desc">{fixPrepositions(item.desc)}</span>
+        ) : null}
+      </li>
+    )
+  }
+
+  return (
+    <li className="en__item">
+      <span className="en__label">{fixPrepositions(item.label)}</span>
+      {item.desc ? (
+        <span className="en__desc">{fixPrepositions(item.desc)}</span>
+      ) : null}
     </li>
   )
 }
 
 function NavCard({ card }: { card: EnvNavCard }) {
   return (
-    <div className="en__card">
-      <h2 className="en__card-title">{fixPrepositions(card.title)}</h2>
+    <article
+      className={`en__card en__card--${card.accent} en__card--${card.index}`}
+      aria-labelledby={`en-card-${card.index}`}
+    >
+      <header className="en__card-head">
+        <span className="en__card-index" aria-hidden>
+          {card.index}
+        </span>
+        <h2 className="en__card-title" id={`en-card-${card.index}`}>
+          {fixPrepositions(card.title)}
+        </h2>
+      </header>
       <ul className="en__list">
         {card.items.map((item) => (
           <NavItem key={item.label} item={item} />
         ))}
       </ul>
-    </div>
-  )
-}
-
-function Brand({ tone }: { tone: 'light' | 'ink' }) {
-  return (
-    <div className={`en__brand en__brand--${tone}`}>
-      <span>ГЕРОФАРМ</span>
-      <span className="en__mark" aria-hidden />
-      <span>ТРАНСФОРМАЦИЯ</span>
-    </div>
+    </article>
   )
 }
 
 export function EnvNavigatorPage() {
-  const { badge, title, intro, footnote, leftCards, rightCards, quote } =
-    envNavigator
-
-  const [historyCard, missionCard] = leftCards
-  const [synergyCard, valuesCard, masteryCard] = rightCards
+  const { badge, title, intro, footnote, cards } = envNavigator
 
   return (
     <article className="page-shell page-bleed page-env-navigator">
-      <section className="en__half en__half--left" aria-label={title}>
-        <div className="en__inner">
-          <span className="en__badge">{badge}</span>
-          <h1 className="en__title">{title}</h1>
-          <p className="en__intro">{intro}</p>
-
-          <div className="en__tree en__tree--pair">
-            <div className="en__tree-rail" aria-hidden />
-            <div className="en__tree-cards">
-              <NavCard card={historyCard} />
-              <NavCard card={missionCard} />
-            </div>
-          </div>
-
-          <div className="en__closing">
-            <p className="en__quote">
-              {quote.map((line) => (
-                <span key={line}>{fixPrepositions(line)}</span>
-              ))}
+      <div className="en__shell">
+        <div className="en__main">
+          <header className="en__hero">
+            <span className="en__badge">{badge}</span>
+            <h1 className="en__title">{fixPrepositions(title)}</h1>
+            <p className="en__intro">{fixPrepositions(intro)}</p>
+            <blockquote className="en__lead">
+              <p className="en__lead-text">
+                {fixPrepositions('Каждый день мы можем')}
+                <br className="en__br en__br--mobile" />{' '}
+                {fixPrepositions('использовать')}
+                <br className="en__br en__br--desktop" />{' '}
+                {fixPrepositions('возможности,')}
+                <br className="en__br en__br--mobile" />{' '}
+                {fixPrepositions('которые компания')}
+                <br className="en__br en__br--desktop" />{' '}
+                {fixPrepositions('создаёт')}
+                <br className="en__br en__br--mobile" />{' '}
+                {fixPrepositions('для нашего успеха')}
+              </p>
+            </blockquote>
+            <p className="en__note">
+              <span className="en__note-icon" aria-hidden>
+                ↗
+              </span>
+              <span className="en__note-text">{fixPrepositions(footnote)}</span>
             </p>
-            <p className="en__footnote">*{fixPrepositions(footnote)}</p>
-          </div>
-          <Brand tone="light" />
-        </div>
-      </section>
+          </header>
 
-      <section
-        className="en__half en__half--right"
-        aria-label="Инструменты окружения"
-      >
-        <div className="en__inner en__inner--right">
-          <div className="en__tree en__tree--branch">
-            <NavCard card={synergyCard} />
-            <div className="en__tree-fork" aria-hidden />
-            <div className="en__tree-cards">
-              <NavCard card={valuesCard} />
-              <NavCard card={masteryCard} />
-            </div>
-          </div>
-          <Brand tone="light" />
+          <section className="en__catalog" aria-label="Каталог окружения">
+            {cards.map((card) => (
+              <NavCard key={card.index} card={card} />
+            ))}
+          </section>
         </div>
-        <SectionEndNav />
-      </section>
+
+        <footer className="en__brand">
+          <span>ГЕРОФАРМ</span>
+          <span className="en__mark" aria-hidden />
+          <span>ТРАНСФОРМАЦИЯ</span>
+        </footer>
+      </div>
+
+      <SectionEndNav />
     </article>
   )
 }

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { asset } from '../asset'
 import type { PracticeCaseData } from '../data/practiceCase'
-import { SectionEndNav } from './SectionEndNav'
 import '../styles/practice-equipment.css'
 
 type Phase = 'choose' | 'feedback'
@@ -25,6 +25,7 @@ function fallbackConsequence(letter: string) {
 
 export function PracticeCasePage({
   data,
+  onFinishSection,
 }: {
   data: PracticeCaseData
   onFinishSection?: () => void
@@ -33,12 +34,21 @@ export function PracticeCasePage({
   const [phase, setPhase] = useState<Phase>('choose')
   const [chosenKey, setChosenKey] = useState<string | null>(null)
   const [showOthers, setShowOthers] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     setPhase('choose')
     setChosenKey(null)
     setShowOthers(false)
   }, [data])
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)')
+    const sync = () => setIsMobile(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
 
   useEffect(() => {
     if (!showOthers) return
@@ -49,6 +59,21 @@ export function PracticeCasePage({
     return () => window.removeEventListener('keydown', onKey)
   }, [showOthers])
 
+  useEffect(() => {
+    if (!showOthers || !isMobile) return
+    const sheet = document.getElementById('pe-others-title')
+    sheet?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [showOthers, isMobile])
+
+  useEffect(() => {
+    if (!showOthers || isMobile) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [showOthers, isMobile])
+
   const bestLetters = useMemo(
     () => parseBestLetters(right.bestOption),
     [right.bestOption],
@@ -57,6 +82,53 @@ export function PracticeCasePage({
   const otherOptions = left.options.filter(
     (opt) => !bestLetters.has(optionLetter(opt.key)),
   )
+
+  const othersSheet =
+    showOthers && otherOptions.length > 0 ? (
+      <div
+        className={`pe__others-sheet${isMobile ? '' : ' is-viewport-modal'}`}
+        role="dialog"
+        aria-modal={isMobile ? undefined : true}
+        aria-labelledby="pe-others-title"
+      >
+        <button
+          type="button"
+          className="pe__others-sheet-backdrop"
+          aria-label="Закрыть"
+          onClick={() => setShowOthers(false)}
+        />
+        <div className="pe__others-sheet-card">
+          <div className="pe__others-sheet-head">
+            <h2 id="pe-others-title" className="pe__others-sheet-title">
+              Другие решения и последствия
+            </h2>
+            <button
+              type="button"
+              className="pe__others-sheet-close"
+              aria-label="Закрыть"
+              onClick={() => setShowOthers(false)}
+            >
+              ×
+            </button>
+          </div>
+          <ul className="pe__others-list pe__others-list--sheet">
+            {otherOptions.map((opt) => {
+              const letter = optionLetter(opt.key)
+              return (
+                <li key={opt.key} className="pe__other">
+                  <p className="pe__other-title">Вариант {letter}</p>
+                  <p className="pe__other-decision">{opt.text}</p>
+                  <p className="pe__other-text">
+                    <strong>Последствие:</strong>{' '}
+                    {opt.consequence ?? fallbackConsequence(letter)}
+                  </p>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      </div>
+    ) : null
 
   return (
     <article
@@ -155,17 +227,28 @@ export function PracticeCasePage({
                   <p className="pe__result">
                     <strong>{right.resultLabel}</strong> {right.result}
                   </p>
-                  {otherOptions.length > 0 ? (
-                    <div className="pe__others">
+                  <div className="pe__actions">
+                    <div className="pe__actions-row">
+                      {otherOptions.length > 0 && !showOthers ? (
+                        <button
+                          type="button"
+                          className="pe__cta pe__cta--primary"
+                          aria-expanded={false}
+                          onClick={() => setShowOthers(true)}
+                        >
+                          Посмотреть другие решения
+                        </button>
+                      ) : null}
                       <button
                         type="button"
-                        className="pe__cta pe__cta--ghost"
-                        onClick={() => setShowOthers(true)}
+                        className="pe__cta pe__cta--secondary"
+                        onClick={() => onFinishSection?.()}
                       >
-                        Посмотреть другие решения
+                        К практикам
                       </button>
                     </div>
-                  ) : null}
+                    {isMobile ? othersSheet : null}
+                  </div>
                 </div>
               </div>
             )}
@@ -173,53 +256,9 @@ export function PracticeCasePage({
         </div>
       </div>
 
-      {showOthers ? (
-        <div
-          className="pe__modal"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="pe-others-title"
-        >
-          <button
-            type="button"
-            className="pe__modal-backdrop"
-            aria-label="Закрыть"
-            onClick={() => setShowOthers(false)}
-          />
-          <div className="pe__modal-card">
-            <div className="pe__modal-head">
-              <h2 id="pe-others-title" className="pe__modal-title">
-                Другие решения и последствия
-              </h2>
-              <button
-                type="button"
-                className="pe__modal-close"
-                aria-label="Закрыть"
-                onClick={() => setShowOthers(false)}
-              >
-                ×
-              </button>
-            </div>
-            <ul className="pe__others-list pe__others-list--modal">
-              {otherOptions.map((opt) => {
-                const letter = optionLetter(opt.key)
-                return (
-                  <li key={opt.key} className="pe__other">
-                    <p className="pe__other-title">Вариант {letter}</p>
-                    <p className="pe__other-decision">{opt.text}</p>
-                    <p className="pe__other-text">
-                      <strong>Последствие:</strong>{' '}
-                      {opt.consequence ?? fallbackConsequence(letter)}
-                    </p>
-                  </li>
-                )
-              })}
-            </ul>
-          </div>
-        </div>
-      ) : null}
-
-      {phase === 'feedback' ? <SectionEndNav /> : null}
+      {!isMobile && othersSheet
+        ? createPortal(othersSheet, document.body)
+        : null}
     </article>
   )
 }
