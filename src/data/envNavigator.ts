@@ -90,7 +90,7 @@ export const envNavigator = {
           desc: 'Диагностика взаимодействия между подразделениями',
         },
         {
-          label: '«Рекомендуй!»',
+          label: 'Рекомендуй!',
           desc: 'Программа рекомендаций коллег',
         },
         {
@@ -138,22 +138,22 @@ export const envNavigator = {
           href: 'https://academiageropharm.ekvio.ru/430/video',
         },
         {
-          label: 'Золотая лига',
-          desc: 'Программа признания лучших результатов',
-          href: 'https://hrm.geropharm.com/root/pages/gold',
-        },
-        {
           label: 'Серебряная лига',
           desc: 'Мотивация и развитие талантов',
           href: 'https://hrm.geropharm.com/root/pages/motivation',
         },
         {
-          label: 'Правила взаимодействия',
-          desc: 'Общие нормы работы в команде',
-        },
-        {
           label: 'Обзор талантов',
           desc: 'Оценка потенциала и карьерные треки',
+        },
+        {
+          label: 'Золотая лига',
+          desc: 'Программа признания лучших результатов',
+          href: 'https://hrm.geropharm.com/root/pages/gold',
+        },
+        {
+          label: 'Правила взаимодействия',
+          desc: 'Общие нормы работы в команде',
         },
       ],
     },

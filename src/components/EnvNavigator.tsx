@@ -70,24 +70,29 @@ export function EnvNavigatorPage() {
       <div className="en__shell">
         <div className="en__main">
           <header className="en__hero">
-            <span className="en__badge">{badge}</span>
-            <h1 className="en__title">{fixPrepositions(title)}</h1>
-            <p className="en__intro">{fixPrepositions(intro)}</p>
+            <div className="en__intro-block">
+              <span className="en__badge">{badge}</span>
+              <h1 className="en__title">{fixPrepositions(title)}</h1>
+              <p className="en__intro">{fixPrepositions(intro)}</p>
+            </div>
+
             <blockquote className="en__lead">
               <p className="en__lead-text">
-                {fixPrepositions('Каждый день мы можем')}
-                <br className="en__br en__br--mobile" />{' '}
-                {fixPrepositions('использовать')}
-                <br className="en__br en__br--desktop" />{' '}
-                {fixPrepositions('возможности,')}
-                <br className="en__br en__br--mobile" />{' '}
-                {fixPrepositions('которые компания')}
-                <br className="en__br en__br--desktop" />{' '}
-                {fixPrepositions('создаёт')}
-                <br className="en__br en__br--mobile" />{' '}
-                {fixPrepositions('для нашего успеха')}
+                <span className="en__lead-line">
+                  {fixPrepositions('Каждый день мы можем')}
+                </span>
+                <span className="en__lead-line">
+                  {fixPrepositions('использовать возможности,')}
+                </span>
+                <span className="en__lead-line">
+                  {fixPrepositions('которые компания создаёт')}
+                </span>
+                <span className="en__lead-line">
+                  {fixPrepositions('для нашего успеха')}
+                </span>
               </p>
             </blockquote>
+
             <p className="en__note">
               <span className="en__note-icon" aria-hidden>
                 ↗
