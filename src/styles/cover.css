@@ -56,6 +56,8 @@
   width: min(100%, 18rem);
   height: auto;
   max-height: 2.4rem;
+  /* Optical align with ExtraBlack «История» ink */
+  margin-left: 0.25rem;
   object-fit: contain;
   object-position: left center;
 }
@@ -215,7 +217,7 @@
     max-width: none;
     min-height: auto;
     height: auto;
-    overflow: auto;
+    overflow: visible;
   }
 
   .cover__hero {
@@ -227,7 +229,8 @@
     min-height: auto;
     height: auto;
     gap: 0;
-    padding: 28px 20px 40px;
+    padding: 20px 16px 24px;
+    overflow: visible;
   }
 
   .cover__hero::before {
@@ -235,48 +238,62 @@
   }
 
   .cover__content {
-    width: 100%;
-    max-width: none;
+    display: contents;
   }
 
   .cover__logo {
-    width: min(100%, 15rem);
-    max-height: 2rem;
+    order: 1;
+    width: min(100%, 13.5rem);
+    max-height: 1.75rem;
+    margin-left: 0.2rem;
   }
 
   .cover__title {
-    font-size: clamp(42px, 14vw, 56px);
-    line-height: 0.9;
-    margin: 28px 0 22px;
-  }
-
-  .cover__content .primary-btn {
-    min-height: 52px;
-    padding: 0 28px;
-    margin: 0 0 28px;
+    order: 2;
+    font-size: clamp(36px, 11.5vw, 48px);
+    line-height: 0.92;
+    margin: 16px 0 14px;
   }
 
   .cover__hashtag {
-    font-size: clamp(34px, 11vw, 46px);
-    line-height: 0.9;
-    margin: 0 0 28px;
+    order: 3;
+    font-size: clamp(28px, 9vw, 38px);
+    line-height: 0.92;
+    margin: 0 0 16px;
     max-width: none;
   }
 
   .cover__visual {
+    order: 4;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: none;
+    grid-template-rows: auto auto;
     gap: 8px;
     width: 100%;
     height: auto;
     min-height: 0;
     margin-top: 0;
+    margin-bottom: 0;
     align-self: stretch;
+    flex: 0 0 auto;
+  }
+
+  .cover__cta {
+    order: 5;
+    align-self: center;
+    width: 100%;
+    max-width: 320px;
+    min-height: 54px;
+    height: 54px;
+    margin: 20px 0 0;
+    padding: 0 28px;
+    border-radius: 999px;
+    font-weight: 800;
   }
 
   .cover__cell {
-    height: 140px;
+    height: auto;
+    aspect-ratio: 1 / 1;
   }
 
   .cover__cell--1 {
@@ -292,12 +309,14 @@
   .cover__cell--person {
     grid-column: 1 / -1;
     grid-row: 2 / 3;
-    height: 200px;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    min-height: 200px;
   }
 
   .cover__cell--person img {
     object-fit: cover;
-    object-position: center 18%;
+    object-position: center 28%;
   }
 
   .cover__cell.optional {

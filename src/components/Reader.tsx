@@ -336,31 +336,6 @@ export function Reader({
     if (onBackToWelcome) onBackToWelcome()
     else onExitToHome()
   }, [onBackToWelcome, onExitToHome])
-  const hintSectionEnd = useCallback(() => {
-    // Desktop uses arrows / section buttons — no swipe tip.
-    if (!isMobile) return
-    const now = Date.now()
-    if (now - sectionEndToastAt.current < 1800) return
-    sectionEndToastAt.current = now
-    // Interstitials have no section buttons — swipe-only hint.
-    const pageKind = flatPages[index]?.page.kind
-    if (pageKind === 'interstitial') {
-      setToast(
-        'Свайп вправо — следующий раздел,\nсвайп влево — предыдущий экран',
-      )
-      return
-    }
-    // Strategy intro: CTA gate — do not show the generic section-end tip.
-    if (
-      pageKind === 'mission-strategy-house' &&
-      document.querySelector('.page-strategy-house.is-strategy-intro')
-    ) {
-      setToast('Нажми кнопку «Перейти к стратегии»')
-      return
-    }
-    setToast('Это конец раздела — свайпни вбок\nили воспользуйся кнопками')
-  }, [flatPages, index, isMobile])
-
   const clearZoomTimers = useCallback(() => {
     zoomTimers.current.forEach((id) => window.clearTimeout(id))
     zoomTimers.current = []
@@ -425,7 +400,7 @@ export function Reader({
             title: 'Навигация по книге',
             paragraphs: [
               {
-                text: 'Внутри раздела листайте свайпом вверх/вниз. К следующему разделу — свайпом вбок.',
+                text: 'Внутри раздела листайте свайпом вверх/вниз. К следующему разделу — кнопками внизу экрана.',
               },
               {
                 text: 'На телефоне коснитесь экрана, чтобы скрыть или показать панель навигации.',
@@ -520,14 +495,6 @@ export function Reader({
     revealChrome,
     scheduleChromeHide,
   ])
-
-  useEffect(() => {
-    if (!isMobile || !isInterstitial) return
-    const now = Date.now()
-    if (now - sectionEndToastAt.current < 1800) return
-    sectionEndToastAt.current = now
-    setToast('Свайп вправо — следующий раздел,\nсвайп влево — предыдущий экран')
-  }, [index, isInterstitial, isMobile])
 
   useEffect(() => {
     const onToast = (event: Event) => {
@@ -1129,35 +1096,19 @@ export function Reader({
       const absDy = Math.abs(dy)
       const fingerUp = dy < -threshold && absDy > absDx
       const fingerDown = dy > threshold && absDy > absDx
-      const fingerLeft = dx < -threshold && absDx > absDy
-      const fingerRight = dx > threshold && absDx > absDy
       const isTap = absDx < tapSlop && absDy < tapSlop
 
-      if (fingerLeft) {
-        // Swipe left → previous screen
-        armSwipeLock()
-        turn('prev')
-        return
-      }
-      if (fingerRight) {
-        // Swipe right → next section
-        armSwipeLock()
-        goNextSection()
-        return
-      }
       if (fingerUp && startedAtBottom) {
         // Gallery: must pick a story/practice — no swipe-to-next.
         if (isGalleryPickPage) return
-        // Vertical swipe only flips pages inside the same section.
-        if (pageStaysInSection(index + 1)) {
-          turn('next')
-        } else {
-          hintSectionEnd()
-        }
+        // Interstitial intro: swipe up enters the section; otherwise stay in-section only.
+        if (isInterstitial || pageStaysInSection(index + 1)) turn('next')
+        else revealChrome()
         return
       }
       if (fingerDown && startedAtTop) {
-        if (pageStaysInSection(index - 1)) turn('prev')
+        // Interstitial: overscroll up leaves to the previous section.
+        if (isInterstitial || pageStaysInSection(index - 1)) turn('prev')
         return
       }
       if (isTap) {
@@ -1199,10 +1150,6 @@ export function Reader({
       const dx = t.clientX - start.x
       const absDx = Math.abs(dx)
       const absDy = Math.abs(dy)
-      if (absDx > 10 && absDx > absDy) {
-        e.preventDefault()
-        return
-      }
       if (absDy < 10 || absDy <= absDx) return
       if (dy < 0 && start.atBottom) {
         e.preventDefault()

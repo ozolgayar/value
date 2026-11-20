@@ -33,7 +33,7 @@ export function Cover({ onOpen, inert = false }: CoverProps) {
 
           <button
             type="button"
-            className="primary-btn"
+            className="primary-btn cover__cta"
             onClick={onOpen}
             tabIndex={inert ? -1 : undefined}
           >

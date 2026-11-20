@@ -384,7 +384,6 @@ export function MissionCircle3DSlide() {
       </div>
       <header className="mc3d__head">
         <div className="mc3d__head-copy">
-          <span className="mc3d__badge">МИССИЯ ГЕРОФАРМ</span>
           <h1 className="mc3d__title">
             {fixPrepositions('ГЕРОФАРМ в экосистеме\nздорового долголетия')}
           </h1>

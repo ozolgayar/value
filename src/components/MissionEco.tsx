@@ -19,37 +19,24 @@ export { MissionStrategyHousePage } from './StrategyHouse'
 export function MissionStatementPage() {
   const data = missionStatement
   return (
-    <article className="page-shell page-bleed page-mission-statement">
-      <div className="mstmt__spread">
-        <div className="mstmt__bg mstmt__bg--strategy" aria-hidden />
-        <div className="mstmt__bg mstmt__bg--mission" aria-hidden />
-        <div className="mstmt__mid">
-          <section
-            className="mstmt__panel mstmt__panel--mission"
-            aria-label="Миссия"
-          >
-            <span className="mstmt__badge">{data.badge}</span>
-            <h2 className="mstmt__title">{fixPrepositions(data.title)}</h2>
-          </section>
-          <section
-            className="mstmt__panel mstmt__panel--strategy"
-            aria-label="Стратегия"
-          >
-            <span className="mstmt__badge">{data.strategyBadge}</span>
-            <div className="mstmt__paras">
-              {data.strategyBody.map((p) => (
-                <p key={p.slice(0, 28)}>{fixPrepositions(p)}</p>
-              ))}
-            </div>
-          </section>
+    <article
+      className="page-shell page-bleed page-mission-statement"
+      aria-label="Миссия ГЕРОФАРМ"
+    >
+      <div className="mstmt__grid" aria-hidden />
+      <div className="mstmt__glow" aria-hidden />
+
+      <div className="mstmt__stage">
+        <div className="mstmt__panel">
+          <span className="mstmt__label">{data.badge}</span>
+          <h2 className="mstmt__title">
+            {data.titleLines.map((line) => (
+              <span key={line} className="mstmt__title-line">
+                {fixPrepositions(line)}
+              </span>
+            ))}
+          </h2>
         </div>
-        <footer className="mstmt__brand">
-          <img
-            className="mstmt__brand-logo"
-            src={asset('img/main/logo.svg')}
-            alt="ГЕРОФАРМ Трансформация"
-          />
-        </footer>
       </div>
     </article>
   )

@@ -37,6 +37,9 @@ export function SplitJourneyPage({ page }: { page: BookPage }) {
     }
   }, [page])
 
+  const inviteFrom =
+    page.body?.findIndex((line) => line.startsWith('Станьте')) ?? -1
+
   return (
     <article ref={rootRef} className="page-shell page-bleed page-split">
       <div className="page-split__left">
@@ -54,23 +57,34 @@ export function SplitJourneyPage({ page }: { page: BookPage }) {
             </h2>
           )}
           <div className="page-split__body">
-            {page.body?.map((p, i) => (
-              <p
-                key={p.slice(0, 24)}
-                className={
-                  page.meta?.qrPlaceholder && i === (page.body?.length ?? 0) - 1
-                    ? 'page-split__invite'
-                    : undefined
-                }
-              >
-                {fixPrepositions(p)}
-              </p>
-            ))}
-            {page.meta?.qrPlaceholder && (
-              <div className="page-split__qr" aria-hidden>
-                <span>QR</span>
+            {page.body?.map((p, i) => {
+              if (inviteFrom >= 0 && i >= inviteFrom) return null
+              return <p key={p.slice(0, 24)}>{fixPrepositions(p)}</p>
+            })}
+            {inviteFrom >= 0 ? (
+              <div className="page-split__invite-block">
+                <div className="page-split__invite-rule" aria-hidden />
+                {page.body?.slice(inviteFrom).map((p) => {
+                  const text = fixPrepositions(p)
+                  // fixPrepositions may insert NBSP after short words («Как»).
+                  const howMatch = text.match(/^(Как\s+отправить:)/)
+                  if (howMatch) {
+                    const howPrefix = howMatch[1]
+                    return (
+                      <p key={p.slice(0, 24)} className="page-split__invite-note">
+                        <span className="page-split__invite-accent">{howPrefix}</span>
+                        {text.slice(howPrefix.length)}
+                      </p>
+                    )
+                  }
+                  return (
+                    <p key={p.slice(0, 24)} className="page-split__invite">
+                      {text}
+                    </p>
+                  )
+                })}
               </div>
-            )}
+            ) : null}
           </div>
         </div>
         {page.meta?.logo && (

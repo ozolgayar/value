@@ -42,11 +42,6 @@ export function ClosingCoverPage({
             </button>
           ) : null}
         </div>
-        <img
-          className="closing-cover__qr"
-          src={asset('img/14.png')}
-          alt="QR-код путеводителя ГЕРОФАРМ"
-        />
       </div>
     </article>
   )

@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
-import { createPortal } from 'react-dom'
+import { useEffect, useState } from 'react'
 import { asset } from '../asset'
 import type { PracticeCaseData } from '../data/practiceCase'
 import '../styles/practice-equipment.css'
@@ -9,18 +8,6 @@ type Phase = 'choose' | 'feedback'
 function optionLetter(key: string) {
   const match = key.match(/[АБВ]/)
   return match?.[0] ?? key.replace(/[).:\s]/g, '')
-}
-
-function parseBestLetters(bestOption: string) {
-  // Only the choice letter after «Вариант», not the «В» inside the word itself.
-  const match = bestOption.match(/Вариант\s*([АБВ])/i)
-  if (match?.[1]) return new Set([match[1].toUpperCase()])
-  const fallback = bestOption.match(/([АБВ])\s*$/)
-  return new Set(fallback?.[1] ? [fallback[1]] : [])
-}
-
-function fallbackConsequence(letter: string) {
-  return `Вариант ${letter} слабее опирается на ценности компании: путь получается дольше, а риски для качества и пациентов выше.`
 }
 
 export function PracticeCasePage({
@@ -33,102 +20,13 @@ export function PracticeCasePage({
   const { left, right } = data
   const [phase, setPhase] = useState<Phase>('choose')
   const [chosenKey, setChosenKey] = useState<string | null>(null)
-  const [showOthers, setShowOthers] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     setPhase('choose')
     setChosenKey(null)
-    setShowOthers(false)
   }, [data])
 
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 768px)')
-    const sync = () => setIsMobile(mq.matches)
-    sync()
-    mq.addEventListener('change', sync)
-    return () => mq.removeEventListener('change', sync)
-  }, [])
-
-  useEffect(() => {
-    if (!showOthers) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setShowOthers(false)
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [showOthers])
-
-  useEffect(() => {
-    if (!showOthers || !isMobile) return
-    const sheet = document.getElementById('pe-others-title')
-    sheet?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }, [showOthers, isMobile])
-
-  useEffect(() => {
-    if (!showOthers || isMobile) return
-    const prev = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = prev
-    }
-  }, [showOthers, isMobile])
-
-  const bestLetters = useMemo(
-    () => parseBestLetters(right.bestOption),
-    [right.bestOption],
-  )
   const chosenOption = left.options.find((o) => o.key === chosenKey)
-  const otherOptions = left.options.filter(
-    (opt) => !bestLetters.has(optionLetter(opt.key)),
-  )
-
-  const othersSheet =
-    showOthers && otherOptions.length > 0 ? (
-      <div
-        className={`pe__others-sheet${isMobile ? '' : ' is-viewport-modal'}`}
-        role="dialog"
-        aria-modal={isMobile ? undefined : true}
-        aria-labelledby="pe-others-title"
-      >
-        <button
-          type="button"
-          className="pe__others-sheet-backdrop"
-          aria-label="Закрыть"
-          onClick={() => setShowOthers(false)}
-        />
-        <div className="pe__others-sheet-card">
-          <div className="pe__others-sheet-head">
-            <h2 id="pe-others-title" className="pe__others-sheet-title">
-              Другие решения и последствия
-            </h2>
-            <button
-              type="button"
-              className="pe__others-sheet-close"
-              aria-label="Закрыть"
-              onClick={() => setShowOthers(false)}
-            >
-              ×
-            </button>
-          </div>
-          <ul className="pe__others-list pe__others-list--sheet">
-            {otherOptions.map((opt) => {
-              const letter = optionLetter(opt.key)
-              return (
-                <li key={opt.key} className="pe__other">
-                  <p className="pe__other-title">Вариант {letter}</p>
-                  <p className="pe__other-decision">{opt.text}</p>
-                  <p className="pe__other-text">
-                    <strong>Последствие:</strong>{' '}
-                    {opt.consequence ?? fallbackConsequence(letter)}
-                  </p>
-                </li>
-              )
-            })}
-          </ul>
-        </div>
-      </div>
-    ) : null
 
   return (
     <article
@@ -181,7 +79,6 @@ export function PracticeCasePage({
                       style={{ animationDelay: `${i * 60}ms` }}
                       onClick={() => {
                         setChosenKey(opt.key)
-                        setShowOthers(false)
                         setPhase('feedback')
                       }}
                     >
@@ -229,14 +126,16 @@ export function PracticeCasePage({
                   </p>
                   <div className="pe__actions">
                     <div className="pe__actions-row">
-                      {otherOptions.length > 0 && !showOthers ? (
+                      {left.options.length > 0 ? (
                         <button
                           type="button"
                           className="pe__cta pe__cta--primary"
-                          aria-expanded={false}
-                          onClick={() => setShowOthers(true)}
+                          onClick={() => {
+                            setChosenKey(null)
+                            setPhase('choose')
+                          }}
                         >
-                          Посмотреть другие решения
+                          Варианты решений
                         </button>
                       ) : null}
                       <button
@@ -247,7 +146,6 @@ export function PracticeCasePage({
                         К практикам
                       </button>
                     </div>
-                    {isMobile ? othersSheet : null}
                   </div>
                 </div>
               </div>
@@ -255,10 +153,6 @@ export function PracticeCasePage({
           </section>
         </div>
       </div>
-
-      {!isMobile && othersSheet
-        ? createPortal(othersSheet, document.body)
-        : null}
     </article>
   )
 }

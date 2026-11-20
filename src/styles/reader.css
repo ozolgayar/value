@@ -412,24 +412,31 @@
   color: rgba(255, 255, 255, 0.95);
 }
 
-.page-split__invite {
-  font-weight: 700;
+.page-split__invite-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85em;
+  margin-top: 0.35em;
 }
 
-.page-split__qr {
-  display: grid;
-  place-items: center;
-  width: 104px;
-  height: 104px;
-  /* gap 18px + margin ≈ 34px от последней строки */
-  margin-top: 16px;
-  border: 2px dashed rgba(255, 255, 255, 0.7);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 0.85rem;
+.page-split__invite-rule {
+  width: 72px;
+  height: 3px;
+  margin: 0.35em 0 0.15em;
+  border-radius: 2px;
+  background: #ffffff;
+}
+
+.page-split__invite,
+.page-split__invite-note {
+  margin: 0;
+  font-weight: 400;
+}
+
+.page-split__invite-accent {
+  font-family: 'TT Commons Pro Expanded', var(--font), system-ui, sans-serif;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  font-style: normal;
 }
 
 .page-split__logo {

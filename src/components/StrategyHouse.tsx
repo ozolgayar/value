@@ -336,15 +336,6 @@ export function MissionStrategyHousePage() {
     })
   }
 
-  useEffect(() => {
-    if (!isMobileLayout || mobileIntroDone) return
-    window.dispatchEvent(
-      new CustomEvent('gph:toast', {
-        detail: 'Нажми кнопку «Перейти к стратегии»',
-      }),
-    )
-  }, [isMobileLayout, mobileIntroDone])
-
   const activeTooltip = FLOOR_TOOLTIP[active]
   const showMobileDetail = floorsOpened
   const articleClass = [

@@ -58,6 +58,33 @@
   pointer-events: auto;
 }
 
+@media (max-width: 900px) {
+  /* Single scrollport: stacked cover can exceed the phone viewport */
+  .akony__curtain {
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  .uc-akony-cover,
+  .akony__face,
+  .akony__face--front {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+  }
+
+  .akony__face .cover {
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+  }
+}
+
 @media (max-width: 600px) {
   .akony,
   .akony__stage,
@@ -71,8 +98,6 @@
   .akony__face .cover {
     width: 100%;
     max-width: none;
-    height: auto;
-    min-height: 100%;
   }
 }
 
